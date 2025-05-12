@@ -43,6 +43,7 @@ class FeindPanzer(Level):
         self.turret_angle = 0
         self.lives = 3
         self.active_bullets = []
-        self.behaviour = 0 #Noch nicht
+        self.state = 0 # 
+        
         
 
