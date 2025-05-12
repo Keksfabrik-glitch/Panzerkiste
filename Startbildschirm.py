@@ -32,12 +32,14 @@ while laeuft:
         if event.type == pygame.QUIT:
             laeuft = False
             pygame.quit()
+        
     tastatur = pygame.key.get_pressed()
     if tastatur[pygame.K_DOWN] :
         selected_index += 1
     if tastatur[pygame.K_UP] :
         selected_index += 1
-        
+    if tastatur[pygame.K_RETURN]:
+        print(selected_index)
             
 
     pygame.display.flip()
