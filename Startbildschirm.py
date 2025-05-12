@@ -1,7 +1,7 @@
 # Pygame Template
 import pygame
 stellen = ["Singelplayer" ,"Multiplayer" , "Einstellungen" , "Beenden"]
-selected_index = 0
+selected_index =  0
 # Setup
 pygame.init()
 BREITE = 600
