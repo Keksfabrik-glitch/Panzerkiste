@@ -20,8 +20,7 @@ class Player():
         self.lives = 3
         self.active_bullets = []
     def move_right(self):
-        self.direction = direction_vector.normalize()
-        self.position += self.direction * self.speed
+        self.position.x += self.speed
     
 class FeindPanzer(Level):
     def __init__(self):
