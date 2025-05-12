@@ -9,24 +9,32 @@ BREITE = 600
 HOEHE = 600
 fenster = pygame.display.set_mode((BREITE, HOEHE))
 pygame.display.set_caption("Startbildschirm")
-# clock = pygame.time.Clock()
 laeuft = True
+# clock = pygame.time.Clock()
+#Hintergrund
+hintergrund = pygame.image.load("Hintergrund_Panzerkiste.png")
+hintergrund = pygame.transform.scale(hintergrund ,(BREITE, HOEHE))
 #Schriftart
 font = pygame.font.SysFont("Arial", 36)  # Schriftart & Größe
-
+#Farben
+ROT = (255, 0, 0)
+SCHWARZ = (0, 0, 0)
+GRÜN = (0, 255, 0)
+WEIß = (255,255,255)
 # Gameloop / Spielschleife
 while laeuft:
-    fenster.fill((225, 225, 225))
+    #Hintergrund
+    fenster.blit(hintergrund , (0,0))
     for i in range (0,len(stellen)):
         if i == selected_index:
-            color = (255, 0, 0)  # ROT für Auswahl
+            color = WEIß  # ROT für Auswahl
         else:
-            color = (0, 0, 0)  # SCHWARZ normal
+            color = SCHWARZ  # SCHWARZ normal
         
         rendered = font.render(stellen[i], True, color)
-        fenster.blit(rendered, (100, 100 + i * 50))  # vertikal untereinander
+        fenster.blit(rendered, (200, 250 + i * 50))  # vertikal untereinander
 
-    pygame.display.flip()
+    
     # Ereignisse
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
