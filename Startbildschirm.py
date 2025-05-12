@@ -32,14 +32,15 @@ while laeuft:
         if event.type == pygame.QUIT:
             laeuft = False
             pygame.quit()
-        
-    tastatur = pygame.key.get_pressed()
-    if tastatur[pygame.K_DOWN] :
-        selected_index += 1
-    if tastatur[pygame.K_UP] :
-        selected_index += 1
-    if tastatur[pygame.K_RETURN]:
-        print(selected_index)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                selected_index = (selected_index + 1) % len(stellen)
+            elif event.key == pygame.K_UP:
+                selected_index = (selected_index - 1) % len(stellen)
+            elif event.key == pygame.K_RETURN:
+                print("Ausgewählt:", stellen[selected_index])
+                if stellen[selected_index] == "Beenden":
+                    laeuft = False
             
 
     pygame.display.flip()
