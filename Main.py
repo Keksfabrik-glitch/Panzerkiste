@@ -1,4 +1,5 @@
 # Pygame Template
+from win11toast import toast, notify, update_progress
 import pygame
 
 # Setup
