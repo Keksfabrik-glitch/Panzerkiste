@@ -21,15 +21,16 @@ ROT = (255, 0, 0)
 SCHWARZ = (0, 0, 0)
 GRÜN = (0, 255, 0)
 WEIß = (255,255,255)
+BLAU = (0,0,255)
 # Gameloop / Spielschleife
 while laeuft:
     #Hintergrund
     fenster.blit(hintergrund , (0,0))
     for i in range (0,len(stellen)):
         if i == selected_index:
-            color = WEIß  # ROT für Auswahl
+            color = BLAU  #  für Auswahl
         else:
-            color = SCHWARZ  # SCHWARZ normal
+            color = WEIß  #  normal
         
         rendered = font.render(stellen[i], True, color)
         fenster.blit(rendered, (200, 250 + i * 50))  # vertikal untereinander
