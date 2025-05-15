@@ -55,7 +55,7 @@ class Player:
         bewegung = pygame.Vector2( math.sin(rad), -math.cos(rad) ) * self.geschwindigkeit/10
         self.position -= bewegung
 
-class FeindPanzer(Level):
+class FeindPanzer:
     def __init__(self):
         self.level = 1
         self.position = pygame.Vector2(position)
