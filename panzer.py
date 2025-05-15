@@ -24,10 +24,10 @@ class Player:
         self.kugel_art = 1  # 2 = Feuer
         self.nachladezeit = 3
         self.letzterSchuss = 0
-        self.mieneZeit = 7
+        self.mieneZeit = 7 #Bis zur explosion
         self.mienenAnzahl = -1  # -1 = unendlich viele
-        self.letzte_mine_zeit = 0  
-        self.mine_cooldown = 500   
+        self.letzte_mine_zeit = 0
+        self.mine_cooldown = 5    # zwischen neuen Mienen
         self.drehgeschwindigkeit = 5
         self.turmDrehgeschw = 8
         self.abpraller = 2
@@ -62,15 +62,39 @@ class Player:
         self.position -= bewegung
     def Miene(self):
         aktuelle_zeit = pygame.time.get_ticks()
-        if aktuelle_zeit - self.letzte_mine_zeit >= self.mine_cooldown:
+        if aktuelle_zeit - self.letzte_mine_zeit >= self.mine_cooldown*1000:
             if self.mienenAnzahl >= 1 or self.mienenAnzahl == -1:
                 if self.mienenAnzahl != -1:
                     self.mienenAnzahl -= 1
                 if len(self.mienenPos) <= 5:
-                    self.mienenPos.append(self.position.copy())
-                    self.letzte_mine_zeit = aktuelle_zeit  
+                    pos = self.position.copy()
+                    self.mienenPos.append({'pos': pos, 'gelegt': aktuelle_zeit})
+                    self.letzte_mine_zeit = aktuelle_zeit
+
                     
-        
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.bilder = []
+        for i in range(1, 6):
+            bild = pygame.image.load(f"BilderExplosion/exp{i}.png")
+            bild = pygame.transform.scale(bild, (100, 100))
+            self.bilder.append(bild)
+        self.index = 0
+        self.image = self.bilder[self.index]
+        self.rect = self.image.get_rect(center=(x, y))
+        self.timer = 0
+
+    def update(self):
+        geschwindigkeit = 4
+        self.timer += 1
+        if self.timer >= geschwindigkeit:
+            self.timer = 0
+            self.index += 1
+            if self.index < len(self.bilder):
+                self.image = self.bilder[self.index]
+            else:
+                self.kill()        
 #IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
 
 player = Player((400, 300))
@@ -87,6 +111,7 @@ panzer_surface = pygame.Surface((panzer_größe-(panzer_größe/4), panzer_grö�
 panzer_surface.fill(GRÜN)
 pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe-(panzer_größe/4), panzer_größe), 2)
 
+explosions_gruppe = pygame.sprite.Group()
 # Haupt-Game Loop
 running = True
 while running:
@@ -116,10 +141,27 @@ while running:
     if keys[pygame.K_d]:
         player.goD()
     if keys[pygame.K_SPACE]:
-        MieneVerarbeitung = threading.Thread(target=player.Miene(), args=())
+       threading.Thread(target=player.Miene).start()
+
     
-    for pos in player.mienenPos:
-        miene = pygame.draw.circle(screen, ROT, (pos.x,pos.y), 8)
+    jetzt = pygame.time.get_ticks()
+    for m in player.mienenPos[:]:
+        t = (jetzt - m['gelegt']) / 1000
+        rest = player.mieneZeit - t
+        if rest <= 0:
+            explosions_gruppe.add(Explosion(m['pos'].x, m['pos'].y))
+            player.mienenPos.remove(m)
+        else:
+            if rest <= 2:   # letzte 2 Sekunden
+                # schneller Blinken
+                blink = 500 - ((2 - rest) / 2) *100
+                blinkend = (jetzt // blink) % 2 == 0
+                farbe = (255, 255, 0) if blinkend else (255, 0, 0)
+            else:
+                farbe = (255, 0, 0)  # normal rot, kein Blinken
+                
+            pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
+
     #Drehe das untere
     gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
     gedreht_rect = gedreht.get_rect(center=player.position)
@@ -134,7 +176,8 @@ while running:
     
     #Zeichne die Kanone
     screen.blit(drehen, neu_rect.topleft)
-
+    explosions_gruppe.update()
+    explosions_gruppe.draw(screen)
     pygame.display.flip()
     clock.tick(60)
 
