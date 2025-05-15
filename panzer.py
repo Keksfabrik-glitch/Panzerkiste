@@ -12,6 +12,7 @@ ROT = (255, 0, 0)
 SCHWARZ = (0, 0, 0)
 SAND = (239, 228, 176)
 BLAU = (0, 0, 255)
+GRÜN = (0,255,0)
 panzer_größe = 40
 
 class Player:
@@ -73,10 +74,14 @@ class Player:
 #IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
 
 player = Player((400, 300))
-# Definiere das blaue Quadrat (unten)
+# Definiere den Turm
 unten = pygame.Surface((panzer_größe / 4, panzer_größe / 4), pygame.SRCALPHA)
 unten.fill(BLAU)
 pygame.draw.rect(unten, SCHWARZ, (0, 0, panzer_größe / 4, panzer_größe / 4), 2)
+# Zeichne den Unteren (rotierend)
+panzer_surface = pygame.Surface((panzer_größe-(panzer_größe/4), panzer_größe), pygame.SRCALPHA)
+panzer_surface.fill(GRÜN)
+pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe-(panzer_größe/4), panzer_größe), 2)
 
 # Haupt-Game Loop
 running = True
@@ -111,14 +116,7 @@ while running:
     
     for pos in player.mienenPos:
         miene = pygame.draw.circle(screen, ROT, (pos.x,pos.y), 8)
-    panzer_breite = 20  
-    panzer_länge = 40   
-    panzer_surface = pygame.Surface((panzer_breite, panzer_länge), pygame.SRCALPHA)
-    panzer_surface.fill((0, 255, 0))
-     # Zeichne den Turm (rotierend)
-    panzer_surface = pygame.Surface((panzer_größe-(panzer_größe/4), panzer_größe), pygame.SRCALPHA)
-    pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe-(panzer_größe/4), panzer_größe), 2)
-    
+    #Drehen
     gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
     gedreht_rect = gedreht.get_rect(center=player.position)
     # Zeichne den Unterteil
