@@ -74,10 +74,14 @@ class Player:
 #IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
 
 player = Player((400, 300))
+# Definiere Kanone
+kanone = pygame.Surface((panzer_größe / 4, panzer_größe / 4), pygame.SRCALPHA)
+kanone.fill(BLAU)
+pygame.draw.rect(kanone, SCHWARZ, (0, 0, panzer_größe / 4, panzer_größe / 4), 2)
 # Definiere den Turm
-unten = pygame.Surface((panzer_größe / 4, panzer_größe / 4), pygame.SRCALPHA)
-unten.fill(BLAU)
-pygame.draw.rect(unten, SCHWARZ, (0, 0, panzer_größe / 4, panzer_größe / 4), 2)
+turm = pygame.Surface((panzer_größe / 4, panzer_größe / 4), pygame.SRCALPHA)
+turm.fill(BLAU)
+pygame.draw.rect(turm, SCHWARZ, (0, 0, panzer_größe / 4, panzer_größe / 4), 2)
 # Zeichne den Unteren (rotierend)
 panzer_surface = pygame.Surface((panzer_größe-(panzer_größe/4), panzer_größe), pygame.SRCALPHA)
 panzer_surface.fill(GRÜN)
@@ -97,8 +101,8 @@ while running:
         richtung = richtung.normalize()  # auf Länge 1 bringen
     winkel = -richtung.angle_to(pygame.Vector2(1, 0))
 
-    # Zur Maus drehen
-    rotiert = pygame.transform.rotate(unten, -winkel)
+    # Drehe den Turm
+    rotiert = pygame.transform.rotate(turm, -winkel)
     neu_rect = rotiert.get_rect(center=player.position)
 
     # Steuerung
@@ -116,14 +120,20 @@ while running:
     
     for pos in player.mienenPos:
         miene = pygame.draw.circle(screen, ROT, (pos.x,pos.y), 8)
-    #Drehen
+    #Drehe das untere
     gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
     gedreht_rect = gedreht.get_rect(center=player.position)
+    #Drehe die Kanone
+    drehen = pygame.transform.rotate(kanone, -winkel)
+    neu_rect = rotiert.get_rect(center=player.position)
     # Zeichne den Unterteil
     screen.blit(gedreht, gedreht_rect.topleft)
 
     # Das blaue Quadrat im Zentrum des Panzers
-    screen.blit(rotiert, neu_rect.topleft)  # Das rotiert in der Mitte des grünen Panzers bleibt
+    screen.blit(rotiert, neu_rect.topleft)
+    
+    #Zeichne die Kanone
+    screen.blit(drehen, neu_rect.topleft)
 
     pygame.display.flip()
     clock.tick(60)
