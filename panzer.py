@@ -6,14 +6,17 @@ pygame.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
+panzer_größe = 40
 
+#Farben
 WEISS = (255, 255, 255)
 ROT = (255, 0, 0)
 SCHWARZ = (0, 0, 0)
 SAND = (239, 228, 176)
 BLAU = (0, 0, 255)
 GRÜN = (0,255,0)
-panzer_größe = 40
+TRANSPARENT = (0,0,0,0)
+
 
 class Player:
     def __init__(self, position):
@@ -98,18 +101,20 @@ class Explosion(pygame.sprite.Sprite):
 #IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
 
 player = Player((400, 300))
-# Definiere Kanone
-kanone = pygame.Surface((panzer_größe / 4, panzer_größe / 4), pygame.SRCALPHA)
-kanone.fill(BLAU)
-pygame.draw.rect(kanone, SCHWARZ, (0, 0, panzer_größe / 4, panzer_größe / 4), 2)
 # Definiere den Turm
-turm = pygame.Surface((panzer_größe / 4, panzer_größe / 4), pygame.SRCALPHA)
+turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
 turm.fill(BLAU)
-pygame.draw.rect(turm, SCHWARZ, (0, 0, panzer_größe / 4, panzer_größe / 4), 2)
+pygame.draw.rect(turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
+# Definiere Kanone – zeigt nach rechts, Mittelpunkt hinten
+kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
+kanone.fill(TRANSPARENT)  
+pygame.draw.rect(kanone, ROT, (panzer_größe // 2, 0, panzer_größe // 1.5, panzer_größe // 8))  # Hauptteil
+pygame.draw.rect(kanone, SCHWARZ, (panzer_größe // 2, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
+
 # Zeichne den Unteren (rotierend)
-panzer_surface = pygame.Surface((panzer_größe-(panzer_größe/4), panzer_größe), pygame.SRCALPHA)
+panzer_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
 panzer_surface.fill(GRÜN)
-pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe-(panzer_größe/4), panzer_größe), 2)
+pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe * 0.75, panzer_größe), 2)
 
 explosions_gruppe = pygame.sprite.Group()
 # Haupt-Game Loop
@@ -126,9 +131,9 @@ while running:
         richtung = richtung.normalize()  # auf Länge 1 bringen
     winkel = -richtung.angle_to(pygame.Vector2(1, 0))
 
-    # Drehe den Turm
-    rotiert = pygame.transform.rotate(turm, -winkel)
-    neu_rect = rotiert.get_rect(center=player.position)
+    # Drehe die Kanone
+    gedrehte_kanone = pygame.transform.rotate(kanone, -winkel)
+    kanone_rect = gedrehte_kanone.get_rect(center=player.position)
 
     # Steuerung
     keys = pygame.key.get_pressed()
@@ -165,17 +170,16 @@ while running:
     #Drehe das untere
     gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
     gedreht_rect = gedreht.get_rect(center=player.position)
-    #Drehe die Kanone
-    drehen = pygame.transform.rotate(kanone, -winkel)
+    #Drehe den Turm
+    rotiert = pygame.transform.rotate(turm, -winkel)
     neu_rect = rotiert.get_rect(center=player.position)
     # Zeichne den Unterteil
     screen.blit(gedreht, gedreht_rect.topleft)
-
-    # Das blaue Quadrat im Zentrum des Panzers
-    screen.blit(rotiert, neu_rect.topleft)
-    
     #Zeichne die Kanone
-    screen.blit(drehen, neu_rect.topleft)
+    screen.blit(gedrehte_kanone, kanone_rect.topleft)
+    #Zeichne den Turm
+    screen.blit(rotiert, neu_rect.topleft)
+    #Explosionen
     explosions_gruppe.update()
     explosions_gruppe.draw(screen)
     pygame.display.flip()
