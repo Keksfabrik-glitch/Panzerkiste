@@ -52,7 +52,7 @@ class Player:
         rad = math.radians(self.richtung)
         bewegung = pygame.Vector2( math.sin(rad), -math.cos(rad) ) * self.geschwindigkeit/10
         self.position -= bewegung
-       
+         
 
 #IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
 
