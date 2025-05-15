@@ -9,6 +9,8 @@ clock = pygame.time.Clock()
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+SCHWARZ = (0,0,0)
+SAND = (239,228,176)
 
 def angle_diff(a, b):
     """Kleinste Differenz zwischen zwei Winkeln"""
@@ -52,42 +54,6 @@ class Player:
         rad = math.radians(self.richtung)
         bewegung = pygame.Vector2( math.sin(rad), -math.cos(rad) ) * self.geschwindigkeit/10
         self.position -= bewegung
-         
-
-#IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
-
-player = Player((400, 300))  
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        player.goW()
-    if keys[pygame.K_s]:
-        player.goS()  
-    if keys[pygame.K_a]:
-        player.goA()
-    if keys[pygame.K_d]:
-        player.goD()
-    if keys[pygame.K_SPACE]:
-        player.fahr()
-    screen.fill((0, 0, 0))
-    panzer_breite = 20  
-    panzer_länge = 40   
-    panzer_surface = pygame.Surface((panzer_breite, panzer_länge), pygame.SRCALPHA)
-    panzer_surface.fill((0, 255, 0))
-    gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
-    gedreht_rect = gedreht.get_rect(center=player.position)
-    screen.blit(gedreht, gedreht_rect.topleft)
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
-
 
 class FeindPanzer(Level):
     def __init__(self):
@@ -111,6 +77,38 @@ class FeindPanzer(Level):
         self.lives = 3
         self.active_bullets = []
         self.state = 0 # 
-        
-        
 
+#IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
+
+player = Player((400, 300))  
+
+running = True
+while running:
+    screen.fill(SAND)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+        player.goW()
+    if keys[pygame.K_s]:
+        player.goS()  
+    if keys[pygame.K_a]:
+        player.goA()
+    if keys[pygame.K_d]:
+        player.goD()
+    if keys[pygame.K_SPACE]:
+        player.fahr()
+    panzer_größe = 40     
+    panzer_surface = pygame.Surface((panzer_größe/2,panzer_größe), pygame.SRCALPHA)
+    panzer_surface.fill((0, 255, 0))
+    pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0, panzer_größe/2,panzer_größe), 2)
+    gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
+    gedreht_rect = gedreht.get_rect(center=player.position)
+    screen.blit(gedreht, gedreht_rect.topleft)
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+exit()        
