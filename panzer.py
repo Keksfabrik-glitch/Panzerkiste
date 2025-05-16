@@ -27,6 +27,8 @@ class Player:
         self.kugel_art = 1  # 2 = Feuer
         self.nachladezeit = 3
         self.letzterSchuss = 0
+        self.schuss_cooldown = 150  # in Millisekunden
+        self.letzterEinzelschuss = 0
         self.mieneZeit = 7 #Bis zur explosion
         self.mienenAnzahl = -1  # -1 = unendlich viele
         self.letzte_mine_zeit = 0
@@ -42,7 +44,6 @@ class Player:
         self.winkel = 0
         self.turmWinkel = 0
         self.leben = 3
-        self.mienenPos = []
     def Drehen(self,Um):
 
         self.richtung += Um
@@ -64,17 +65,16 @@ class Player:
         bewegung = pygame.Vector2( math.sin(rad), -math.cos(rad) ) * self.geschwindigkeit/10
         self.position -= bewegung
     def Miene(self):
-        aktuelle_zeit = pygame.time.get_ticks()
-        if aktuelle_zeit - self.letzte_mine_zeit >= self.mine_cooldown*1000:
+        jetzt = pygame.time.get_ticks()
+        if jetzt - self.letzte_mine_zeit >= self.mine_cooldown*1000:
             if self.mienenAnzahl >= 1 or self.mienenAnzahl == -1:
                 if self.mienenAnzahl != -1:
                     self.mienenAnzahl -= 1
                 if len(self.mienenPos) <= 5:
                     pos = self.position.copy()
-                    self.mienenPos.append({'pos': pos, 'gelegt': aktuelle_zeit})
-                    self.letzte_mine_zeit = aktuelle_zeit
-
-                    
+                    self.mienenPos.append({'pos': pos, 'gelegt': jetzt})
+                    self.letzte_mine_zeit = jetzt
+                                       
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -97,7 +97,27 @@ class Explosion(pygame.sprite.Sprite):
             if self.index < len(self.bilder):
                 self.image = self.bilder[self.index]
             else:
-                self.kill()        
+                self.kill()
+        
+class Kugel(pygame.sprite.Sprite):
+    def __init__(self, start_pos, richtung, geschwindigkeit=8):
+        super().__init__()
+        self.image = pygame.Surface((10, 4))
+        self.image.fill(ROT)
+        self.original_image = self.image
+        self.rect = self.image.get_rect(center=start_pos)
+        self.richtung = pygame.Vector2(richtung).normalize()
+        self.geschwindigkeit = geschwindigkeit
+        self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
+        self.image = pygame.transform.rotate(self.original_image, self.winkel)
+
+    def update(self):
+        bewegung = self.richtung * self.geschwindigkeit
+        self.rect.center += bewegung
+        # Entferne Kugel, wenn sie außerhalb des Bildschirms ist
+        if not screen.get_rect().colliderect(self.rect):
+            self.kill()
+        
 #IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
 
 player = Player((400, 300))
@@ -117,10 +137,13 @@ panzer_surface.fill(GRÜN)
 pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe * 0.75, panzer_größe), 2)
 
 explosions_gruppe = pygame.sprite.Group()
+kugel_gruppe = pygame.sprite.Group()
 # Haupt-Game Loop
 running = True
 while running:
     screen.fill(SAND)
+    #Zeit
+    jetzt = pygame.time.get_ticks()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -130,6 +153,7 @@ while running:
     if richtung.length() != 0:
         richtung = richtung.normalize()  # auf Länge 1 bringen
     winkel = -richtung.angle_to(pygame.Vector2(1, 0))
+    player.turmWinkel = winkel
 
     # Drehe die Kanone
     gedrehte_kanone = pygame.transform.rotate(kanone, -winkel)
@@ -147,9 +171,27 @@ while running:
         player.goD()
     if keys[pygame.K_SPACE]:
        threading.Thread(target=player.Miene).start()
-
     
     jetzt = pygame.time.get_ticks()
+
+    # Wenn linke Maustaste gedrückt ist und Spieler Kugeln hat
+    if pygame.mouse.get_pressed()[0]:
+        if player.kugeln > 0 and jetzt - player.letzterEinzelschuss >= player.schuss_cooldown:
+            richtung = pygame.Vector2(pygame.mouse.get_pos()) - player.position
+            if richtung.length() != 0:
+                neue_kugel = Kugel(player.position, richtung)
+                kugel_gruppe.add(neue_kugel)
+                player.kugeln -= 1
+                player.letzterEinzelschuss = jetzt
+                # Wenn letzte Kugel verschossen wurde, starte Nachladezeit
+                if player.kugeln == 0:
+                    player.letzterSchuss = jetzt
+
+    # Nachladen nach Pause
+    if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
+        player.kugeln = 5
+
+       
     for m in player.mienenPos[:]:
         t = (jetzt - m['gelegt']) / 1000
         rest = player.mieneZeit - t
@@ -182,8 +224,16 @@ while running:
     #Explosionen
     explosions_gruppe.update()
     explosions_gruppe.draw(screen)
+    #Kugeln
+    kugel_gruppe.update()
+    kugel_gruppe.draw(screen)
+    font = pygame.font.SysFont(None, 24)
+    text = font.render(f"Kugeln: {player.kugeln}", True, SCHWARZ)
+    screen.blit(text, (10, 10))
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
 exit()
+
+
