@@ -2,6 +2,7 @@ import pygame
 import time
 import math
 import threading
+import random
 pygame.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -16,7 +17,10 @@ SAND = (239, 228, 176)
 BLAU = (0, 0, 255)
 GRÜN = (0,255,0)
 TRANSPARENT = (0,0,0,0)
-
+#Sprite Groups
+wände = pygame.sprite.Group()
+explosions_gruppe = pygame.sprite.Group()
+kugel_gruppe = pygame.sprite.Group()
 
 class Player:
     def __init__(self, position):
@@ -51,8 +55,11 @@ class Player:
 
     def goW(self):
         rad = math.radians(self.richtung)
-        bewegung = pygame.Vector2( math.sin(rad), -math.cos(rad) ) * self.geschwindigkeit/10
-        self.position += bewegung
+        bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
+        neue_pos = self.position + bewegung
+        spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
+        if not any(spieler_rect.colliderect(w.rect) for w in wände):
+            self.position = neue_pos
 
     def goD(self):
         self.Drehen(self.drehgeschwindigkeit)
@@ -62,8 +69,12 @@ class Player:
 
     def goS(self):
         rad = math.radians(self.richtung)
-        bewegung = pygame.Vector2( math.sin(rad), -math.cos(rad) ) * self.geschwindigkeit/10
-        self.position -= bewegung
+        bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
+        neue_pos = self.position - bewegung
+        spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
+        if not any(spieler_rect.colliderect(w.rect) for w in wände):
+            self.position = neue_pos
+        
     def Miene(self):
         jetzt = pygame.time.get_ticks()
         if jetzt - self.letzte_mine_zeit >= self.mine_cooldown*1000:
@@ -100,7 +111,7 @@ class Explosion(pygame.sprite.Sprite):
                 self.kill()
         
 class Kugel(pygame.sprite.Sprite):
-    def __init__(self, start_pos, richtung, geschwindigkeit=8):
+    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75):
         super().__init__()
         self.image = pygame.Surface((10, 4))
         self.image.fill(ROT)
@@ -108,36 +119,77 @@ class Kugel(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=start_pos)
         self.richtung = pygame.Vector2(richtung).normalize()
         self.geschwindigkeit = geschwindigkeit
+        self.abpraller = abpraller
+        self.abprallChance = abprallChance
         self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.winkel)
 
     def update(self):
         bewegung = self.richtung * self.geschwindigkeit
-        self.rect.center += bewegung
-        # Entferne Kugel, wenn sie außerhalb des Bildschirms ist
-        if not screen.get_rect().colliderect(self.rect):
-            self.kill()
-        
-#IGNORIEREN NUR DAMIT MAN ES VISUELL SIEHT 
+        neue_rect = self.rect.move(bewegung)
 
+        kollidierte_wand = pygame.sprite.spritecollideany(self, wände)
+        if kollidierte_wand:
+            if kollidierte_wand.zersörbarkeit:
+                kollidierte_wand.schaden()
+                self.kill()
+            else:
+                if self.abpraller > 0 and random.random() <= self.abprallChance:
+                    if kollidierte_wand.rect.width > kollidierte_wand.rect.height:
+                        self.richtung.y *= -1
+                    else:
+                        self.richtung.x *= -1
+
+                    self.abpraller -= 1
+                    self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
+                    self.image = pygame.transform.rotate(self.original_image, self.winkel)   
+                    self.rect = self.rect.move(self.richtung * self.geschwindigkeit)
+                else:
+                    self.kill()
+                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+        else:
+            self.rect = neue_rect
+
+        
+        
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, x, y, breite, höhe, zersörbarkeit=False, leben=3):
+        super().__init__()
+        self.image = pygame.Surface((breite, höhe))
+        self.image.fill((120, 120, 120) if zersörbarkeit else SCHWARZ)
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.zersörbarkeit = zersörbarkeit
+        self.leben = leben
+
+    def schaden(self):
+        if self.zersörbarkeit:
+            self.leben -= 1
+            if self.leben <= 0:
+                explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                self.kill()
+        
 player = Player((400, 300))
 # Definiere den Turm
 turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
 turm.fill(BLAU)
 pygame.draw.rect(turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
-# Definiere Kanone – zeigt nach rechts, Mittelpunkt hinten
+# Definiere Kanone
 kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
 kanone.fill(TRANSPARENT)  
 pygame.draw.rect(kanone, ROT, (panzer_größe // 2, 0, panzer_größe // 1.5, panzer_größe // 8))  # Hauptteil
 pygame.draw.rect(kanone, SCHWARZ, (panzer_größe // 2, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
-
-# Zeichne den Unteren (rotierend)
+# Definiere den Unteren 
 panzer_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
 panzer_surface.fill(GRÜN)
 pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe * 0.75, panzer_größe), 2)
+#Wände
+wände.add(Wall(0, 0, WIDTH, 2))               # Oben
+wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))      # Unten
+wände.add(Wall(0, 0, 2, HEIGHT))              # Links
+wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))      # Rechts
+wände.add(Wall(200, 200, 50, 50, zersörbarkeit=True, leben=2))  # zerstörbar
 
-explosions_gruppe = pygame.sprite.Group()
-kugel_gruppe = pygame.sprite.Group()
+
 # Haupt-Game Loop
 running = True
 while running:
@@ -155,10 +207,6 @@ while running:
     winkel = -richtung.angle_to(pygame.Vector2(1, 0))
     player.turmWinkel = winkel
 
-    # Drehe die Kanone
-    gedrehte_kanone = pygame.transform.rotate(kanone, -winkel)
-    kanone_rect = gedrehte_kanone.get_rect(center=player.position)
-
     # Steuerung
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
@@ -170,16 +218,15 @@ while running:
     if keys[pygame.K_d]:
         player.goD()
     if keys[pygame.K_SPACE]:
-       threading.Thread(target=player.Miene).start()
+        threading.Thread(target=player.Miene).start()
     
-    jetzt = pygame.time.get_ticks()
-
+    
     # Wenn linke Maustaste gedrückt ist und Spieler Kugeln hat
     if pygame.mouse.get_pressed()[0]:
         if player.kugeln > 0 and jetzt - player.letzterEinzelschuss >= player.schuss_cooldown:
-            richtung = pygame.Vector2(pygame.mouse.get_pos()) - player.position
+            richtung = pygame.Vector2(maus_pos) - player.position
             if richtung.length() != 0:
-                neue_kugel = Kugel(player.position, richtung)
+                neue_kugel = Kugel(player.position, richtung,abpraller=player.abpraller,abprallChance=player.abprallChance)
                 kugel_gruppe.add(neue_kugel)
                 player.kugeln -= 1
                 player.letzterEinzelschuss = jetzt
@@ -215,12 +262,17 @@ while running:
     #Drehe den Turm
     rotiert = pygame.transform.rotate(turm, -winkel)
     neu_rect = rotiert.get_rect(center=player.position)
+    # Drehe die Kanone
+    gedrehte_kanone = pygame.transform.rotate(kanone, -winkel)
+    kanone_rect = gedrehte_kanone.get_rect(center=player.position)
     # Zeichne den Unterteil
     screen.blit(gedreht, gedreht_rect.topleft)
     #Zeichne die Kanone
     screen.blit(gedrehte_kanone, kanone_rect.topleft)
     #Zeichne den Turm
     screen.blit(rotiert, neu_rect.topleft)
+    #Wände
+    wände.draw(screen)
     #Explosionen
     explosions_gruppe.update()
     explosions_gruppe.draw(screen)
@@ -228,12 +280,10 @@ while running:
     kugel_gruppe.update()
     kugel_gruppe.draw(screen)
     font = pygame.font.SysFont(None, 24)
-    text = font.render(f"Kugeln: {player.kugeln}", True, SCHWARZ)
-    screen.blit(text, (10, 10))
+    text = font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ)
+    screen.blit(text, (30, 30))
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
 exit()
-
-

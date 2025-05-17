@@ -68,5 +68,5 @@ while laufend:
 
 # Pygame beenden
 pygame.quit()
-sys.exit()
+
 
