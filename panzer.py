@@ -48,7 +48,6 @@ class Player:
         self.mienenPos = []
         self.winkel = 0
         self.turmWinkel = 0
-        self.leben = 3
     def Drehen(self,Um):
 
         self.richtung += Um
@@ -145,6 +144,7 @@ class Kugel(pygame.sprite.Sprite):
         getroffeneWand = pygame.sprite.spritecollideany(self, wände)
         if getroffeneWand:
             if getroffeneWand.zersörbarkeit:
+                explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 getroffeneWand.schaden()
                 self.kill()
             else:
@@ -202,7 +202,7 @@ wände.add(Wall(0, 0, WIDTH, 2))               # Oben
 wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))      # Unten
 wände.add(Wall(0, 0, 2, HEIGHT))              # Links
 wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))      # Rechts
-wände.add(Wall(200, 200, 50, 50, zersörbarkeit=True, leben=1))  # zerstörbar
+wände.add(Wall(200, 200, 50, 50, zersörbarkeit=True, leben=2))  # zerstörbar
 
 
 # Haupt-Game Loop
@@ -211,7 +211,7 @@ while running:
     screen.fill(SAND)
     #Zeit
     jetzt = pygame.time.get_ticks()
-
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -257,19 +257,18 @@ while running:
             pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
             explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
             explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-            # Kollisionnen 
+            # Kollisionen 
             getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
             if getroffeneWand:
                 if getroffeneWand.zersörbarkeit:
                     getroffeneWand.schaden()
             
-            #getroffenenPlayer = pygame.sprite.spritecollideany(explosions_sprite, panzer_mask, collided=pygame.sprite.collide_mask)
-            #if getroffenenPlayer:
-            #    if getroffenenPlayer.leben:
-            #        if getroffenenPlayer.leben >= 1:
-            #            getroffenenPlayer.leben -= 1
-            #        if getroffenenPlayer.leben <= 0:
-            #            print("Ende")
+            offset = (gedreht_rect.left - explosions_sprite.rect.left,gedreht_rect.top - explosions_sprite.rect.top)
+            if explosions_sprite.mask.overlap(panzer_mask, offset):
+                player.leben -= 1
+            if player.leben <= 0:
+                print("Ende")
+                #running = False
         else:
             if rest <= 2:   # letzte 2 Sekunden
                 # schneller Blinken
@@ -309,8 +308,10 @@ while running:
     explosions_gruppe.draw(screen)
     #TEXT: ZEICHNEN
     font = pygame.font.SysFont(None, 24)
-    text = font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ)
-    screen.blit(text, (30, 30))
+    text1 = font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ)
+    screen.blit(text1, (30, 30))
+    text2 = font.render("Leben: {}".format(player.leben), True, SCHWARZ)
+    screen.blit(text2, (30, 55))
     pygame.display.flip()
     clock.tick(60)
 
