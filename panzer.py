@@ -21,35 +21,85 @@ TRANSPARENT = (0,0,0,0)
 wände = pygame.sprite.Group()
 explosions_gruppe = pygame.sprite.Group()
 kugel_gruppe = pygame.sprite.Group()
+spieler_gruppe = pygame.sprite.Group()
 
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, position):
-        self.level = 1
+        super().__init__()
         self.position = pygame.Vector2(position)
-        self.geschwindigkeit = 10
-        self.kugeln = 5
-        self.kugel_art = 1  # 2 = Feuer
-        self.nachladezeit = 3
-        self.letzterSchuss = 0
-        self.schuss_cooldown = 250  # in Millisekunden
-        self.letzterEinzelschuss = 0
-        self.mieneZeit = 7 #Bis zur explosion
-        self.mienenAnzahl = -1  # -1 = unendlich viele
-        self.letzte_mine_zeit = -2*1000 #5 Cooldown. 3 Sekunden nach Spawn erste Miene
-        self.mine_cooldown = 5    # zwischen neuen Mienen
-        self.explosionsRadius = 40
-        self.drehgeschwindigkeit = 5
-        self.turmDrehgeschw = 8
-        self.abpraller = 2
-        self.abprallChance = 0.75
-        self.richtung = 90  # 
+        self.richtung = 90
         self.turmWinkel = 0
         self.leben = 1
+        self.geschwindigkeit = 10
+        self.drehgeschwindigkeit = 5
+        self.schuss_cooldown = 250
+        self.kugeln = 5
+        self.nachladezeit = 3
+        self.letzterSchuss = 0
+        self.letzterEinzelschuss = 0
+        self.mieneZeit = 7
+        self.mienenAnzahl = -1
+        self.letzte_mine_zeit = -2000
+        self.mine_cooldown = 5
+        self.explosionsRadius = 40
+        self.abpraller = 2
+        self.abprallChance = 0.75
         self.mienenPos = []
-        self.winkel = 0
-        self.turmWinkel = 0
-    def Drehen(self,Um):
 
+        #  Grafik:
+        #  Unten
+        self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
+        self.body_surface.fill(GRÜN)
+        pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
+        # Turm
+        self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
+        self.turm.fill(BLAU)
+        pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
+        #Kanone
+        self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
+        pygame.draw.rect(self.kanone, ROT, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
+        pygame.draw.rect(self.kanone, SCHWARZ, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
+
+        # Platzhalter (wird bei update() gesetzt)
+        self.image = pygame.Surface((1, 1), pygame.SRCALPHA)
+        self.rect = self.image.get_rect(center=self.position)
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self):
+        # --- Körper drehen ---
+        gedreht_body = pygame.transform.rotate(self.body_surface, -self.richtung)
+        body_rect = gedreht_body.get_rect(center=(self.position.x, self.position.y))
+
+        # --- Turm drehen ---
+        gedreht_turm = pygame.transform.rotate(self.turm, -self.turmWinkel)
+        turm_rect = gedreht_turm.get_rect(center=self.position)
+
+        # --- Kanone drehen ---
+        gedrehte_kanone = pygame.transform.rotate(self.kanone, -self.turmWinkel)
+        kanone_rect = gedrehte_kanone.get_rect(center=self.position)
+
+        # --- Neues Image mit allem zusammen ---
+        # Fläche groß genug für alles
+        w = max(body_rect.width, turm_rect.width, kanone_rect.width)
+        h = max(body_rect.height, turm_rect.height, kanone_rect.height)
+        full_image = pygame.Surface((w, h), pygame.SRCALPHA)
+
+        # Zentriert zeichnen
+        offset_body = (w//2 - body_rect.width//2, h//2 - body_rect.height//2)
+        offset_turm = (w//2 - turm_rect.width//2, h//2 - turm_rect.height//2)
+        offset_kanone = (w//2 - kanone_rect.width//2, h//2 - kanone_rect.height//2)
+
+        full_image.blit(gedreht_body, offset_body)
+        full_image.blit(gedrehte_kanone, offset_kanone)
+        full_image.blit(gedreht_turm, offset_turm)
+
+        self.image = full_image
+        self.rect = self.image.get_rect(center=self.position)
+        self.mask = pygame.mask.from_surface(self.image)
+
+    # --- Bewegungsmethoden ---
+    def Drehen(self, Um):
         self.richtung += Um
         self.richtung %= 360
 
@@ -61,12 +111,6 @@ class Player:
         if not any(spieler_rect.colliderect(w.rect) for w in wände):
             self.position = neue_pos
 
-    def goD(self):
-        self.Drehen(self.drehgeschwindigkeit)
-
-    def goA(self):
-        self.Drehen(-self.drehgeschwindigkeit)
-
     def goS(self):
         rad = math.radians(self.richtung)
         bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
@@ -74,10 +118,16 @@ class Player:
         spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
         if not any(spieler_rect.colliderect(w.rect) for w in wände):
             self.position = neue_pos
-        
+
+    def goA(self):
+        self.Drehen(-self.drehgeschwindigkeit)
+
+    def goD(self):
+        self.Drehen(self.drehgeschwindigkeit)
+
     def Miene(self):
         jetzt = pygame.time.get_ticks()
-        if jetzt - self.letzte_mine_zeit >= self.mine_cooldown*1000:
+        if jetzt - self.letzte_mine_zeit >= self.mine_cooldown * 1000:
             if self.mienenAnzahl >= 1 or self.mienenAnzahl == -1:
                 if self.mienenAnzahl != -1:
                     self.mienenAnzahl -= 1
@@ -85,20 +135,27 @@ class Player:
                     pos = self.position.copy()
                     self.mienenPos.append({'pos': pos, 'gelegt': jetzt})
                     self.letzte_mine_zeit = jetzt
-    def Schuss(self):
-         if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
+
+    def Schuss(self, maus_pos, jetzt):
+        if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
             richtung = pygame.Vector2(maus_pos) - self.position
             if richtung.length() != 0:
-                neue_kugel = Kugel(self.position, richtung,abpraller=player.abpraller,abprallChance=player.abprallChance)
+                richtung = richtung.normalize()
+                # Abstand von Panzerzentrum plus Kugelgröße (halbe Breite), damit Kugel komplett außerhalb startet
+                panzer_radius = panzer_größe * 0.5  # ca. halbe Panzergröße (Radius)
+                kugel_radius = 10 / 2  # Kugelgröße ist 10x4, also halbe Breite=5
+                abstand = panzer_radius + kugel_radius + 2  # 2 Pixel extra als Puffer
+
+                start_pos = self.position + richtung * abstand
+
+                neue_kugel = Kugel(start_pos, richtung,
+                                   abpraller=self.abpraller, abprallChance=self.abprallChance)
                 kugel_gruppe.add(neue_kugel)
                 self.kugeln -= 1
                 self.letzterEinzelschuss = jetzt
-                # Wenn letzte Kugel verschossen wurde, starte Nachladezeit
                 if self.kugeln == 0:
                     self.letzterSchuss = jetzt
-
-
-                                       
+                                      
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -136,14 +193,18 @@ class Kugel(pygame.sprite.Sprite):
         self.abprallChance = abprallChance
         self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.winkel)
+        
+        # Zeit, bis die Kugel freundliche Kollisionen ignoriert (in ms)
+        self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # 150 ms ignorieren
 
     def update(self):
         bewegung = self.richtung * self.geschwindigkeit
         neue_rect = self.rect.move(bewegung)
 
+        # Kollision mit Wänden prüfen
         getroffeneWand = pygame.sprite.spritecollideany(self, wände)
         if getroffeneWand:
-            if getroffeneWand.zersörbarkeit:
+            if getroffeneWand.zerstörbarkeit:
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 getroffeneWand.schaden()
                 self.kill()
@@ -161,48 +222,50 @@ class Kugel(pygame.sprite.Sprite):
                 else:
                     self.kill()
                     explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-        else:
-            self.rect = neue_rect
+            return  # Wurde Wand getroffen, nicht weiter bewegen
+
+        # Kollision mit Spieler prüfen — aber nur wenn Zeit abgelaufen ist
+        jetzt = pygame.time.get_ticks()
+        if jetzt >= self.freund_ignorieren_bis:
+            if pygame.sprite.collide_mask(self, player):
+                player.leben -= 1
+                self.kill()
+                explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                return
+
+        # Bewegung ausführen
+        self.rect = neue_rect
 
         
         
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, x, y, breite, höhe, zersörbarkeit=False, leben=1):
+    def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=1):
         super().__init__()
         self.image = pygame.Surface((breite, höhe))
-        self.image.fill((120, 120, 120) if zersörbarkeit else SCHWARZ)
+        self.zerstörbarkeit = zerstörbarkeit
+        if self.zerstörbarkeit:
+            self.image.fill((120, 120, 120))
+        else:
+            self.image.fill(SCHWARZ)
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.zersörbarkeit = zersörbarkeit
         self.leben = leben
         self.mask = pygame.mask.from_surface(self.image)
 
     def schaden(self):
-        if self.zersörbarkeit:
+        if self.zerstörbarkeit:
             self.leben -= 1
             if self.leben <= 0:
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 self.kill()
         
 player = Player((400, 300))
-# Definiere den Turm
-turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
-turm.fill(BLAU)
-pygame.draw.rect(turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
-# Definiere Kanone
-kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
-kanone.fill(TRANSPARENT)  
-pygame.draw.rect(kanone, ROT, (panzer_größe // 2, 0, panzer_größe // 1.5, panzer_größe // 8))  # Hauptteil
-pygame.draw.rect(kanone, SCHWARZ, (panzer_größe // 2, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
-# Definiere den Unteren 
-panzer_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
-panzer_surface.fill(GRÜN)
-pygame.draw.rect(panzer_surface, SCHWARZ, (0, 0,panzer_größe * 0.75, panzer_größe), 2)
+spieler_gruppe.add(player)
 #Wände
 wände.add(Wall(0, 0, WIDTH, 2))               # Oben
 wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))      # Unten
 wände.add(Wall(0, 0, 2, HEIGHT))              # Links
 wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))      # Rechts
-wände.add(Wall(200, 200, 50, 50, zersörbarkeit=True, leben=2))  # zerstörbar
+wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True, leben=2))  # zerstörbar
 
 
 # Haupt-Game Loop
@@ -238,11 +301,11 @@ while running:
     ##PLAYER: KUGELN
     # Wenn linke Maustaste gedrückt ist und Spieler Kugeln hat
     if pygame.mouse.get_pressed()[0]:
-       player.Schuss()
+        player.Schuss(maus_pos, jetzt)
     # Nachladen nach Pause
     if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
         player.kugeln = 5
-  
+        
     ## PLAYER: MIENEN   
     for m in player.mienenPos[:]:
         t = (jetzt - m['gelegt']) / 1000
@@ -260,11 +323,11 @@ while running:
             # Kollisionen 
             getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
             if getroffeneWand:
-                if getroffeneWand.zersörbarkeit:
+                if getroffeneWand.zerstörbarkeit:
                     getroffeneWand.schaden()
             
-            offset = (gedreht_rect.left - explosions_sprite.rect.left,gedreht_rect.top - explosions_sprite.rect.top)
-            if explosions_sprite.mask.overlap(panzer_mask, offset):
+            offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+            if explosions_sprite.mask.overlap(player.mask, offset):
                 player.leben -= 1
             if player.leben <= 0:
                 print("Ende")
@@ -280,32 +343,18 @@ while running:
                 
             pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
     ## PLAYER: ZEICHNEN
-    #Drehe das untere [Panzerkörper]
-    gedreht = pygame.transform.rotate(panzer_surface, -player.richtung)
-    gedreht_rect = gedreht.get_rect(center=player.position)
-    panzer_mask = pygame.mask.from_surface(gedreht)
-    #Drehe den Turm
-    rotiert = pygame.transform.rotate(turm, -winkel)
-    neu_rect = rotiert.get_rect(center=player.position)
-    # Drehe die Kanone
-    gedrehte_kanone = pygame.transform.rotate(kanone, -winkel)
-    kanone_rect = gedrehte_kanone.get_rect(center=player.position)
-    # Zeichne den Unterteil
-    screen.blit(gedreht, gedreht_rect.topleft)
+    spieler_gruppe.update()
     #KUGELN : ZEICHEN
     kugel_gruppe.update()
     kugel_gruppe.draw(screen)
     #PLAYER: ZEICHNEN
-    #Zeichne die Kanone
-    screen.blit(gedrehte_kanone, kanone_rect.topleft)
-    #Zeichne den Turm
-    screen.blit(rotiert, neu_rect.topleft)
-
+    spieler_gruppe.draw(screen)
     ## WÄNDE: ZEICHENN
     wände.draw(screen)
     #Explosionen: Zeichnen
     explosions_gruppe.update()
     explosions_gruppe.draw(screen)
+    
     #TEXT: ZEICHNEN
     font = pygame.font.SysFont(None, 24)
     text1 = font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ)
