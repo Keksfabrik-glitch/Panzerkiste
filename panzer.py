@@ -34,6 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.drehgeschwindigkeit = 5
         self.schuss_cooldown = 250
         self.kugeln = 5
+        self.kugelSpeed = 10
         self.nachladezeit = 3
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
@@ -148,14 +149,18 @@ class Player(pygame.sprite.Sprite):
 
                 start_pos = self.position + richtung * abstand
 
-                neue_kugel = Kugel(start_pos, richtung,
+                neue_kugel = Kugel(start_pos, richtung,self.kugelSpeed,
                                    abpraller=self.abpraller, abprallChance=self.abprallChance)
                 kugel_gruppe.add(neue_kugel)
                 self.kugeln -= 1
                 self.letzterEinzelschuss = jetzt
                 if self.kugeln == 0:
                     self.letzterSchuss = jetzt
-                                      
+    def Schaden(self):
+        self.leben -= 1
+        if player.leben <= 0:
+            print("Ende")
+            #running = False                                  
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -228,7 +233,7 @@ class Kugel(pygame.sprite.Sprite):
         jetzt = pygame.time.get_ticks()
         if jetzt >= self.freund_ignorieren_bis:
             if pygame.sprite.collide_mask(self, player):
-                player.leben -= 1
+                player.Schaden()
                 self.kill()
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 return
@@ -328,10 +333,7 @@ while running:
             
             offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
             if explosions_sprite.mask.overlap(player.mask, offset):
-                player.leben -= 1
-            if player.leben <= 0:
-                print("Ende")
-                #running = False
+                player.Schaden()
         else:
             if rest <= 2:   # letzte 2 Sekunden
                 # schneller Blinken
