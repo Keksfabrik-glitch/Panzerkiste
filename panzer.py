@@ -22,6 +22,7 @@ wände = pygame.sprite.Group()
 explosions_gruppe = pygame.sprite.Group()
 kugel_gruppe = pygame.sprite.Group()
 spieler_gruppe = pygame.sprite.Group()
+löcher = pygame.sprite.Group()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, position,Name):
@@ -110,7 +111,11 @@ class Player(pygame.sprite.Sprite):
         bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
         neue_pos = self.position + bewegung
         spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
-        if not any(spieler_rect.colliderect(w.rect) for w in wände):
+
+        loch_kollision = any(pygame.sprite.collide_mask(self, l) for l in löcher)
+        wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
+
+        if not wand_kollision and not loch_kollision:
             self.position = neue_pos
 
     def goS(self):
@@ -118,7 +123,11 @@ class Player(pygame.sprite.Sprite):
         bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
         neue_pos = self.position - bewegung
         spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
-        if not any(spieler_rect.colliderect(w.rect) for w in wände):
+
+        loch_kollision = any(pygame.sprite.collide_mask(self, l) for l in löcher)
+        wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
+
+        if not wand_kollision and not loch_kollision:
             self.position = neue_pos
 
     def goA(self):
@@ -245,8 +254,7 @@ class Kugel(pygame.sprite.Sprite):
         # Bewegung ausführen
         self.rect = neue_rect
 
-        
-        
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=8):
         super().__init__()
@@ -267,7 +275,22 @@ class Wall(pygame.sprite.Sprite):
             if self.leben <= 0:
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 self.kill()
-        
+
+
+class Loch(pygame.sprite.Sprite):
+    def __init__(self, x, y, radius=20):
+        super().__init__()
+        self.radius = radius
+        self.image = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+
+        # Transparenter Kreis (Loch)
+        self.image.fill((0, 0, 0, 0))  # komplett transparent
+        pygame.draw.circle(self.image, (0, 0, 0, 100), (radius, radius), radius)
+
+        # Kollisionsmaske (für Spieler)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.mask = pygame.mask.from_surface(self.image)
+
 player = Player((400, 300),"Spieler1")
 spieler_gruppe.add(player)
 #Wände
@@ -277,11 +300,14 @@ wände.add(Wall(0, 0, 2, HEIGHT,2))              # Links
 wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT,2))      # Rechts
 wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True,))  # zerstörbar
 
+löcher.add(Loch(300, 300, radius=30))
+
 
 # Haupt-Game Loop
 running = True
 while running:
     screen.fill(SAND)
+    löcher.draw(screen)
     #Zeit
     jetzt = pygame.time.get_ticks()
     
