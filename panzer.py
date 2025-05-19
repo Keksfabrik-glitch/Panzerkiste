@@ -4,7 +4,7 @@ import math
 import threading
 import random
 pygame.init()
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 800,400
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 panzer_größe = 40
@@ -191,6 +191,7 @@ class Kugel(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface((10, 4))
         self.image.fill(ROT)
+        self.letztes = 0
         self.original_image = self.image
         self.rect = self.image.get_rect(center=start_pos)
         self.richtung = pygame.Vector2(richtung).normalize()
@@ -209,24 +210,27 @@ class Kugel(pygame.sprite.Sprite):
         # Kollision mit Wänden prüfen
         getroffeneWand = pygame.sprite.spritecollideany(self, wände)
         if getroffeneWand:
-            if getroffeneWand.zerstörbarkeit:
-                explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                getroffeneWand.schaden()
-                self.kill()
-            else:
-                if self.abpraller > 0 and random.random() <= self.abprallChance:
-                    if getroffeneWand.rect.width > getroffeneWand.rect.height:
-                        self.richtung.y *= -1
-                    else:
-                        self.richtung.x *= -1
-
-                    self.abpraller -= 1
-                    self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
-                    self.image = pygame.transform.rotate(self.original_image, self.winkel)   
-                    self.rect = self.rect.move(self.richtung * self.geschwindigkeit)
-                else:
-                    self.kill()
+            jetzt = pygame.time.get_ticks()
+            if (jetzt - self.letztes)/1000 >= 0.5:
+                self.letztes = jetzt	
+                if getroffeneWand.zerstörbarkeit:
                     explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                    getroffeneWand.schaden(1)
+                    self.kill()
+                else:
+                    if self.abpraller > 0 and random.random() <= self.abprallChance:
+                        if getroffeneWand.rect.width > getroffeneWand.rect.height:
+                            self.richtung.y *= -1
+                        else:
+                            self.richtung.x *= -1
+
+                        self.abpraller -= 1
+                        self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
+                        self.image = pygame.transform.rotate(self.original_image, self.winkel)   
+                        self.rect = self.rect.move(self.richtung * self.geschwindigkeit)
+                    else:
+                        self.kill()
+                        explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
             return  # Wurde Wand getroffen, nicht weiter bewegen
 
         # Kollision mit Spieler prüfen — aber nur wenn Zeit abgelaufen ist
@@ -244,7 +248,7 @@ class Kugel(pygame.sprite.Sprite):
         
         
 class Wall(pygame.sprite.Sprite):
-    def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=0):
+    def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=8):
         super().__init__()
         self.image = pygame.Surface((breite, höhe))
         self.zerstörbarkeit = zerstörbarkeit
@@ -256,9 +260,10 @@ class Wall(pygame.sprite.Sprite):
         self.leben = leben
         self.mask = pygame.mask.from_surface(self.image)
 
-    def schaden(self):
+    def schaden(self,amount=1):
         if self.zerstörbarkeit:
-            self.leben -= 1
+            print(self.leben,amount)
+            self.leben -= amount
             if self.leben <= 0:
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 self.kill()
@@ -266,11 +271,11 @@ class Wall(pygame.sprite.Sprite):
 player = Player((400, 300),"Spieler1")
 spieler_gruppe.add(player)
 #Wände
-wände.add(Wall(0, 0, WIDTH, 2))               # Oben
-wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))      # Unten
-wände.add(Wall(0, 0, 2, HEIGHT))              # Links
-wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))      # Rechts
-wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True, leben=2))  # zerstörbar
+wände.add(Wall(0, 0, WIDTH,2))               # Oben
+wände.add(Wall(0, HEIGHT - 2, WIDTH,2))      # Unten
+wände.add(Wall(0, 0, 2, HEIGHT,2))              # Links
+wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT,2))      # Rechts
+wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True,))  # zerstörbar
 
 
 # Haupt-Game Loop
@@ -329,7 +334,7 @@ while running:
             getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
             if getroffeneWand:
                 if getroffeneWand.zerstörbarkeit:
-                    getroffeneWand.schaden()
+                    getroffeneWand.schaden(10)
             
             offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
             if explosions_sprite.mask.overlap(player.mask, offset):
