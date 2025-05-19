@@ -202,9 +202,6 @@ class Kugel(pygame.sprite.Sprite):
         
         # Zeit, bis die Kugel freundliche Kollisionen ignoriert (in ms)
         self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # 150 ms ignorieren
-    def kill(self):
-        self.kill()
-        return
     def update(self):
         bewegung = self.richtung * self.geschwindigkeit
         neue_rect = self.rect.move(bewegung)
