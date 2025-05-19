@@ -52,6 +52,7 @@ while laeuft:
                 toast('Ausgewählt: ', stellen[selected_index])
                 if stellen[selected_index] == "Beenden":
                     laeuft = False
+                    pygame.quit()
             
 
     pygame.display.flip()

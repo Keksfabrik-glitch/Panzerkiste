@@ -270,7 +270,6 @@ class Wall(pygame.sprite.Sprite):
 
     def schaden(self,amount=1):
         if self.zerstörbarkeit:
-            print(self.leben,amount)
             self.leben -= amount
             if self.leben <= 0:
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
@@ -394,6 +393,7 @@ while running:
                         m['gelegt'] += (2 - rest)*1000  # Gelegte Ziet manipulieren das es so war das jetzt nur noch 2 Sekunden verbleibend sind   
 
             pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
+            
     ## PLAYER: ZEICHNEN
     spieler_gruppe.update()
     #KUGELN : ZEICHEN
