@@ -1,4 +1,5 @@
-# Pygame Template
+# Pygame Template https://www.pygame.org/project-Pathfinding+Experiment-2932-4829.html
+from win11toast import toast
 import pygame
 #Variablen
 stellen = ["Singelplayer" ,"Multiplayer" , "Einstellungen" , "Beenden"]
@@ -48,6 +49,7 @@ while laeuft:
                 selected_index = (selected_index - 1) % len(stellen)
             elif event.key == pygame.K_RETURN:
                 print("Ausgewählt:", stellen[selected_index])
+                toast('Ausgewählt: ', stellen[selected_index])
                 if stellen[selected_index] == "Beenden":
                     laeuft = False
             
@@ -59,3 +61,4 @@ while laeuft:
 # Ende
 pygame.quit()
 exit()
+
