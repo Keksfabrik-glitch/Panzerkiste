@@ -112,7 +112,13 @@ class Player(pygame.sprite.Sprite):
         neue_pos = self.position + bewegung
         spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
 
-        loch_kollision = any(pygame.sprite.collide_mask(self, l) for l in löcher)
+        loch_kollision = False
+        for loch in löcher:
+            abstand = neue_pos.distance_to(loch.rect.center)
+            if abstand < loch.radius:
+                loch_kollision = True
+                break
+
         wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
 
         if not wand_kollision and not loch_kollision:
@@ -124,7 +130,13 @@ class Player(pygame.sprite.Sprite):
         neue_pos = self.position - bewegung
         spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
 
-        loch_kollision = any(pygame.sprite.collide_mask(self, l) for l in löcher)
+        loch_kollision = False
+        for loch in löcher:
+            abstand = neue_pos.distance_to(loch.rect.center)
+            if abstand < loch.radius:
+                loch_kollision = True
+                break
+
         wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
 
         if not wand_kollision and not loch_kollision:
@@ -333,8 +345,8 @@ while running:
     if keys[pygame.K_SPACE]:
         threading.Thread(target=player.Miene).start()
     
-    ##PLAYER: KUGELN
-    # Wenn linke Maustaste gedrückt ist und Spieler Kugeln hat
+    #PLAYER: KUGELN
+    # wenn linke Maustaste gedrückt ist und Spieler Kugeln hat
     if pygame.mouse.get_pressed()[0]:
         player.Schuss(maus_pos, jetzt)
     # Nachladen nach Pause
@@ -366,7 +378,7 @@ while running:
                 player.Schaden()
         else:
             if rest <= 2:   # letzte 2 Sekunden
-                # schneller Blinken
+                # schnelles Blinken
                 blink = 500 - ((2 - rest) / 2) *100
                 blinkend = (jetzt // blink) % 2 == 0
                 farbe = (255, 255, 0) if blinkend else (255, 0, 0)
@@ -384,13 +396,13 @@ while running:
                 if m["early"] == False:
                         #getroffeneKugel.kill()
                         m["early"] = True
-                        m['gelegt'] += (2 - rest)*1000  # Gelegte Ziet manipulieren das es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                        m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
             offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
             if explosions_sprite.mask.overlap(player.mask, offset):
                 if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
                     if m["early"] == False:
                         m["early"] = True
-                        m['gelegt'] += (2 - rest)*1000  # Gelegte Ziet manipulieren das es so war das jetzt nur noch 2 Sekunden verbleibend sind   
+                        m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
 
             pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
             
@@ -401,7 +413,7 @@ while running:
     kugel_gruppe.draw(screen)
     #PLAYER: ZEICHNEN
     spieler_gruppe.draw(screen)
-    ## WÄNDE: ZEICHENN
+    ## WÄNDE: ZEICHEN
     wände.draw(screen)
     #Explosionen: Zeichnen
     explosions_gruppe.update()
