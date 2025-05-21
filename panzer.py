@@ -254,6 +254,11 @@ class Kugel(pygame.sprite.Sprite):
                         explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
             return  # Wurde Wand getroffen, nicht weiter bewegen
 
+        if not screen.get_rect().contains(neue_rect):
+            explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+            self.kill()
+            return
+
         # Kollision mit Spieler prüfen — aber nur wenn Zeit abgelaufen ist
         jetzt = pygame.time.get_ticks()
         if jetzt >= self.freund_ignorieren_bis:
@@ -370,10 +375,10 @@ class Miene(pygame.sprite.Sprite):
 player = Player((400, 300),"Spieler1")
 spieler_gruppe.add(player)
 #Wände
-wände.add(Wall(0, 0, WIDTH,2))               # Oben
+wände.add(Wall(0, 0, WIDTH,2))            # Oben
 wände.add(Wall(0, HEIGHT - 2, WIDTH,2))      # Unten
-wände.add(Wall(0, 0, 2, HEIGHT,2))              # Links
-wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT,2))      # Rechts
+wände.add(Wall(0, 0, 2, HEIGHT))          # Links
+wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))     # Rechts
 wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True,))  # zerstörbar
 
 löcher.add(Loch(300, 300, radius=30))
