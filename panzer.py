@@ -229,7 +229,7 @@ class Kugel(pygame.sprite.Sprite):
         neue_rect = self.rect.move(bewegung)
 
         # Kollision mit Wänden prüfen
-        getroffeneWand = pygame.sprite.spritecollideany(self, wände)
+        getroffeneWand = pygame.sprite.spritecollideany(self, wände, collided=pygame.sprite.collide_mask)
         if getroffeneWand:
             jetzt = pygame.time.get_ticks()
             if (jetzt - self.letztes)/1000 >= 0.5:
