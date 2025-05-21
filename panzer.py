@@ -156,9 +156,9 @@ class Player(pygame.sprite.Sprite):
                     self.mienenAnzahl -= 1
                 if len(self.mienenPos) <= 5:
                     pos = self.position.copy()
-                    self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
+                    Miene(pos,jetzt,self.ID,self.mieneZeit,)
                     self.letzte_mine_zeit = jetzt
-
+                    self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
     def Schuss(self, maus_pos, jetzt):
         if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
             richtung = pygame.Vector2(maus_pos) - self.position
@@ -301,7 +301,68 @@ class Loch(pygame.sprite.Sprite):
         # Kollisionsmaske (für Spieler)
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
+class Miene():
+    #Zwischenversion, die funktioniert
+    def __init__(self,pos,jetzt,ID,mieneZeit):
+        self.pos = pos
+        self.gelegt = jetzt
+        self.ErstellerID = ID
+        self.Explosionszeit = mieneZeit
+        #self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
 
+    def update(player):
+        for m in player.mienenPos[:]:
+            t = (jetzt - m['gelegt']) / 1000
+            rest = player.mieneZeit - t
+            if rest <= 0:
+                explosions_gruppe.add(Explosion(m['pos'].x, m['pos'].y))
+                player.mienenPos.remove(m)
+                # Sprite 
+                explosions_sprite = pygame.sprite.Sprite()
+                radius = player.explosionsRadius
+                explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+                pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
+                explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
+                explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
+                # Kollisionen 
+                getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
+                if getroffeneWand:
+                    if getroffeneWand.zerstörbarkeit:
+                        getroffeneWand.schaden(10)
+                
+                offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+                if explosions_sprite.mask.overlap(player.mask, offset):
+                    player.Schaden()
+            else:
+                if rest <= 2:   # letzte 2 Sekunden
+                    # schnelles Blinken
+                    blink = 500 - ((2 - rest) / 2) *100
+                    blinkend = (jetzt // blink) % 2 == 0
+                    farbe = (255, 255, 0) if blinkend else (255, 0, 0)
+                else:
+                    farbe = (255, 0, 0)  # normal rot, kein Blinken
+                explosions_sprite = pygame.sprite.Sprite()
+                radius = player.explosionsRadius
+                explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+                pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
+                explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
+                explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
+                # Kollisionen 
+                getroffeneKugel = pygame.sprite.spritecollideany(explosions_sprite, kugel_gruppe, collided=pygame.sprite.collide_mask)
+                if getroffeneKugel:
+                    if m["early"] == False:
+                            #getroffeneKugel.kill()
+                            m["early"] = True
+                            m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+                if explosions_sprite.mask.overlap(player.mask, offset):
+                    if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
+                        if m["early"] == False:
+                            m["early"] = True
+                            m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+
+                pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
+        
 player = Player((400, 300),"Spieler1")
 spieler_gruppe.add(player)
 #Wände
@@ -353,59 +414,8 @@ while running:
     if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
         player.kugeln = 5
         
-    ## PLAYER: MIENEN   
-    for m in player.mienenPos[:]:
-        t = (jetzt - m['gelegt']) / 1000
-        rest = player.mieneZeit - t
-        if rest <= 0:
-            explosions_gruppe.add(Explosion(m['pos'].x, m['pos'].y))
-            player.mienenPos.remove(m)
-            # Sprite 
-            explosions_sprite = pygame.sprite.Sprite()
-            radius = player.explosionsRadius
-            explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-            pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
-            explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
-            explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-            # Kollisionen 
-            getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
-            if getroffeneWand:
-                if getroffeneWand.zerstörbarkeit:
-                    getroffeneWand.schaden(10)
-            
-            offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
-            if explosions_sprite.mask.overlap(player.mask, offset):
-                player.Schaden()
-        else:
-            if rest <= 2:   # letzte 2 Sekunden
-                # schnelles Blinken
-                blink = 500 - ((2 - rest) / 2) *100
-                blinkend = (jetzt // blink) % 2 == 0
-                farbe = (255, 255, 0) if blinkend else (255, 0, 0)
-            else:
-                farbe = (255, 0, 0)  # normal rot, kein Blinken
-            explosions_sprite = pygame.sprite.Sprite()
-            radius = player.explosionsRadius
-            explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-            pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
-            explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
-            explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-            # Kollisionen 
-            getroffeneKugel = pygame.sprite.spritecollideany(explosions_sprite, kugel_gruppe, collided=pygame.sprite.collide_mask)
-            if getroffeneKugel:
-                if m["early"] == False:
-                        #getroffeneKugel.kill()
-                        m["early"] = True
-                        m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-            offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
-            if explosions_sprite.mask.overlap(player.mask, offset):
-                if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
-                    if m["early"] == False:
-                        m["early"] = True
-                        m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-
-            pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
-            
+    ## MIENEN MALEN
+    Miene.update(player)
     ## PLAYER: ZEICHNEN
     spieler_gruppe.update()
     #KUGELN : ZEICHEN
@@ -418,7 +428,7 @@ while running:
     #Explosionen: Zeichnen
     explosions_gruppe.update()
     explosions_gruppe.draw(screen)
-    
+
     #TEXT: ZEICHNEN
     font = pygame.font.SysFont(None, 24)
     text1 = font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ)
