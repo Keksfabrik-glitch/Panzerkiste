@@ -1,6 +1,7 @@
 # Pygame Template
 from win11toast import toast, notify, update_progress
 import pygame
+import Startbildschirm as SB
 
 # Setup
 pygame.init()
@@ -13,16 +14,10 @@ laeuft = True
 
 # Gameloop / Spielschleife
 while laeuft:
-    import Startbildschirm.py
-    # Ereignisse
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            laeuft = False
-            
 
-    pygame.display.flip()
+    SB.Main()
 
-    # clock.tick(60)  # limits FPS to 60
+
 
 # Ende
 pygame.quit()
