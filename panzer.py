@@ -115,7 +115,7 @@ class Player(pygame.sprite.Sprite):
         loch_kollision = False
         for loch in löcher:
             abstand = neue_pos.distance_to(loch.rect.center)
-            if abstand < loch.radius:
+            if abstand -(loch.radius /2) < loch.radius:
                 loch_kollision = True
                 break
 
@@ -133,7 +133,7 @@ class Player(pygame.sprite.Sprite):
         loch_kollision = False
         for loch in löcher:
             abstand = neue_pos.distance_to(loch.rect.center)
-            if abstand < loch.radius:
+            if abstand -(loch.radius /2) < loch.radius:
                 loch_kollision = True
                 break
 
@@ -282,7 +282,7 @@ class Wall(pygame.sprite.Sprite):
         self.image = pygame.Surface((breite, höhe))
         self.zerstörbarkeit = zerstörbarkeit
         if self.zerstörbarkeit:
-            self.image.fill((120, 120, 120))
+            self.image.fill((160,85,58))
         else:
             self.image.fill(SCHWARZ)
         self.rect = self.image.get_rect(topleft=(x, y))
@@ -301,7 +301,7 @@ class Loch(pygame.sprite.Sprite):
     def __init__(self, x, y, radius=20):
         super().__init__()
         self.radius = radius
-        self.image = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        self.image = pygame.Surface((radius*2 , radius*2 ), pygame.SRCALPHA)
 
         # Transparenter Kreis (Loch)
         self.image.fill((0, 0, 0, 0))  # komplett transparent
@@ -381,11 +381,12 @@ spieler_gruppe.add(player)
 #Wände
 wände.add(Wall(0, 0, WIDTH,2))            # Oben
 wände.add(Wall(0, HEIGHT - 2, WIDTH,2))      # Unten
-wände.add(Wall(0, 0, 2, HEIGHT))          # Links
-wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))     # Rechts
+wände.add(Wall(0, 0, 2, HEIGHT))              # Links
+wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))      # Rechts
+
 wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True,))  # zerstörbar
 
-löcher.add(Loch(300, 300, radius=30))
+löcher.add(Loch(300, 300, radius=10))
 
 
 # Haupt-Game Loop
