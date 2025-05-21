@@ -1,5 +1,7 @@
 # Pygame Template https://www.pygame.org/project-Pathfinding+Experiment-2932-4829.html
-from win11toast import toast
+from time import sleep
+from win11toast import notify, update_progress,toast
+
 import pygame
 #Variablen
 stellen = ["Singelplayer" ,"Multiplayer" , "Einstellungen" , "Beenden"]
@@ -49,12 +51,34 @@ while laeuft:
                 selected_index = (selected_index - 1) % len(stellen)
             elif event.key == pygame.K_RETURN:
                 print("Ausgewählt:", stellen[selected_index])
-                toast('Ausgewählt: ', stellen[selected_index])
                 if stellen[selected_index] == "Beenden":
                     laeuft = False
                     pygame.quit()
-            
+                if stellen[selected_index] == "Singelplayer":
+                    notify(progress={
+                        'title': 'Wird gestarted',
+                        'status': 'Singelplayer wird vorbereited...',
+                        'value': '0',
+                        'valueStringOverride': '0/15 videos'
+                    })
 
+                    for i in range(1, 102,1):
+                        sleep(0.05)
+                        update_progress({'value': i/100, 'valueStringOverride': f'{i}/100%'})
+                        if i == 1: 
+                            update_progress({'status': 'Map wird geladen!'})
+                        if i == 25: 
+                            update_progress({'status': 'Panzer werden geladen!'})
+                        elif i == 50:
+                            update_progress({'status': 'Gegner werden trainiert!'})
+                        elif i == 75:
+                            update_progress({'status': 'Projektiele werden geladen!'})
+                        elif i == 101:
+                            update_progress({'value': "100/100", 'valueStringOverride': "100/100%"})
+                            i = 100
+                    update_progress({'status': 'Fertig!'})
+                if stellen[selected_index] == "Multiplayer":
+                    notify('Fehler', 'Es gibt noch keinen Multiplayer', audio='ms-winsoundevent:Notification.IM')
     pygame.display.flip()
 
     # clock.tick(60)  # limits FPS to 60
