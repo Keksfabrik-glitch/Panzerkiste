@@ -158,7 +158,7 @@ class Player(pygame.sprite.Sprite):
                     pos = self.position.copy()
                     GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
                     self.letzte_mine_zeit = jetzt
-                    #self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
+                    
     def Schuss(self, maus_pos, jetzt):
         if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
             richtung = pygame.Vector2(maus_pos) - self.position
@@ -365,7 +365,7 @@ class Miene(pygame.sprite.Sprite):
                             self.early = True
                             self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
 
-                pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
+            pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
         
 player = Player((400, 300),"Spieler1")
 spieler_gruppe.add(player)
