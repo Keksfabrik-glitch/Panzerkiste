@@ -2,8 +2,6 @@ import pygame
 import math
 import random
 pygame.init()
-WIDTH, HEIGHT = 800,400
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 panzer_größe = 40
 
@@ -382,6 +380,11 @@ löcher.add(Loch(300, 300, radius=10))
 
 def Main(screen):  # screen von main.py übergeben
     global player, running
+    WIDTH, HEIGHT = 800, 400
+
+    if screen is None:
+        screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
+    pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
     player = Player((400, 300), "Spieler1")
     spieler_gruppe.empty()

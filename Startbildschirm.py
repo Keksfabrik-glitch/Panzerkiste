@@ -1,18 +1,10 @@
 # Pygame Template https://www.pygame.org/project-Pathfinding+Experiment-2932-4829.html
 from time import sleep
 from win11toast import notify, update_progress,toast
-
 import pygame
-#Variablen
-
-# Setup
-pygame.init()
-BREITE = 600
-HOEHE = 600
-fenster = pygame.display.set_mode((BREITE, HOEHE))
-pygame.display.set_caption("Startbildschirm")
 laeuft = True
-# clock = pygame.time.Clock()
+
+
 #Hintergrund
 hintergrund = pygame.image.load("Hintergrund_Panzerkiste.png")
 hintergrund = pygame.transform.scale(hintergrund ,(BREITE, HOEHE))
@@ -25,12 +17,17 @@ GRÜN = (0, 255, 0)
 WEIß = (255,255,255)
 BLAU = (0,0,255)
 # Gameloop / Spielschleife
-def Main(fenster):
+def Main(fenster=None):
     stellen = ["Singleplayer", "Multiplayer", "Einstellungen", "Beenden"]
     selected_index = 0
     laeuft = True
 
-    # Assets laden etc. (wie gehabt)
+    BREITE = 600  # Fensterbreite für Startbildschirm
+    HOEHE = 600  # Fensterhöhe für Startbildschirm
+
+    if fenster is None:
+        fenster = pygame.display.set_mode((BREITE, HOEHE))  # Fenstergröße für den Startbildschirm
+    pygame.display.set_caption("Startbildschirm")  # Fenstertitel
 
     while laeuft:
         fenster.blit(hintergrund, (0, 0))
