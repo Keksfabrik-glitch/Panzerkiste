@@ -1,7 +1,5 @@
 import pygame
-import time
 import math
-import threading
 import random
 pygame.init()
 WIDTH, HEIGHT = 800,400
@@ -181,7 +179,7 @@ class Player(pygame.sprite.Sprite):
                     self.letzterSchuss = jetzt
     def Schaden(self):
         self.leben -= 1
-        if player.leben <= 0:
+        if self.leben <= 0:
             print("Ende")
             #running = False                                  
 class Explosion(pygame.sprite.Sprite):
@@ -370,9 +368,7 @@ class Miene(pygame.sprite.Sprite):
                             self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
 
             pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
-        
-player = Player((400, 300),"Spieler1")
-spieler_gruppe.add(player)
+
 #Wände
 wände.add(Wall(0, 0, WIDTH,2))            # Oben
 wände.add(Wall(0, HEIGHT - 2, WIDTH,2))      # Unten
@@ -384,68 +380,62 @@ wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True,))  # zerstörbar
 löcher.add(Loch(300, 300, radius=10))
 
 
-# Haupt-Game Loop
-running = True
-while running:
-    screen.fill(SAND)
-    löcher.draw(screen)
-    #Zeit
-    jetzt = pygame.time.get_ticks()
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    maus_pos = pygame.mouse.get_pos()
-    richtung = pygame.Vector2(maus_pos) - player.position
-    if richtung.length() != 0:
-        richtung = richtung.normalize()  # auf Länge 1 bringen
-    winkel = -richtung.angle_to(pygame.Vector2(1, 0))
-    player.turmWinkel = winkel
+def Main(screen):  # screen von main.py übergeben
+    global player, running
 
-    # Steuerung
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        player.goW()
-    if keys[pygame.K_s]:
-        player.goS()
-    if keys[pygame.K_a]:
-        player.goA()
-    if keys[pygame.K_d]:
-        player.goD()
-    if keys[pygame.K_SPACE]:
-        threading.Thread(target=player.Miene).start()
-    
-    #PLAYER: KUGELN
-    # wenn linke Maustaste gedrückt ist und Spieler Kugeln hat
-    if pygame.mouse.get_pressed()[0]:
-        player.Schuss(maus_pos, jetzt)
-    # Nachladen nach Pause
-    if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
-        player.kugeln = 5
-        
-    ## MIENEN MALEN
-    GelegteMienen.update()
-    ## PLAYER: ZEICHNEN
-    spieler_gruppe.update()
-    #KUGELN : ZEICHEN
-    kugel_gruppe.update()
-    kugel_gruppe.draw(screen)
-    #PLAYER: ZEICHNEN
-    spieler_gruppe.draw(screen)
-    ## WÄNDE: ZEICHEN
-    wände.draw(screen)
-    #Explosionen: Zeichnen
-    explosions_gruppe.update()
-    explosions_gruppe.draw(screen)
+    player = Player((400, 300), "Spieler1")
+    spieler_gruppe.empty()
+    spieler_gruppe.add(player)
 
-    #TEXT: ZEICHNEN
-    font = pygame.font.SysFont(None, 24)
-    text1 = font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ)
-    screen.blit(text1, (30, 30))
-    text2 = font.render("Leben: {}".format(player.leben), True, SCHWARZ)
-    screen.blit(text2, (30, 55))
-    pygame.display.flip()
-    clock.tick(60)
+    running = True
+    clock = pygame.time.Clock()
 
-pygame.quit()
-exit()
+    while running:
+        screen.fill(SAND)
+        löcher.draw(screen)
+        jetzt = pygame.time.get_ticks()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        maus_pos = pygame.mouse.get_pos()
+        richtung = pygame.Vector2(maus_pos) - player.position
+        if richtung.length() != 0:
+            richtung = richtung.normalize()
+        winkel = -richtung.angle_to(pygame.Vector2(1, 0))
+        player.turmWinkel = winkel
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            player.goW()
+        if keys[pygame.K_s]:
+            player.goS()
+        if keys[pygame.K_a]:
+            player.goA()
+        if keys[pygame.K_d]:
+            player.goD()
+        if keys[pygame.K_SPACE]:
+            player.Miene()
+
+        if pygame.mouse.get_pressed()[0]:
+            player.Schuss(maus_pos, jetzt)
+
+        if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
+            player.kugeln = 5
+
+        GelegteMienen.update()
+        spieler_gruppe.update()
+        kugel_gruppe.update()
+        kugel_gruppe.draw(screen)
+        spieler_gruppe.draw(screen)
+        wände.draw(screen)
+        explosions_gruppe.update()
+        explosions_gruppe.draw(screen)
+
+        font = pygame.font.SysFont(None, 24)
+        screen.blit(font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ), (30, 30))
+        screen.blit(font.render("Leben: {}".format(player.leben), True, SCHWARZ), (30, 55))
+
+        pygame.display.flip()
+        clock.tick(60)

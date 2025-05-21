@@ -25,69 +25,54 @@ GRÜN = (0, 255, 0)
 WEIß = (255,255,255)
 BLAU = (0,0,255)
 # Gameloop / Spielschleife
-def Main():
-    stellen = ["Singelplayer" ,"Multiplayer" , "Einstellungen" , "Beenden"]
+def Main(fenster):
+    stellen = ["Singleplayer", "Multiplayer", "Einstellungen", "Beenden"]
     selected_index = 0
     laeuft = True
-    while laeuft:
-        #Hintergrund
-        fenster.blit(hintergrund , (0,0))
-        for i in range (0,len(stellen)):
-            if i == selected_index:
-                color = BLAU  #  für Auswahl
-            else:
-                color = WEIß  #  normal
-            
-            rendered = font.render(stellen[i], True, color)
-            fenster.blit(rendered, (200, 250 + i * 50))  # vertikal untereinander
 
-        
-        # Ereignisse
+    # Assets laden etc. (wie gehabt)
+
+    while laeuft:
+        fenster.blit(hintergrund, (0, 0))
+
+        for i, text in enumerate(stellen):
+            color = BLAU if i == selected_index else WEIß
+            rendered = font.render(text, True, color)
+            fenster.blit(rendered, (200, 250 + i * 50))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                laeuft = False
-                pygame.quit()
+                return "Beenden"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
                     selected_index = (selected_index + 1) % len(stellen)
                 elif event.key == pygame.K_UP:
                     selected_index = (selected_index - 1) % len(stellen)
                 elif event.key == pygame.K_RETURN:
-                    print("Ausgewählt:", stellen[selected_index])
-                    if stellen[selected_index] == "Beenden":
-                        laeuft = False
-                        pygame.quit()
-                    if stellen[selected_index] == "Singelplayer":
+                    auswahl = stellen[selected_index]
+                    if auswahl == "Singleplayer":
                         notify(progress={
-                            'title': 'Wird gestarted',
-                            'status': 'Singelplayer wird vorbereited...',
+                            'title': 'Wird gestartet',
+                            'status': 'Singleplayer wird vorbereited...',
                             'value': '0',
-                            'valueStringOverride': '0/15 videos'
+                            'valueStringOverride': '0/100%'
                         })
 
-                        for i in range(1, 102,1):
-                            sleep(0.05)
+                        for i in range(1, 102):
+                            sleep(0.01)
                             update_progress({'value': i/100, 'valueStringOverride': f'{i}/100%'})
-                            if i == 1: 
-                                update_progress({'status': 'Map wird geladen!'})
-                            if i == 25: 
+                            if i == 25:
                                 update_progress({'status': 'Panzer werden geladen!'})
-                            elif i == 50:
-                                update_progress({'status': 'Gegner werden trainiert!'})
                             elif i == 75:
-                                update_progress({'status': 'Projektiele werden geladen!'})
-                            elif i == 101:
-                                update_progress({'value': "100/100", 'valueStringOverride': "100/100%"})
-                                i = 100
+                                update_progress({'status': 'Projektile werden geladen!'})
                         update_progress({'status': 'Fertig!'})
-                    if stellen[selected_index] == "Multiplayer":
-                        notify('Fehler', 'Es gibt noch keinen Multiplayer', audio='ms-winsoundevent:Notification.IM')
+
+                        return "Singleplayer"
+                    elif auswahl == "Multiplayer":
+                        return "Multiplayer"
+                    elif auswahl == "Einstellungen":
+                        return "Einstellungen"
+                    elif auswahl == "Beenden":
+                        return "Beenden"
+
         pygame.display.flip()
-
-        # clock.tick(60)  # limits FPS to 60
-
-    # Ende
-    pygame.quit()
-    exit()
-
-Main()
