@@ -23,7 +23,7 @@ explosions_gruppe = pygame.sprite.Group()
 kugel_gruppe = pygame.sprite.Group()
 spieler_gruppe = pygame.sprite.Group()
 löcher = pygame.sprite.Group()
-
+GelegteMienen = pygame.sprite.Group()
 class Player(pygame.sprite.Sprite):
     def __init__(self, position,Name):
         super().__init__()
@@ -156,9 +156,9 @@ class Player(pygame.sprite.Sprite):
                     self.mienenAnzahl -= 1
                 if len(self.mienenPos) <= 5:
                     pos = self.position.copy()
-                    Miene(pos,jetzt,self.ID,self.mieneZeit,)
+                    GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
                     self.letzte_mine_zeit = jetzt
-                    self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
+                    #self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
     def Schuss(self, maus_pos, jetzt):
         if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
             richtung = pygame.Vector2(maus_pos) - self.position
@@ -301,67 +301,71 @@ class Loch(pygame.sprite.Sprite):
         # Kollisionsmaske (für Spieler)
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
-class Miene():
+
+
+class Miene(pygame.sprite.Sprite):
     #Zwischenversion, die funktioniert
-    def __init__(self,pos,jetzt,ID,mieneZeit):
+    def __init__(self,pos,jetzt,ID,mieneZeit,explosionsRadius):
+        super().__init__()
         self.pos = pos
         self.gelegt = jetzt
         self.ErstellerID = ID
-        self.Explosionszeit = mieneZeit
+        self.ZeitBisEx = mieneZeit
+        self.explosionsRadius = explosionsRadius
+        self.early = False
         #self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
+    def update(self):
+        jetzt = pygame.time.get_ticks()
+        t = (jetzt - self.gelegt) / 1000
+        rest = self.ZeitBisEx - t
+        if rest <= 0:
+            explosions_gruppe.add(Explosion(self.pos.x, self.pos.y))
+            explosions_sprite = pygame.sprite.Sprite()
+            radius = self.explosionsRadius
+            explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+            pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
+            explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
+            explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
+            # Kollisionen 
+            getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
+            if getroffeneWand:
+                if getroffeneWand.zerstörbarkeit:
+                    getroffeneWand.schaden(10)
+            offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+            if explosions_sprite.mask.overlap(player.mask, offset):
+                player.Schaden()
+            self.kill() 
 
-    def update(player):
-        for m in player.mienenPos[:]:
-            t = (jetzt - m['gelegt']) / 1000
-            rest = player.mieneZeit - t
-            if rest <= 0:
-                explosions_gruppe.add(Explosion(m['pos'].x, m['pos'].y))
-                player.mienenPos.remove(m)
-                # Sprite 
-                explosions_sprite = pygame.sprite.Sprite()
-                radius = player.explosionsRadius
-                explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-                pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
-                explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
-                explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-                # Kollisionen 
-                getroffeneWand = pygame.sprite.spritecollideany(explosions_sprite, wände, collided=pygame.sprite.collide_mask)
-                if getroffeneWand:
-                    if getroffeneWand.zerstörbarkeit:
-                        getroffeneWand.schaden(10)
-                
-                offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
-                if explosions_sprite.mask.overlap(player.mask, offset):
-                    player.Schaden()
+            ##!!! Bei den getroffenem Panzer, nicht immer Player
+        else:
+            if rest <= 2:   # letzte 2 Sekunden
+                # schnelles Blinken
+                blink = 500 - ((2 - rest) / 2) *100
+                blinkend = (jetzt // blink) % 2 == 0
+                farbe = (255, 255, 0) if blinkend else (255, 0, 0)
             else:
-                if rest <= 2:   # letzte 2 Sekunden
-                    # schnelles Blinken
-                    blink = 500 - ((2 - rest) / 2) *100
-                    blinkend = (jetzt // blink) % 2 == 0
-                    farbe = (255, 255, 0) if blinkend else (255, 0, 0)
-                else:
-                    farbe = (255, 0, 0)  # normal rot, kein Blinken
+                farbe = (255, 0, 0)  # normal rot, kein Blinken
                 explosions_sprite = pygame.sprite.Sprite()
-                radius = player.explosionsRadius
+                radius = self.explosionsRadius
                 explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
                 pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
-                explosions_sprite.rect = explosions_sprite.image.get_rect(center=(m['pos'].x, m['pos'].y))
+                explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
                 explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
                 # Kollisionen 
                 getroffeneKugel = pygame.sprite.spritecollideany(explosions_sprite, kugel_gruppe, collided=pygame.sprite.collide_mask)
                 if getroffeneKugel:
-                    if m["early"] == False:
+                    if self.early == False:
                             #getroffeneKugel.kill()
-                            m["early"] = True
-                            m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                        self.early = True
+                        self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
                 offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
                 if explosions_sprite.mask.overlap(player.mask, offset):
                     if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
-                        if m["early"] == False:
-                            m["early"] = True
-                            m['gelegt'] += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                        if self.early == False:
+                            self.early = True
+                            self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
 
-                pygame.draw.circle(screen, farbe, (int(m['pos'].x), int(m['pos'].y)), 8)
+                pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
         
 player = Player((400, 300),"Spieler1")
 spieler_gruppe.add(player)
@@ -415,7 +419,7 @@ while running:
         player.kugeln = 5
         
     ## MIENEN MALEN
-    Miene.update(player)
+    GelegteMienen.update()
     ## PLAYER: ZEICHNEN
     spieler_gruppe.update()
     #KUGELN : ZEICHEN
