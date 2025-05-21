@@ -24,6 +24,7 @@ kugel_gruppe = pygame.sprite.Group()
 spieler_gruppe = pygame.sprite.Group()
 löcher = pygame.sprite.Group()
 GelegteMienen = pygame.sprite.Group()
+## CLASSES
 class Player(pygame.sprite.Sprite):
     def __init__(self, position,Name):
         super().__init__()
@@ -205,8 +206,7 @@ class Explosion(pygame.sprite.Sprite):
             if self.index < len(self.bilder):
                 self.image = self.bilder[self.index]
             else:
-                self.kill()
-        
+                self.kill()       
 class Kugel(pygame.sprite.Sprite):
     def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75):
         super().__init__()
@@ -230,6 +230,7 @@ class Kugel(pygame.sprite.Sprite):
 
         # Kollision mit Wänden prüfen
         getroffeneWand = pygame.sprite.spritecollideany(self, wände, collided=pygame.sprite.collide_mask)
+        # Debounce muss noch hin
         if getroffeneWand:
             jetzt = pygame.time.get_ticks()
             if (jetzt - self.letztes)/1000 >= 0.5:
@@ -274,8 +275,6 @@ class Kugel(pygame.sprite.Sprite):
 
         # Bewegung ausführen
         self.rect = neue_rect
-
-
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=8):
         super().__init__()
@@ -295,8 +294,6 @@ class Wall(pygame.sprite.Sprite):
             if self.leben <= 0:
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                 self.kill()
-
-
 class Loch(pygame.sprite.Sprite):
     def __init__(self, x, y, radius=20):
         super().__init__()
@@ -310,8 +307,6 @@ class Loch(pygame.sprite.Sprite):
         # Kollisionsmaske (für Spieler)
         self.rect = self.image.get_rect(center=(x, y))
         self.mask = pygame.mask.from_surface(self.image)
-
-
 class Miene(pygame.sprite.Sprite):
     #Zwischenversion, die funktioniert
     def __init__(self,pos,jetzt,ID,mieneZeit,explosionsRadius):
