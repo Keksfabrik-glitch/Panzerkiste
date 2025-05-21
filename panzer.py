@@ -1,10 +1,12 @@
 import pygame
 import math
 import random
+
 pygame.init()
 clock = pygame.time.Clock()
 panzer_größe = 40
 
+WIDTH, HEIGHT = 800, 400
 #Farben
 WEISS = (255, 255, 255)
 ROT = (255, 0, 0)
@@ -367,21 +369,9 @@ class Miene(pygame.sprite.Sprite):
 
             pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
 
-#Wände
-wände.add(Wall(0, 0, WIDTH,2))            # Oben
-wände.add(Wall(0, HEIGHT - 2, WIDTH,2))      # Unten
-wände.add(Wall(0, 0, 2, HEIGHT))              # Links
-wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))      # Rechts
-
-wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True,))  # zerstörbar
-
-löcher.add(Loch(300, 300, radius=10))
-
-
-def Main(screen):  # screen von main.py übergeben
+def Main(screen = None):
     global player, running
     WIDTH, HEIGHT = 800, 400
-
     if screen is None:
         screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
@@ -389,6 +379,14 @@ def Main(screen):  # screen von main.py übergeben
     player = Player((400, 300), "Spieler1")
     spieler_gruppe.empty()
     spieler_gruppe.add(player)
+    # Wände + Löcher
+    wände.add(Wall(0, 0, WIDTH, 2))  # Oben
+    wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))  # Unten
+    wände.add(Wall(0, 0, 2, HEIGHT))  # Links
+    wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))  # Rechts
+    wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True, ))  # zerstörbar
+
+    löcher.add(Loch(300, 300, radius=10))
 
     running = True
     clock = pygame.time.Clock()

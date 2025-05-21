@@ -1,41 +1,36 @@
 # Pygame Template https://www.pygame.org/project-Pathfinding+Experiment-2932-4829.html
-from time import sleep
-from win11toast import notify, update_progress,toast
 import pygame
-laeuft = True
+from time import sleep
+from win11toast import notify, update_progress, toast
 
+# Setup für Startbildschirm
+def Main(screen=None):
+    BREITE = 600  # screenbreite für Startbildschirm
+    HOEHE = 600   # screenhöhe für Startbildschirm
 
-#Hintergrund
-hintergrund = pygame.image.load("Hintergrund_Panzerkiste.png")
-hintergrund = pygame.transform.scale(hintergrund ,(BREITE, HOEHE))
-#Schriftart
-font = pygame.font.SysFont("Arial", 36)  # Schriftart & Größe
-#Farben
-ROT = (255, 0, 0)
-SCHWARZ = (0, 0, 0)
-GRÜN = (0, 255, 0)
-WEIß = (255,255,255)
-BLAU = (0,0,255)
-# Gameloop / Spielschleife
-def Main(fenster=None):
+    if screen is None:
+        screen = pygame.display.set_mode((BREITE, HOEHE))  # screengröße für den Startbildschirm
+    pygame.display.set_caption("Startbildschirm")  # screentitel
+
+    # Hintergrund und Schriftart für das Menü
+    hintergrund = pygame.image.load("Hintergrund_Panzerkiste.png")
+    hintergrund = pygame.transform.scale(hintergrund, (BREITE, HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
+
+    font = pygame.font.SysFont("Arial", 36)  # Schriftart und -größe
+    BLAU = (0, 0, 255)  # Blaue Farbe für Auswahl
+    WEIß = (255, 255, 255)  # Weiße Farbe für nicht selektierte Optionen
+
     stellen = ["Singleplayer", "Multiplayer", "Einstellungen", "Beenden"]
     selected_index = 0
     laeuft = True
 
-    BREITE = 600  # Fensterbreite für Startbildschirm
-    HOEHE = 600  # Fensterhöhe für Startbildschirm
-
-    if fenster is None:
-        fenster = pygame.display.set_mode((BREITE, HOEHE))  # Fenstergröße für den Startbildschirm
-    pygame.display.set_caption("Startbildschirm")  # Fenstertitel
-
     while laeuft:
-        fenster.blit(hintergrund, (0, 0))
+        screen.blit(hintergrund, (0, 0))
 
         for i, text in enumerate(stellen):
             color = BLAU if i == selected_index else WEIß
             rendered = font.render(text, True, color)
-            fenster.blit(rendered, (200, 250 + i * 50))
+            screen.blit(rendered, (200, 250 + i * 50))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

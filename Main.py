@@ -6,17 +6,14 @@ import panzer as P
 
 # Setup
 pygame.init()
-BREITE = 600
-HOEHE = 600
-fenster = pygame.display.set_mode((BREITE, HOEHE))
 pygame.display.set_caption("Panzerkiste")
 
 # Hauptschleife
 running = True
 while running:
-    auswahl = SB.Main(fenster)  # Fenster übergeben
+    auswahl = SB.Main()  # Fenster übergeben
     if auswahl == "Singleplayer":
-        P.Main(fenster)          # Fenster übergeben
+        P.Main()          # Fenster übergeben
     elif auswahl == "Beenden":
         running = False
     elif auswahl == "Multiplayer":
