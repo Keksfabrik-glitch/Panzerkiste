@@ -254,8 +254,12 @@ class Kugel(pygame.sprite.Sprite):
                         explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
             return  # Wurde Wand getroffen, nicht weiter bewegen
 
-        if not screen.get_rect().contains(neue_rect):
-            explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+        puffer = 20
+        erweiterter_bereich = pygame.Rect(
+            -puffer, -puffer,
+            WIDTH + 2 * puffer, HEIGHT + 2 * puffer
+        )
+        if not erweiterter_bereich.collidepoint(neue_rect.center):
             self.kill()
             return
 
