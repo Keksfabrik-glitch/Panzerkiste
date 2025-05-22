@@ -22,6 +22,7 @@ kugel_gruppe = pygame.sprite.Group()
 spieler_gruppe = pygame.sprite.Group()
 löcher = pygame.sprite.Group()
 GelegteMienen = pygame.sprite.Group()
+screen = pygame.display.set_mode((WIDTH,HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
 class Player(pygame.sprite.Sprite):
     def __init__(self, position,Name):
@@ -61,7 +62,6 @@ class Player(pygame.sprite.Sprite):
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
         pygame.draw.rect(self.kanone, ROT, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
         pygame.draw.rect(self.kanone, SCHWARZ, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
-
         # Platzhalter (wird bei update() gesetzt)
         self.image = pygame.Surface((1, 1), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=self.position)
@@ -72,21 +72,17 @@ class Player(pygame.sprite.Sprite):
         # --- Körper drehen ---
         gedreht_body = pygame.transform.rotate(self.body_surface, -self.richtung)
         body_rect = gedreht_body.get_rect(center=(self.position.x, self.position.y))
-
         # --- Turm drehen ---
         gedreht_turm = pygame.transform.rotate(self.turm, -self.turmWinkel)
         turm_rect = gedreht_turm.get_rect(center=self.position)
-
         # --- Kanone drehen ---
         gedrehte_kanone = pygame.transform.rotate(self.kanone, -self.turmWinkel)
         kanone_rect = gedrehte_kanone.get_rect(center=self.position)
-
         # --- Neues Image mit allem zusammen ---
         # Fläche groß genug für alles
         w = max(body_rect.width, turm_rect.width, kanone_rect.width)
         h = max(body_rect.height, turm_rect.height, kanone_rect.height)
         full_image = pygame.Surface((w, h), pygame.SRCALPHA)
-
         # Zentriert zeichnen
         offset_body = (w//2 - body_rect.width//2, h//2 - body_rect.height//2)
         offset_turm = (w//2 - turm_rect.width//2, h//2 - turm_rect.height//2)
@@ -222,6 +218,8 @@ class Kugel(pygame.sprite.Sprite):
         
         # Zeit, bis die Kugel freundliche Kollisionen ignoriert (in ms)
         self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # 150 ms ignorieren
+    def remove(self):
+        self.kill()
     def update(self):
         bewegung = self.richtung * self.geschwindigkeit
         neue_rect = self.rect.move(bewegung)
@@ -357,7 +355,7 @@ class Miene(pygame.sprite.Sprite):
                 getroffeneKugel = pygame.sprite.spritecollideany(explosions_sprite, kugel_gruppe, collided=pygame.sprite.collide_mask)
                 if getroffeneKugel:
                     if self.early == False:
-                            #getroffeneKugel.kill()
+                        getroffeneKugel.remove()
                         self.early = True
                         self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
                 offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
@@ -440,3 +438,4 @@ def Main(screen = None):
 
         pygame.display.flip()
         clock.tick(60)
+Main()
