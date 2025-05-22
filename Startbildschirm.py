@@ -1,7 +1,13 @@
+#Startbildschirm
 # Pygame Template https://www.pygame.org/project-Pathfinding+Experiment-2932-4829.html
 import pygame
 from time import sleep
-from win11toast import notify, update_progress, toast
+try:
+    from win11toast import toast, notify, update_progress
+    wintoast = True
+except:
+    wintoast = False
+    print("Bitte installiere Win11toast, um alle Features freizuschalten")
 
 # Setup für Startbildschirm
 def Main(screen=None):
@@ -43,23 +49,26 @@ def Main(screen=None):
                 elif event.key == pygame.K_RETURN:
                     auswahl = stellen[selected_index]
                     if auswahl == "Singleplayer":
-                        notify(progress={
-                            'title': 'Wird gestartet',
-                            'status': 'Singleplayer wird vorbereited...',
-                            'value': '0',
-                            'valueStringOverride': '0/100%'
-                        })
+                        if wintoast:
+                            notify(progress={
+                                'title': 'Wird gestartet',
+                                'status': 'Singleplayer wird vorbereited...',
+                                'value': '0',
+                                'valueStringOverride': '0/100%'
+                            })
 
-                        for i in range(1, 102):
-                            sleep(0.01)
-                            update_progress({'value': i/100, 'valueStringOverride': f'{i}/100%'})
-                            if i == 25:
-                                update_progress({'status': 'Panzer werden geladen!'})
-                            elif i == 75:
-                                update_progress({'status': 'Projektile werden geladen!'})
-                        update_progress({'status': 'Fertig!'})
-
+                            for i in range(1, 102):
+                                sleep(0.01)
+                                update_progress({'value': i/100, 'valueStringOverride': f'{i}/100%'})
+                                if i == 25:
+                                    update_progress({'status': 'Panzer werden geladen!'})
+                                elif i == 75:
+                                    update_progress({'status': 'Projektile werden geladen!'})
+                            update_progress({'status': 'Fertig!'})
+                        else:
+                            print("Installier jetzt endlich win11toast !!!")
                         return "Singleplayer"
+                        
                     elif auswahl == "Multiplayer":
                         return "Multiplayer"
                     elif auswahl == "Einstellungen":
