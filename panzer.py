@@ -110,7 +110,7 @@ class Player(pygame.sprite.Sprite):
         loch_kollision = False
         for loch in löcher:
             abstand = neue_pos.distance_to(loch.rect.center)
-            if abstand -(loch.radius /2) < loch.radius:
+            if abstand-20 <= loch.radius:
                 loch_kollision = True
                 break
 
@@ -128,7 +128,8 @@ class Player(pygame.sprite.Sprite):
         loch_kollision = False
         for loch in löcher:
             abstand = neue_pos.distance_to(loch.rect.center)
-            if abstand -(loch.radius /2) < loch.radius:
+            #if abstand -(loch.radius /2) < loch.radius:
+            if abstand-20 <= loch.radius: # panzer mitte
                 loch_kollision = True
                 break
 
@@ -439,3 +440,4 @@ def Main(screen = None):
         pygame.display.flip()
         clock.tick(60)
 Main()
+
