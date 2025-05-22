@@ -439,5 +439,4 @@ def Main(screen = None):
 
         pygame.display.flip()
         clock.tick(60)
-Main()
 

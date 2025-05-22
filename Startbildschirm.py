@@ -57,13 +57,20 @@ def Main(screen=None):
                                 'valueStringOverride': '0/100%'
                             })
 
-                            for i in range(1, 102):
-                                sleep(0.01)
+                            for i in range(1, 102,1):
+                                sleep(0.05)
                                 update_progress({'value': i/100, 'valueStringOverride': f'{i}/100%'})
-                                if i == 25:
+                                if i == 1: 
+                                    update_progress({'status': 'Map wird geladen!'})
+                                if i == 25: 
                                     update_progress({'status': 'Panzer werden geladen!'})
+                                elif i == 50:
+                                    update_progress({'status': 'Gegner werden trainiert!'})
                                 elif i == 75:
-                                    update_progress({'status': 'Projektile werden geladen!'})
+                                    update_progress({'status': 'Projektiele werden geladen!'})
+                                elif i == 101:
+                                    update_progress({'value': "100/100", 'valueStringOverride': "100/100%"})
+                                    i = 100
                             update_progress({'status': 'Fertig!'})
                         else:
                             print("Installier jetzt endlich win11toast !!!")
