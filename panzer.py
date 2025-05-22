@@ -36,6 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.drehgeschwindigkeit = 5
         self.schuss_cooldown = 250
         self.kugeln = 5
+        self.maxKugeln = 5
         self.kugelSpeed = 10
         self.nachladezeit = 3
         self.letzterSchuss = 0
@@ -174,8 +175,8 @@ class Player(pygame.sprite.Sprite):
                 self.letzterEinzelschuss = jetzt
                 if self.kugeln == 0:
                     self.letzterSchuss = jetzt
-    def Schaden(self):
-        self.leben -= 1
+    def Schaden(self,amount=1):
+        self.leben -= amount
         if self.leben <= 0:
             print("Ende")
             #running = False                                  
@@ -334,7 +335,7 @@ class Miene(pygame.sprite.Sprite):
                     getroffeneWand.schaden(10)
             offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
             if explosions_sprite.mask.overlap(player.mask, offset):
-                player.Schaden()
+                player.Schaden(2)
             self.kill() 
 
             ##!!! Bei den getroffenem Panzer, nicht immer Player
@@ -346,23 +347,22 @@ class Miene(pygame.sprite.Sprite):
                 farbe = (255, 255, 0) if blinkend else (255, 0, 0)
             else:
                 farbe = (255, 0, 0)  # normal rot, kein Blinken
-                explosions_sprite = pygame.sprite.Sprite()
-                radius = self.explosionsRadius
-                explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
-                pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
-                explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
-                explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-                # Kollisionen 
-                getroffeneKugel = pygame.sprite.spritecollideany(explosions_sprite, kugel_gruppe, collided=pygame.sprite.collide_mask)
-                if getroffeneKugel:
-                    if self.early == False:
+                if self.early == False:
+                    explosions_sprite = pygame.sprite.Sprite()
+                    radius = self.explosionsRadius
+                    explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+                    pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
+                    explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
+                    explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
+                    # Kollisionen 
+                    getroffeneKugel = pygame.sprite.spritecollideany(explosions_sprite, kugel_gruppe, collided=pygame.sprite.collide_mask)
+                    if getroffeneKugel:
                         getroffeneKugel.remove()
                         self.early = True
                         self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-                offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
-                if explosions_sprite.mask.overlap(player.mask, offset):
-                    if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
-                        if self.early == False:
+                    offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+                    if explosions_sprite.mask.overlap(player.mask, offset):
+                        if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
                             self.early = True
                             self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
 
@@ -422,7 +422,7 @@ def Main(screen = None):
             player.Schuss(maus_pos, jetzt)
 
         if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
-            player.kugeln = 5
+            player.kugeln = player.maxKugeln 
 
         GelegteMienen.update()
         spieler_gruppe.update()
