@@ -349,7 +349,7 @@ class Miene(pygame.sprite.Sprite):
                 farbe = (255, 0, 0)  # normal rot, kein Blinken
                 if self.early == False:
                     explosions_sprite = pygame.sprite.Sprite()
-                    radius = self.explosionsRadius
+                    radius = 8 # Kugeln sollen nur wenn sie bei AUF die Miene fliegen diese Aktivieren. Spieler sollen sie auhc im Umkreis aktivieren. Daher unterschiedlicher Radius
                     explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
                     pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
                     explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
@@ -360,6 +360,12 @@ class Miene(pygame.sprite.Sprite):
                         getroffeneKugel.remove()
                         self.early = True
                         self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                    explosions_sprite = pygame.sprite.Sprite()
+                    radius = self.explosionsRadius
+                    explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
+                    pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
+                    explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
+                    explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
                     offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
                     if explosions_sprite.mask.overlap(player.mask, offset):
                         if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
