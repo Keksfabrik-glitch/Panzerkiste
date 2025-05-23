@@ -41,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.nachladezeit = 3
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
-        self.mieneZeit = 7
+        self.mieneZeit = 15
         self.mienenAnzahl = -1
         self.letzte_mine_zeit = -2000
         self.mine_cooldown = 5
@@ -311,10 +311,13 @@ class Miene(pygame.sprite.Sprite):
         super().__init__()
         self.pos = pos
         self.gelegt = jetzt
-        self.ErstellerID = ID
         self.ZeitBisEx = mieneZeit
         self.explosionsRadius = explosionsRadius
+        self.ErstellerID = ID
+        self.ErstellerLastIn = self.ZeitBisEx - jetzt/1000
+        self.toleranz = 0.25
         self.early = False
+
         #self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
     def update(self):
         jetzt = pygame.time.get_ticks()
@@ -366,12 +369,20 @@ class Miene(pygame.sprite.Sprite):
                     pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
                     explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
                     explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-                    offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+                    offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top) # NUR SPIELER. ANDERE PANZER MÜSSEN AUCH 
                     if explosions_sprite.mask.overlap(player.mask, offset):
-                        if rest <= 5: #Ersetzten mit: Wenn ersteller Spieler nahe nach ein paar sekunden hoch, sonst immer direkt nach den zwei sekunden
+                        if player.ID == self.ErstellerID:
+                            if self.ErstellerLastIn - rest >= self.toleranz:
+                                self.early = True
+                                self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                                
+                            self.ErstellerLastIn = rest
+                            if rest <= 4: #4 Sekunden zum rausgehen
+                                self.early = True
+                                self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                        else: # Nicht der Leger, also auch keine Vorteile
                             self.early = True
                             self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-
             pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
 
 def Main(screen = None):
