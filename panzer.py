@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+import Maps as M
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -349,7 +350,7 @@ class Miene(pygame.sprite.Sprite):
                 farbe = (255, 0, 0)  # normal rot, kein Blinken
                 if self.early == False:
                     explosions_sprite = pygame.sprite.Sprite()
-                    radius = 8 # Kugeln sollen nur wenn sie bei AUF die Miene fliegen diese Aktivieren. Spieler sollen sie auhc im Umkreis aktivieren. Daher unterschiedlicher Radius
+                    radius = 8 # Kugeln sollen nur, wenn sie bei AUF die Miene fliegen, diese Aktivieren. Spieler sollen sie auch im Umkreis aktivieren. Daher unterschiedlicher Radius
                     explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
                     pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
                     explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
@@ -374,6 +375,30 @@ class Miene(pygame.sprite.Sprite):
 
             pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
 
+def lade_map(map_data):
+    wände.empty()
+    löcher.empty()
+
+    # Map-spezifische Wände laden
+    for wand in map_data.get("walls", []):
+        wände.add(Wall(wand["x"], wand["y"], wand["w"], wand["h"], wand.get("destroyable", False)))
+
+    # Immer die vier Randwände laden
+    wände.add(Wall(0, 0, WIDTH, 2))                  # Oben
+    wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))         # Unten
+    wände.add(Wall(0, 0, 2, HEIGHT))                 # Links
+    wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))         # Rechts
+
+    # Löcher laden
+    for loch in map_data.get("holes", []):
+        löcher.add(Loch(loch["x"], loch["y"], loch["radius"]))
+
+    # Spieler neu platzieren
+    global player
+    player = Player(map_data["player_start"], "Spieler1")
+    spieler_gruppe.empty()
+    spieler_gruppe.add(player)
+
 def Main(screen = None):
     global player, running
     WIDTH, HEIGHT = 800, 400
@@ -381,18 +406,7 @@ def Main(screen = None):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
-    player = Player((400, 300), "Spieler1")
-    spieler_gruppe.empty()
-    spieler_gruppe.add(player)
-    # Wände + Löcher
-    wände.add(Wall(0, 0, WIDTH, 2))  # Oben
-    wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))  # Unten
-    wände.add(Wall(0, 0, 2, HEIGHT))  # Links
-    wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))  # Rechts
-    wände.add(Wall(200, 200, 50, 50, zerstörbarkeit=True, ))  # zerstörbar
-
-    löcher.add(Loch(300, 300, radius=10))
-
+    lade_map(M.map_test)
     running = True
     clock = pygame.time.Clock()
 
