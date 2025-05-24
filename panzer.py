@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+import string
 import Maps as M
 
 pygame.init()
@@ -23,11 +24,20 @@ kugel_gruppe = pygame.sprite.Group()
 spieler_gruppe = pygame.sprite.Group()
 löcher = pygame.sprite.Group()
 GelegteMienen = pygame.sprite.Group()
+feindPanzer = pygame.sprite.Group()
+
 screen = pygame.display.set_mode((WIDTH,HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
+def randomNameID(länge=5,idOrName=True):
+    
+    if idOrName == True:
+        Zeichen = string.ascii_letters + string.digits
+        return "".join(random.choices(Zeichen, k = länge))
 class Player(pygame.sprite.Sprite):
+
     def __init__(self, position,Name):
         super().__init__()
+        self.Punkte = 0
         self.ID = Name
         self.position = pygame.Vector2(position)
         self.richtung = 90
@@ -181,6 +191,188 @@ class Player(pygame.sprite.Sprite):
         if self.leben <= 0:
             print("Ende")
             #running = False                                  
+class FeindPanzerManage():
+    def __init__(self):
+        self.panzer =  {}
+    def NeuerPanzer(self,level,typ,position):
+        id = randomNameID().join(str(level))
+        if typ == "stehend": # viel Lebel   # int(min(MAX, MIN + (level - 1) *STEIGUNG))
+            leben = int(min(10, 1 + (level - 1) *0.6)) #steigt: [a,a][b,b][c][d,d]... max 10
+            kannFahren = False
+            geschwindigkeit = 0
+            drehgeschwindigkeit = int(min(12, 2 + (level - 1) *0.4)) #steigt: [a,a,][b,b][c,c,c][d,d]... max 12
+            schuss_cooldown = int(max(50, 500 + (level - 1) *-20)) # sinkt um -20
+            kugeln = int(min(20, 1 + (level - 1) *0.8)) #steigt: [a,a,][b][c][d,d]... max 20 [19]
+            #maxKugeln = kugeln
+            kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
+            nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
+            self.panzer = self.panzer + FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
+            # Mienen Stats und appraller danach noch...
+#Testing
+#FM = FeindPanzerManage()
+#for i in range(1,25):
+    #FM.NeuerPanzer(i,"stehend",(0,0))
+class FeindPanzer(pygame.sprite.Sprite):
+
+    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit):
+        super().__init__()
+        self.kannFahren = kannFahren
+        self.Punkte = 0
+        self.ID = Name
+        self.level = level
+        self.position = pygame.Vector2(position)
+        self.richtung = 90
+        self.turmWinkel = 0
+        self.leben = leben
+        self.geschwindigkeit = geschwindigkeit
+        self.drehgeschwindigkeit = drehgeschwindigkeit
+        self.schuss_cooldown = schuss_cooldown
+        self.kugeln = kugeln
+        self.maxKugeln = self.kugeln
+        self.kugelSpeed = kugelSpeed
+        self.nachladezeit = nachladezeit
+        self.letzterSchuss = 0
+        self.letzterEinzelschuss = 0
+        
+        self.mieneZeit = 15
+        self.mienenAnzahl = -1
+        self.letzte_mine_zeit = -2000
+        self.mine_cooldown = 5
+        self.explosionsRadius = 40
+        self.abpraller = 2
+        self.abprallChance = 0.75
+        self.mienenPos = []
+
+        #  Grafik:
+        #  Unten
+        self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
+        self.body_surface.fill(GRÜN)
+        pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
+        # Turm
+        self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
+        self.turm.fill(BLAU)
+        pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
+        #Kanone
+        self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
+        pygame.draw.rect(self.kanone, ROT, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
+        pygame.draw.rect(self.kanone, SCHWARZ, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
+        # Platzhalter (wird bei update() gesetzt)
+        self.image = pygame.Surface((1, 1), pygame.SRCALPHA)
+        self.rect = self.image.get_rect(center=self.position)
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self):
+        # --- Körper drehen ---
+        gedreht_body = pygame.transform.rotate(self.body_surface, -self.richtung)
+        body_rect = gedreht_body.get_rect(center=(self.position.x, self.position.y))
+        # --- Turm drehen ---
+        gedreht_turm = pygame.transform.rotate(self.turm, -self.turmWinkel)
+        turm_rect = gedreht_turm.get_rect(center=self.position)
+        # --- Kanone drehen ---
+        gedrehte_kanone = pygame.transform.rotate(self.kanone, -self.turmWinkel)
+        kanone_rect = gedrehte_kanone.get_rect(center=self.position)
+        # --- Neues Image mit allem zusammen ---
+        # Fläche groß genug für alles
+        w = max(body_rect.width, turm_rect.width, kanone_rect.width)
+        h = max(body_rect.height, turm_rect.height, kanone_rect.height)
+        full_image = pygame.Surface((w, h), pygame.SRCALPHA)
+        # Zentriert zeichnen
+        offset_body = (w//2 - body_rect.width//2, h//2 - body_rect.height//2)
+        offset_turm = (w//2 - turm_rect.width//2, h//2 - turm_rect.height//2)
+        offset_kanone = (w//2 - kanone_rect.width//2, h//2 - kanone_rect.height//2)
+
+        full_image.blit(gedreht_body, offset_body)
+        full_image.blit(gedrehte_kanone, offset_kanone)
+        full_image.blit(gedreht_turm, offset_turm)
+
+        self.image = full_image
+        self.rect = self.image.get_rect(center=self.position)
+        self.mask = pygame.mask.from_surface(self.image)
+
+    # --- Bewegungsmethoden ---
+    def Drehen(self, Um):
+        self.richtung += Um
+        self.richtung %= 360
+
+    def goW(self):
+        rad = math.radians(self.richtung)
+        bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
+        neue_pos = self.position + bewegung
+        spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
+
+        loch_kollision = False
+        for loch in löcher:
+            abstand = neue_pos.distance_to(loch.rect.center)
+            if abstand-20 <= loch.radius:
+                loch_kollision = True
+                break
+
+        wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
+
+        if not wand_kollision and not loch_kollision:
+            self.position = neue_pos
+
+    def goS(self):
+        rad = math.radians(self.richtung)
+        bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
+        neue_pos = self.position - bewegung
+        spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
+
+        loch_kollision = False
+        for loch in löcher:
+            abstand = neue_pos.distance_to(loch.rect.center)
+            #if abstand -(loch.radius /2) < loch.radius:
+            if abstand-20 <= loch.radius: # panzer mitte
+                loch_kollision = True
+                break
+
+        wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
+
+        if not wand_kollision and not loch_kollision:
+            self.position = neue_pos
+
+    def goA(self):
+        self.Drehen(-self.drehgeschwindigkeit)
+
+    def goD(self):
+        self.Drehen(self.drehgeschwindigkeit)
+
+    def Miene(self):
+        jetzt = pygame.time.get_ticks()
+        if jetzt - self.letzte_mine_zeit >= self.mine_cooldown * 1000:
+            if self.mienenAnzahl >= 1 or self.mienenAnzahl == -1:
+                if self.mienenAnzahl != -1:
+                    self.mienenAnzahl -= 1
+                if len(self.mienenPos) <= 5:
+                    pos = self.position.copy()
+                    GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
+                    self.letzte_mine_zeit = jetzt
+                    
+    def Schuss(self, maus_pos, jetzt):
+        if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
+            richtung = pygame.Vector2(maus_pos) - self.position
+            if richtung.length() != 0:
+                richtung = richtung.normalize()
+                # Abstand von Panzerzentrum plus Kugelgröße (halbe Breite), damit Kugel komplett außerhalb startet
+                panzer_radius = panzer_größe * 0.5  # ca. halbe Panzergröße (Radius)
+                kugel_radius = 10 / 2  # Kugelgröße ist 10x4, also halbe Breite=5
+                abstand = panzer_radius + kugel_radius + 2  # 2 Pixel extra als Puffer
+
+                start_pos = self.position + richtung * abstand
+
+                neue_kugel = Kugel(start_pos, richtung,self.kugelSpeed,
+                                   abpraller=self.abpraller, abprallChance=self.abprallChance)
+                kugel_gruppe.add(neue_kugel)
+                self.kugeln -= 1
+                self.letzterEinzelschuss = jetzt
+                if self.kugeln == 0:
+                    self.letzterSchuss = jetzt
+    def Schaden(self,amount=1):
+        self.leben -= amount
+        if self.leben <= 0:
+            print("Ende")
+            #running = False   
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -246,6 +438,7 @@ class Kugel(pygame.sprite.Sprite):
                             self.richtung.x *= -1
 
                         self.abpraller -= 1
+                        self.geschwindigkeit -= 0.25
                         self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
                         self.image = pygame.transform.rotate(self.original_image, self.winkel)   
                         self.rect = self.rect.move(self.richtung * self.geschwindigkeit)
@@ -421,6 +614,7 @@ def lade_map(map_data):
     spieler_gruppe.add(player)
 
 def Main(screen = None):
+    #feindPanzer.add(Player(10,10))
     global player, running
     WIDTH, HEIGHT = 800, 400
     if screen is None:
@@ -446,7 +640,6 @@ def Main(screen = None):
             richtung = richtung.normalize()
         winkel = -richtung.angle_to(pygame.Vector2(1, 0))
         player.turmWinkel = winkel
-
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             player.goW()
@@ -464,12 +657,13 @@ def Main(screen = None):
 
         if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
             player.kugeln = player.maxKugeln 
-
         GelegteMienen.update()
         spieler_gruppe.update()
+        feindPanzer.update()
         kugel_gruppe.update()
         kugel_gruppe.draw(screen)
         spieler_gruppe.draw(screen)
+        feindPanzer.draw(screen)
         wände.draw(screen)
         explosions_gruppe.update()
         explosions_gruppe.draw(screen)
@@ -481,3 +675,4 @@ def Main(screen = None):
         pygame.display.flip()
         clock.tick(60)
 
+Main()
