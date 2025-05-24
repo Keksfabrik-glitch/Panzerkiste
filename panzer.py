@@ -218,7 +218,7 @@ class Kugel(pygame.sprite.Sprite):
         self.abprallChance = abprallChance
         self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.winkel)
-        
+
         # Zeit, bis die Kugel freundliche Kollisionen ignoriert (in ms)
         self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # 150 ms ignorieren
     def remove(self):
@@ -318,13 +318,15 @@ class Miene(pygame.sprite.Sprite):
         self.ErstellerLastIn = self.ZeitBisEx - jetzt/1000
         self.toleranz = 0.25
         self.early = False
-
+        self.radius = 8
+        self.rest = self.ZeitBisEx
+        #self.rect = pygame.Rect(pos.x -9, pos.y - 8, 16, 16)
         #self.mienenPos.append({'pos': pos, 'gelegt': jetzt,"von":self.ID, "early":False})
     def update(self):
         jetzt = pygame.time.get_ticks()
         t = (jetzt - self.gelegt) / 1000
-        rest = self.ZeitBisEx - t
-        if rest <= 0:
+        self.rest = self.ZeitBisEx - t
+        if self.rest <= 0:
             explosions_gruppe.add(Explosion(self.pos.x, self.pos.y))
             explosions_sprite = pygame.sprite.Sprite()
             radius = self.explosionsRadius
@@ -338,22 +340,29 @@ class Miene(pygame.sprite.Sprite):
                 if getroffeneWand.zerstörbarkeit:
                     getroffeneWand.schaden(10)
             offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+            for miene in GelegteMienen:
+                diff = miene.pos - self.pos
+                abstand = diff.length()
+                if abstand <= self.explosionsRadius:
+                    miene.early = True
+                    miene.gelegt += (2 - miene.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+
             if explosions_sprite.mask.overlap(player.mask, offset):
                 player.Schaden(2)
             self.kill() 
 
             ##!!! Bei den getroffenem Panzer, nicht immer Player
         else:
-            if rest <= 2:   # letzte 2 Sekunden
+            if self.rest <= 2:   # letzte 2 Sekunden
                 # schnelles Blinken
-                blink = 500 - ((2 - rest) / 2) *100
+                blink = 500 - ((2 - self.rest) / 2) *100
                 blinkend = (jetzt // blink) % 2 == 0
                 farbe = (255, 255, 0) if blinkend else (255, 0, 0)
             else:
                 farbe = (255, 0, 0)  # normal rot, kein Blinken
                 if self.early == False:
                     explosions_sprite = pygame.sprite.Sprite()
-                    radius = 8 # Kugeln sollen nur, wenn sie bei AUF die Miene fliegen, diese Aktivieren. Spieler sollen sie auch im Umkreis aktivieren. Daher unterschiedlicher Radius
+                    radius = self.radius # Kugeln sollen nur, wenn sie bei AUF die Miene fliegen, diese Aktivieren. Spieler sollen sie auch im Umkreis aktivieren. Daher unterschiedlicher Radius
                     explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
                     pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
                     explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
@@ -363,7 +372,7 @@ class Miene(pygame.sprite.Sprite):
                     if getroffeneKugel:
                         getroffeneKugel.remove()
                         self.early = True
-                        self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                        self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
                     explosions_sprite = pygame.sprite.Sprite()
                     radius = self.explosionsRadius
                     explosions_sprite.image = pygame.Surface((radius*2, radius*2), pygame.SRCALPHA)
@@ -373,18 +382,19 @@ class Miene(pygame.sprite.Sprite):
                     offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top) # NUR SPIELER. ANDERE PANZER MÜSSEN AUCH 
                     if explosions_sprite.mask.overlap(player.mask, offset):
                         if player.ID == self.ErstellerID:
-                            if self.ErstellerLastIn - rest >= self.toleranz:
+                            if self.ErstellerLastIn - self.rest >= self.toleranz:
                                 self.early = True
-                                self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                                self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
                                 
-                            self.ErstellerLastIn = rest
-                            if rest <= 4: #4 Sekunden zum rausgehen
+                            self.ErstellerLastIn = self.rest
+                            if self.rest <= self.ZeitBisEx - 4: #4 Sekunden zum rausgehen 
                                 self.early = True
-                                self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-                        else: # Nicht der Leger, also auch keine Vorteile
+                                self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                        else: # Nicht der Leger, also auch keine Vorteile 
                             self.early = True
-                            self.gelegt += (2 - rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-            pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), 8)
+                            self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+           # pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), self.radius)
+            pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), self.radius)
 
 def lade_map(map_data):
     wände.empty()
