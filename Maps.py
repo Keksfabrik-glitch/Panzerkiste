@@ -1,5 +1,5 @@
 
-map1 = {
+map_1 = {
     "walls": [
         {"x": 300, "y": 100, "w": 200, "h": 20, "destroyable": False},
         {"x": 300, "y": 280, "w": 200, "h": 20, "destroyable": False}
@@ -9,7 +9,7 @@ map1 = {
     ],
     "player_start": (100, 100)
 }
-map2 = {
+map_2 = {
     "walls": [
         {"x": 100, "y": 50, "w": 20, "h": 300, "destroyable": True},
         {"x": 200, "y": 100, "w": 20, "h": 250, "destroyable": True},
@@ -22,7 +22,7 @@ map2 = {
     ],
     "player_start": (50, 200)
 }
-map3 = {
+map_3 = {
     "walls": [
         {"x": 100, "y": 100, "w": 600, "h": 20, "destroyable": False},
         {"x": 100, "y": 100, "w": 20, "h": 200, "destroyable": False},
@@ -33,7 +33,7 @@ map3 = {
     "holes": [
         {"x": 400, "y": 200, "radius": 10}
     ],
-    "player_start": (120, 120)
+    "player_start": (150, 150)
 }
 map_4 = {
     "walls": [
