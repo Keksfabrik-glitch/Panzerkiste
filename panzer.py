@@ -24,7 +24,7 @@ kugel_gruppe = pygame.sprite.Group()
 spieler_gruppe = pygame.sprite.Group()
 löcher = pygame.sprite.Group()
 GelegteMienen = pygame.sprite.Group()
-feindPanzer = pygame.sprite.Group()
+feindPanzerGR = pygame.sprite.Group()
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.schuss_cooldown = 250
         self.kugeln = 5
         self.maxKugeln = 5
-        self.kugelSpeed = 10
+        self.kugelSpeed = 10 #bei manchen
         self.nachladezeit = 3
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
@@ -191,27 +191,6 @@ class Player(pygame.sprite.Sprite):
         if self.leben <= 0:
             print("Ende")
             #running = False                                  
-class FeindPanzerManage():
-    def __init__(self):
-        self.panzer =  {}
-    def NeuerPanzer(self,level,typ,position):
-        id = randomNameID().join(str(level))
-        if typ == "stehend": # viel Lebel   # int(min(MAX, MIN + (level - 1) *STEIGUNG))
-            leben = int(min(10, 1 + (level - 1) *0.6)) #steigt: [a,a][b,b][c][d,d]... max 10
-            kannFahren = False
-            geschwindigkeit = 0
-            drehgeschwindigkeit = int(min(12, 2 + (level - 1) *0.4)) #steigt: [a,a,][b,b][c,c,c][d,d]... max 12
-            schuss_cooldown = int(max(50, 500 + (level - 1) *-20)) # sinkt um -20
-            kugeln = int(min(20, 1 + (level - 1) *0.8)) #steigt: [a,a,][b][c][d,d]... max 20 [19]
-            #maxKugeln = kugeln
-            kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
-            nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
-            self.panzer = self.panzer + FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
-            # Mienen Stats und appraller danach noch...
-#Testing
-#FM = FeindPanzerManage()
-#for i in range(1,25):
-    #FM.NeuerPanzer(i,"stehend",(0,0))
 class FeindPanzer(pygame.sprite.Sprite):
 
     def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit):
@@ -242,6 +221,7 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.abpraller = 2
         self.abprallChance = 0.75
         self.mienenPos = []
+
 
         #  Grafik:
         #  Unten
@@ -372,7 +352,32 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.leben -= amount
         if self.leben <= 0:
             print("Ende")
-            #running = False   
+            #running = False 
+
+class FeindPanzerManage():
+    def __init__(self):
+        self.panzer =  []
+    def NeuerPanzer(self,level,typ,position):
+        id = randomNameID().join(str(level))
+        if typ == "stehend": # viel Lebel   # int(min(MAX, MIN + (level - 1) *STEIGUNG))
+            leben = int(min(10, 1 + (level - 1) *0.6)) #steigt: [a,a][b,b][c][d,d]... max 10
+            kannFahren = False
+            geschwindigkeit = 0
+            drehgeschwindigkeit = int(min(12, 2 + (level - 1) *0.4)) #steigt: [a,a,][b,b][c,c,c][d,d]... max 12
+            schuss_cooldown = int(max(50, 500 + (level - 1) *-20)) # sinkt um -20
+            kugeln = int(min(20, 1 + (level - 1) *0.8)) #steigt: [a,a,][b][c][d,d]... max 20 [19]
+            #maxKugeln = kugeln
+            kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
+            nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
+            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
+            self.panzer.append(neuerPanzer)
+            feindPanzerGR.add(neuerPanzer)
+            # Mienen Stats und appraller danach noch...
+#Testing
+FM = FeindPanzerManage()
+#for i in range(1,25):
+FM.NeuerPanzer(1,"stehend",(300,300))
+  
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -621,7 +626,7 @@ def Main(screen = None):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
-    lade_map(M.map_3)
+    lade_map(M.map_test)
     running = True
     clock = pygame.time.Clock()
 
@@ -659,11 +664,11 @@ def Main(screen = None):
             player.kugeln = player.maxKugeln 
         GelegteMienen.update()
         spieler_gruppe.update()
-        feindPanzer.update()
+        feindPanzerGR.update()
         kugel_gruppe.update()
         kugel_gruppe.draw(screen)
         spieler_gruppe.draw(screen)
-        feindPanzer.draw(screen)
+        feindPanzerGR.draw(screen)
         wände.draw(screen)
         explosions_gruppe.update()
         explosions_gruppe.draw(screen)
