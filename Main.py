@@ -25,12 +25,12 @@ while running:
         if wintoast:
             notify('Fehler', 'Multiplayer ist noch nicht verfügbar.', audio='ms-winsoundevent:Notification.IM')
         else:
-            print:("Fehler, Einstellungen sind noch nicht verfügbar.")
+            print("Fehler, Einstellungen sind noch nicht verfügbar.")
     elif auswahl == "Einstellungen":
         if wintoast:
             notify('Fehler', 'Einstellungen sind noch nicht verfügbar.', audio='ms-winsoundevent:Notification.IM')
         else:
-            print:("Fehler, Einstellungen sind noch nicht verfügbar.")
+            print("Fehler, Einstellungen sind noch nicht verfügbar.")
 
 # Ende
 pygame.quit()
