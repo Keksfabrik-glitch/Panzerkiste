@@ -334,6 +334,7 @@ class FeindPanzer(pygame.sprite.Sprite):
             richtung = pygame.Vector2(maus_pos) - self.position
             if richtung.length() != 0:
                 richtung = richtung.normalize()
+                
                 # Abstand von Panzerzentrum plus Kugelgröße (halbe Breite), damit Kugel komplett außerhalb startet
                 panzer_radius = panzer_größe * 0.5  # ca. halbe Panzergröße (Radius)
                 kugel_radius = 10 / 2  # Kugelgröße ist 10x4, also halbe Breite=5
@@ -402,18 +403,22 @@ class Explosion(pygame.sprite.Sprite):
             else:
                 self.kill()       
 class Kugel(pygame.sprite.Sprite):
-    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75):
+    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75,winkel = None):
         super().__init__()
         self.image = pygame.Surface((10, 4))
         self.image.fill(ROT)
         self.letztes = 0
+
         self.original_image = self.image
         self.rect = self.image.get_rect(center=start_pos)
         self.richtung = pygame.Vector2(richtung).normalize()
         self.geschwindigkeit = geschwindigkeit
         self.abpraller = abpraller
         self.abprallChance = abprallChance
-        self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
+        if winkel is not None:
+            self.winkel = winkel
+        else:
+            self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.winkel)
 
         # Zeit, bis die Kugel freundliche Kollisionen ignoriert (in ms)
