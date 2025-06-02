@@ -193,7 +193,7 @@ class Player(pygame.sprite.Sprite):
             #running = False                                  
 class FeindPanzer(pygame.sprite.Sprite):
 
-    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit):
+    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe):
         super().__init__()
         self.kannFahren = kannFahren
         self.Punkte = 0
@@ -212,6 +212,7 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.nachladezeit = nachladezeit
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
+        self.farbe = farbe
         
         self.mieneZeit = 15
         self.mienenAnzahl = -1
@@ -226,11 +227,11 @@ class FeindPanzer(pygame.sprite.Sprite):
         #  Grafik:
         #  Unten
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
-        self.body_surface.fill(GRÜN)
+        self.body_surface.fill(farbe)
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
-        self.turm.fill(BLAU)
+        self.turm.fill(farbe*(10,10,10)
         pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
         #Kanone
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
@@ -376,6 +377,7 @@ class FeindPanzerManage():
             #maxKugeln = kugeln
             kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
             nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
+            farbe = (222, 166, 44)
             neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
             self.panzer.append(neuerPanzer)
             feindPanzerGR.add(neuerPanzer)
@@ -632,7 +634,7 @@ def lade_map(map_data):
 def Main(screen = None):
     #feindPanzer.add(Player(10,10))
     global player, running
-    WIDTH, HEIGHT = 800, 400
+    global WIDTH, HEIGHT
     if screen is None:
         screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
