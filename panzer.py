@@ -193,7 +193,7 @@ class Player(pygame.sprite.Sprite):
             #running = False                                  
 class FeindPanzer(pygame.sprite.Sprite):
 
-    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe):
+    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit):
         super().__init__()
         self.kannFahren = kannFahren
         self.Punkte = 0
@@ -212,7 +212,6 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.nachladezeit = nachladezeit
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
-        self.farbe = farbe
         
         self.mieneZeit = 15
         self.mienenAnzahl = -1
@@ -227,11 +226,11 @@ class FeindPanzer(pygame.sprite.Sprite):
         #  Grafik:
         #  Unten
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
-        self.body_surface.fill(farbe)
+        self.body_surface.fill(GRÜN)
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
-        self.turm.fill(farbe*(10,10,10))
+        self.turm.fill(BLAU)
         pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
         #Kanone
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
@@ -280,16 +279,16 @@ class FeindPanzer(pygame.sprite.Sprite):
         rad = math.radians(self.richtung)
         bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
         neue_pos = self.position + bewegung
-        spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
+        panzer_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
 
         loch_kollision = False
         for loch in löcher:
             abstand = neue_pos.distance_to(loch.rect.center)
-            if abstand-20 <= loch.radius:
+            if abstand - 20 <= loch.radius:
                 loch_kollision = True
                 break
 
-        wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
+        wand_kollision = any(panzer_rect.colliderect(w.rect) for w in wände)
 
         if not wand_kollision and not loch_kollision:
             self.position = neue_pos
@@ -297,18 +296,17 @@ class FeindPanzer(pygame.sprite.Sprite):
     def goS(self):
         rad = math.radians(self.richtung)
         bewegung = pygame.Vector2(math.sin(rad), -math.cos(rad)) * self.geschwindigkeit / 10
-        neue_pos = self.position - bewegung
-        spieler_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
+        neue_pos = self.position + bewegung
+        panzer_rect = pygame.Rect(neue_pos.x - 20, neue_pos.y - 20, 40, 40)
 
         loch_kollision = False
         for loch in löcher:
             abstand = neue_pos.distance_to(loch.rect.center)
-            #if abstand -(loch.radius /2) < loch.radius:
-            if abstand-20 <= loch.radius: # panzer mitte
+            if abstand - 20 <= loch.radius:
                 loch_kollision = True
                 break
 
-        wand_kollision = any(spieler_rect.colliderect(w.rect) for w in wände)
+        wand_kollision = any(panzer_rect.colliderect(w.rect) for w in wände)
 
         if not wand_kollision and not loch_kollision:
             self.position = neue_pos
@@ -377,8 +375,7 @@ class FeindPanzerManage():
             #maxKugeln = kugeln
             kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
             nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
-            farbe = (222, 166, 44)
-            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe)
+            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
             self.panzer.append(neuerPanzer)
             feindPanzerGR.add(neuerPanzer)
             # Mienen Stats und appraller danach noch...
@@ -479,10 +476,22 @@ class Kugel(pygame.sprite.Sprite):
         if jetzt >= self.freund_ignorieren_bis:
             if pygame.sprite.collide_mask(self, player):
                 player.Schaden()
-                self.kill()
                 explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                self.kill()
                 return
-
+        
+            for Spieler in spieler_gruppe :
+                if pygame.sprite.collide_mask(self, Spieler):
+                    Spieler.Schaden()
+                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                    self.kill()
+                    return
+            for Feind in feindPanzerGR :
+                if pygame.sprite.collide_mask(self, Feind):
+                    Feind.Schaden()
+                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                    self.kill()
+                    return
         # Bewegung ausführen
         self.rect = neue_rect
 class Wall(pygame.sprite.Sprite):
@@ -634,7 +643,7 @@ def lade_map(map_data):
 def Main(screen = None):
     #feindPanzer.add(Player(10,10))
     global player, running
-    global WIDTH, HEIGHT
+    WIDTH, HEIGHT = 800, 400
     if screen is None:
         screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
