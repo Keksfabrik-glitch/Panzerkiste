@@ -378,7 +378,7 @@ class FeindPanzerManage():
             kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
             nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
             farbe = (222, 166, 44)
-            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
+            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe)
             self.panzer.append(neuerPanzer)
             feindPanzerGR.add(neuerPanzer)
             # Mienen Stats und appraller danach noch...
