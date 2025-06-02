@@ -329,26 +329,32 @@ class FeindPanzer(pygame.sprite.Sprite):
                     GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
                     self.letzte_mine_zeit = jetzt
                     
-    def Schuss(self, maus_pos, jetzt):
+    def Schuss(self, maus_pos=None, jetzt=None, winkel=None):
         if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
-            richtung = pygame.Vector2(maus_pos) - self.position
-            if richtung.length() != 0:
+            if winkel is not None:
+                rad = math.radians(winkel)
+                richtung = pygame.Vector2(math.cos(rad), -math.sin(rad))
+            elif maus_pos is not None:
+                richtung = pygame.Vector2(maus_pos) - self.position
+                if richtung.length() == 0:
+                    return
                 richtung = richtung.normalize()
-                
-                # Abstand von Panzerzentrum plus Kugelgröße (halbe Breite), damit Kugel komplett außerhalb startet
-                panzer_radius = panzer_größe * 0.5  # ca. halbe Panzergröße (Radius)
-                kugel_radius = 10 / 2  # Kugelgröße ist 10x4, also halbe Breite=5
-                abstand = panzer_radius + kugel_radius + 2  # 2 Pixel extra als Puffer
+            else:
+                return  # Weder Winkel noch Mausposition
 
-                start_pos = self.position + richtung * abstand
+        panzer_radius = panzer_größe * 0.5
+        kugel_radius = 5
+        abstand = panzer_radius + kugel_radius + 2
 
-                neue_kugel = Kugel(start_pos, richtung,self.kugelSpeed,
-                                   abpraller=self.abpraller, abprallChance=self.abprallChance)
-                kugel_gruppe.add(neue_kugel)
-                self.kugeln -= 1
-                self.letzterEinzelschuss = jetzt
-                if self.kugeln == 0:
-                    self.letzterSchuss = jetzt
+        start_pos = self.position + richtung * abstand
+
+        neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
+                           abpraller=self.abpraller, abprallChance=self.abprallChance)
+        kugel_gruppe.add(neue_kugel)
+        self.kugeln -= 1
+        self.letzterEinzelschuss = jetzt
+        if self.kugeln == 0:
+            self.letzterSchuss = jetzt
     def Schaden(self,amount=1):
         self.leben -= amount
         if self.leben <= 0:
