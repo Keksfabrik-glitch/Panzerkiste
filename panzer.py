@@ -231,7 +231,7 @@ class FeindPanzer(pygame.sprite.Sprite):
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
-        self.turm.fill(farbe*(10,10,10)
+        self.turm.fill(farbe*(10,10,10))
         pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
         #Kanone
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
