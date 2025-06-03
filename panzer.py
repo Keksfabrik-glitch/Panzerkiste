@@ -179,8 +179,9 @@ class Player(pygame.sprite.Sprite):
 
                 start_pos = self.position + richtung * abstand
 
-                neue_kugel = Kugel(start_pos, richtung,self.kugelSpeed,
-                                   abpraller=self.abpraller, abprallChance=self.abprallChance)
+                neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
+                                   abpraller=self.abpraller, abprallChance=self.abprallChance,
+                                   shooter_id=self.ID)
                 kugel_gruppe.add(neue_kugel)
                 self.kugeln -= 1
                 self.letzterEinzelschuss = jetzt
@@ -348,7 +349,8 @@ class FeindPanzer(pygame.sprite.Sprite):
         start_pos = self.position + richtung * abstand
 
         neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
-                           abpraller=self.abpraller, abprallChance=self.abprallChance)
+                           abpraller=self.abpraller, abprallChance=self.abprallChance,
+                           shooter_id=self.ID)
         kugel_gruppe.add(neue_kugel)
         self.kugeln -= 1
         self.letzterEinzelschuss = jetzt
@@ -408,92 +410,85 @@ class Explosion(pygame.sprite.Sprite):
             else:
                 self.kill()       
 class Kugel(pygame.sprite.Sprite):
-    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75,winkel = None):
+    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75, winkel=None, shooter_id=None):
         super().__init__()
         self.image = pygame.Surface((10, 4))
         self.image.fill(ROT)
-        self.letztes = 0
-
         self.original_image = self.image
         self.rect = self.image.get_rect(center=start_pos)
         self.richtung = pygame.Vector2(richtung).normalize()
         self.geschwindigkeit = geschwindigkeit
         self.abpraller = abpraller
         self.abprallChance = abprallChance
+
+        self.shooter_id = shooter_id
+        self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # Nur kurz ignorieren
+
         if winkel is not None:
             self.winkel = winkel
         else:
             self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.winkel)
 
-        # Zeit, bis die Kugel freundliche Kollisionen ignoriert (in ms)
-        self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # 150 ms ignorieren
     def remove(self):
         self.kill()
+
     def update(self):
-        bewegung = self.richtung * self.geschwindigkeit
-        neue_rect = self.rect.move(bewegung)
-
-        # Kollision mit Wänden prüfen
-        getroffeneWand = pygame.sprite.spritecollideany(self, wände, collided=pygame.sprite.collide_mask)
-        # Debounce muss noch hin
-        if getroffeneWand:
-            jetzt = pygame.time.get_ticks()
-            if (jetzt - self.letztes)/1000 >= 0.5:
-                self.letztes = jetzt	
-                if getroffeneWand.zerstörbarkeit:
-                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                    getroffeneWand.schaden(1)
-                    self.kill()
-                else:
-                    if self.abpraller > 0 and random.random() <= self.abprallChance:
-                        if getroffeneWand.rect.width > getroffeneWand.rect.height:
-                            self.richtung.y *= -1
-                        else:
-                            self.richtung.x *= -1
-
-                        self.abpraller -= 1
-                        self.geschwindigkeit -= 0.25
-                        self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
-                        self.image = pygame.transform.rotate(self.original_image, self.winkel)   
-                        self.rect = self.rect.move(self.richtung * self.geschwindigkeit)
-                    else:
-                        self.kill()
-                        explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-            return  # Wurde Wand getroffen, nicht weiter bewegen
-
-        puffer = 20
-        erweiterter_bereich = pygame.Rect(
-            -puffer, -puffer,
-            WIDTH + 2 * puffer, HEIGHT + 2 * puffer
-        )
-        if not erweiterter_bereich.collidepoint(neue_rect.center):
-            self.kill()
-            return
-
-        # Kollision mit Spieler prüfen — aber nur wenn Zeit abgelaufen ist
+        anzahl_schritte = max(1, int(self.geschwindigkeit))
+        teil_bewegung = self.richtung * (self.geschwindigkeit / anzahl_schritte)
         jetzt = pygame.time.get_ticks()
-        if jetzt >= self.freund_ignorieren_bis:
-            if pygame.sprite.collide_mask(self, player):
-                player.Schaden()
-                explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                self.kill()
-                return
-        
-            for Spieler in spieler_gruppe :
-                if pygame.sprite.collide_mask(self, Spieler):
-                    Spieler.Schaden()
+
+        for _ in range(anzahl_schritte):
+            neues_rect = self.rect.move(teil_bewegung)
+            self.rect = neues_rect
+            # Wandkollision
+            wand = pygame.sprite.spritecollideany(self, wände, collided=pygame.sprite.collide_mask)
+            if wand:
+                if wand.zerstörbarkeit:
+                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                    wand.schaden(1)
+                    self.kill()
+                    return
+                elif self.abpraller > 0 and random.random() <= self.abprallChance:
+                    if wand.rect.width > wand.rect.height:
+                        self.richtung.y *= -1
+                    else:
+                        self.richtung.x *= -1
+
+                    self.abpraller -= 1
+                    self.geschwindigkeit *= 0.85
+                    self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
+                    self.image = pygame.transform.rotate(self.original_image, self.winkel)
+                    self.rect = self.rect.move(self.richtung * self.geschwindigkeit / anzahl_schritte)
+                else:
                     explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
                     self.kill()
                     return
-            for Feind in feindPanzerGR :
-                if pygame.sprite.collide_mask(self, Feind):
-                    Feind.Schaden()
-                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                    self.kill()
-                    return
-        # Bewegung ausführen
-        self.rect = neue_rect
+
+            if jetzt >= self.freund_ignorieren_bis:
+                # Nach Ablauf der Schutzzeit: jeder darf getroffen werden
+                for panzer in list(spieler_gruppe) + list(feindPanzerGR):
+                    if pygame.sprite.collide_mask(self, panzer):
+                        panzer.Schaden()
+                        explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                        self.kill()
+                        return
+            else:
+                # Während Schutzzeit: Shooter ignorieren
+                for panzer in list(spieler_gruppe) + list(feindPanzerGR):
+                    if panzer.ID == self.shooter_id:
+                        continue  # eigenen Schützen ignorieren
+                    if pygame.sprite.collide_mask(self, panzer):
+                        panzer.Schaden()
+                        explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+                        self.kill()
+                        return
+
+        # Rand verlassen
+        puffer = 20
+        erweiterter_bereich = pygame.Rect(-puffer, -puffer, WIDTH + 2 * puffer, HEIGHT + 2 * puffer)
+        if not erweiterter_bereich.collidepoint(self.rect.center):
+            self.kill()
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=8):
         super().__init__()
