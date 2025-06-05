@@ -8,7 +8,7 @@ try:
 except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
-
+pygame.init()
 # Setup für Startbildschirm
 def Main(screen=None):
     BREITE = 600  # screenbreite für Startbildschirm
