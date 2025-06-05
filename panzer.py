@@ -1,3 +1,4 @@
+#+ tuple(min(c + amount, 255) for c in color)
 import pygame
 import math
 import random
@@ -28,6 +29,11 @@ feindPanzerGR = pygame.sprite.Group()
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
+def FarbeVerändern(farbe, amount):
+    ret = []
+    for ft in farbe:
+        ret.append(max(min(255, ft + amount),0))
+    return tuple(ret)
 def randomNameID(länge=5,idOrName=True):
     
     if idOrName == True:
@@ -35,9 +41,10 @@ def randomNameID(länge=5,idOrName=True):
         return "".join(random.choices(Zeichen, k = länge))
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position,Name):
+    def __init__(self, position,Name,farbe):
         super().__init__()
         self.Punkte = 0
+        self.farbe = farbe
         self.ID = Name
         self.position = pygame.Vector2(position)
         self.richtung = 90
@@ -64,15 +71,15 @@ class Player(pygame.sprite.Sprite):
         #  Grafik:
         #  Unten
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
-        self.body_surface.fill(GRÜN)
+        self.body_surface.fill(FarbeVerändern(self.farbe,-25))
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
-        self.turm.fill(BLAU)
+        self.turm.fill(self.farbe)
         pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
         #Kanone
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
-        pygame.draw.rect(self.kanone, ROT, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
+        pygame.draw.rect(self.kanone, FarbeVerändern(self.farbe,25), (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
         pygame.draw.rect(self.kanone, SCHWARZ, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
         # Platzhalter (wird bei update() gesetzt)
         self.image = pygame.Surface((1, 1), pygame.SRCALPHA)
@@ -194,7 +201,7 @@ class Player(pygame.sprite.Sprite):
             #running = False                                  
 class FeindPanzer(pygame.sprite.Sprite):
 
-    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit):
+    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe):
         super().__init__()
         self.kannFahren = kannFahren
         self.Punkte = 0
@@ -213,6 +220,7 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.nachladezeit = nachladezeit
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
+        self.farbe = farbe
         
         self.mieneZeit = 15
         self.mienenAnzahl = -1
@@ -227,15 +235,15 @@ class FeindPanzer(pygame.sprite.Sprite):
         #  Grafik:
         #  Unten
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
-        self.body_surface.fill(GRÜN)
+        self.body_surface.fill(FarbeVerändern(farbe,-25))
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
-        self.turm.fill(BLAU)
+        self.turm.fill(farbe)
         pygame.draw.rect(self.turm, SCHWARZ, (0, 0, panzer_größe // 2.15, panzer_größe // 2.15), 2)
         #Kanone
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
-        pygame.draw.rect(self.kanone, ROT, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
+        pygame.draw.rect(self.kanone, FarbeVerändern(farbe,25), (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
         pygame.draw.rect(self.kanone, SCHWARZ, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
         # Platzhalter (wird bei update() gesetzt)
         self.image = pygame.Surface((1, 1), pygame.SRCALPHA)
@@ -377,7 +385,8 @@ class FeindPanzerManage():
             #maxKugeln = kugeln
             kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
             nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
-            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit)
+            farbe = (222, 166, 44)
+            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe)
             self.panzer.append(neuerPanzer)
             feindPanzerGR.add(neuerPanzer)
             # Mienen Stats und appraller danach noch...
@@ -631,7 +640,7 @@ def lade_map(map_data):
 
     # Spieler neu platzieren
     global player
-    player = Player(map_data["player_start"], "Spieler1")
+    player = Player(map_data["player_start"], "Spieler1",(23, 133, 227))
     spieler_gruppe.empty()
     spieler_gruppe.add(player)
 
