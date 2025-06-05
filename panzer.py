@@ -655,7 +655,7 @@ def Main(screen = None):
     lade_map(M.map_test)
     running = True
     clock = pygame.time.Clock()
-
+    font = pygame.font.SysFont(None, 24)
     while running:
         screen.fill(SAND)
         löcher.draw(screen)
@@ -699,7 +699,7 @@ def Main(screen = None):
         explosions_gruppe.update()
         explosions_gruppe.draw(screen)
 
-        font = pygame.font.SysFont(None, 24)
+        
         screen.blit(font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ), (30, 30))
         screen.blit(font.render("Leben: {}".format(player.leben), True, SCHWARZ), (30, 55))
 
