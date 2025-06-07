@@ -366,8 +366,7 @@ class FeindPanzer(pygame.sprite.Sprite):
             self.letzterSchuss = jetzt
     def Schaden(self,amount=1):
         self.leben -= amount
-        if self.leben <= 0:
-            print("Ende")
+        #if self.leben <= 0:
             #running = False 
 
 class FeindPanzerManage():
@@ -419,85 +418,118 @@ class Explosion(pygame.sprite.Sprite):
             else:
                 self.kill()       
 class Kugel(pygame.sprite.Sprite):
-    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=0.75, winkel=None, shooter_id=None):
+    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=1, shooter_id=None):
         super().__init__()
-        self.image = pygame.Surface((10, 4))
-        self.image.fill(ROT)
-        self.original_image = self.image
+        self.original_image = pygame.Surface((14, 7), pygame.SRCALPHA)
+        pygame.draw.rect(self.original_image, ROT, self.original_image.get_rect())
+        self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center=start_pos)
-        self.richtung = pygame.Vector2(richtung).normalize()
+
+        self.position = pygame.math.Vector2(start_pos)
+        self.richtung = pygame.math.Vector2(richtung).normalize()
         self.geschwindigkeit = geschwindigkeit
         self.abpraller = abpraller
         self.abprallChance = abprallChance
-
         self.shooter_id = shooter_id
-        self.freund_ignorieren_bis = pygame.time.get_ticks() + 150  # Nur kurz ignorieren
+        self.freund_ignorieren_bis = pygame.time.get_ticks() + 150
 
-        if winkel is not None:
-            self.winkel = winkel
-        else:
-            self.winkel = -richtung.angle_to(pygame.Vector2(1, 0))
-        self.image = pygame.transform.rotate(self.original_image, self.winkel)
-
-    def remove(self):
+        self.update_rotation()
+    def remove_self(self):
         self.kill()
+    def update_rotation(self):
+        winkel = self.richtung.angle_to(pygame.Vector2(1, 0))
+        self.image = pygame.transform.rotate(self.original_image, winkel)
+        self.rect = self.image.get_rect(center=self.position)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
-        anzahl_schritte = max(1, int(self.geschwindigkeit))
-        teil_bewegung = self.richtung * (self.geschwindigkeit / anzahl_schritte)
         jetzt = pygame.time.get_ticks()
 
-        for _ in range(anzahl_schritte):
-            neues_rect = self.rect.move(teil_bewegung)
-            self.rect = neues_rect
-            # Wandkollision
-            wand = pygame.sprite.spritecollideany(self, wände, collided=pygame.sprite.collide_mask)
-            if wand:
-                if wand.zerstörbarkeit:
-                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                    wand.schaden(1)
-                    self.kill()
-                    return
-                elif self.abpraller > 0 and random.random() <= self.abprallChance:
-                    if wand.rect.width > wand.rect.height:
-                        self.richtung.y *= -1
-                    else:
-                        self.richtung.x *= -1
+        # Bewegung in kleinen Schritten für genaue Kollision
+        steps = int(self.geschwindigkeit)
+        if steps < 1:
+            steps = 1
+        step_vector = self.richtung * (self.geschwindigkeit / steps)
 
-                    self.abpraller -= 1
-                    self.geschwindigkeit *= 0.85
-                    self.winkel = -self.richtung.angle_to(pygame.Vector2(1, 0))
-                    self.image = pygame.transform.rotate(self.original_image, self.winkel)
-                    self.rect = self.rect.move(self.richtung * self.geschwindigkeit / anzahl_schritte)
-                else:
-                    explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                    self.kill()
-                    return
+        for _ in range(steps):
+            self.position += step_vector
+            self.rect.center = self.position
+            self.update_rotation()
 
-            if jetzt >= self.freund_ignorieren_bis:
-                # Nach Ablauf der Schutzzeit: jeder darf getroffen werden
-                for panzer in list(spieler_gruppe) + list(feindPanzerGR):
-                    if pygame.sprite.collide_mask(self, panzer):
-                        panzer.Schaden()
-                        explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
+            # --- Wandkollision ---
+            for wand in wände:
+                if self.rect.colliderect(wand.rect):
+                    offset = (wand.rect.left - self.rect.left, wand.rect.top - self.rect.top)
+                    overlap = self.mask.overlap(wand.mask, offset)
+
+                    if overlap:  # tatsächliche Pixelkollision
+                        self.position -= step_vector  # Schritt zurück
+                        self.rect.center = self.position
+                        self.update_rotation()
+
+                        if wand.zerstörbarkeit:
+                            explosions_gruppe.add(Explosion(*self.rect.center))
+                            wand.schaden(1)
+                            self.kill()
+                            return
+
+                        # Abprallverhalten
+                        if self.abpraller > 0 and self.abprallChance  > random.random():
+                            normal = self.get_normal_vector(wand)
+                            self.richtung = self.richtung.reflect(normal)
+                            self.abpraller -= 1
+                            self.geschwindigkeit *= 0.85
+                            self.update_rotation()
+                            return
+                        else:
+                            explosions_gruppe.add(Explosion(*self.rect.center))
+                            self.kill()
+                            return
+
+            # --- Gegnerkollision ---
+            for ziel in spieler_gruppe.sprites() + feindPanzerGR.sprites():
+                if ziel.ID == self.shooter_id and jetzt < self.freund_ignorieren_bis:
+                    continue
+
+                if self.rect.colliderect(ziel.rect):
+                    offset = (ziel.rect.left - self.rect.left, ziel.rect.top - self.rect.top)
+                    if self.mask.overlap(ziel.mask, offset):
+                        ziel.Schaden()
+                        explosions_gruppe.add(Explosion(*self.rect.center))
                         self.kill()
                         return
-            else:
-                # Während Schutzzeit: Shooter ignorieren
-                for panzer in list(spieler_gruppe) + list(feindPanzerGR):
-                    if panzer.ID == self.shooter_id:
-                        continue  # eigenen Schützen ignorieren
-                    if pygame.sprite.collide_mask(self, panzer):
-                        panzer.Schaden()
-                        explosions_gruppe.add(Explosion(self.rect.centerx, self.rect.centery))
-                        self.kill()
-                        return
 
-        # Rand verlassen
-        puffer = 20
-        erweiterter_bereich = pygame.Rect(-puffer, -puffer, WIDTH + 2 * puffer, HEIGHT + 2 * puffer)
-        if not erweiterter_bereich.collidepoint(self.rect.center):
-            self.kill()
+            # --- Spielfeld verlassen ---
+            if not screen.get_rect().inflate(40, 40).collidepoint(self.rect.center):
+                self.kill()
+                return
+
+    def get_normal_vector(self, hindernis):
+        # Berechne den exakten Kollisionspunkt via Maske
+        offset = (hindernis.rect.left - self.rect.left, hindernis.rect.top - self.rect.top)
+        overlap_point = self.mask.overlap(hindernis.mask, offset)
+        if not overlap_point:
+            return pygame.math.Vector2(0, -1)  # fallback nach oben
+
+        # Erzeuge eine Gradientmaske der Hindernis-Maske für "Normale"
+        # Suche Nachbarn um den Kollisionspunkt herum
+        x, y = overlap_point
+        grad = pygame.math.Vector2(0, 0)
+
+        # Nachbarpixel in der Hindernis-Maske abfragen
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            try:
+                if hindernis.mask.get_at((x + dx, y + dy)) == 0:
+                    grad += pygame.math.Vector2(dx, dy)
+            except IndexError:
+                pass
+
+        if grad.length_squared() == 0:
+            # Kein Rand gefunden, also fallback
+            grad = pygame.math.Vector2(self.rect.center) - pygame.math.Vector2(hindernis.rect.center)
+
+        return grad.normalize()
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=8):
         super().__init__()
@@ -629,10 +661,10 @@ def lade_map(map_data):
         wände.add(Wall(wand["x"], wand["y"], wand["w"], wand["h"], wand.get("destroyable", False)))
 
     # Immer die vier Randwände laden
-    wände.add(Wall(0, 0, WIDTH, 2))                  # Oben
-    wände.add(Wall(0, HEIGHT - 2, WIDTH, 2))         # Unten
-    wände.add(Wall(0, 0, 2, HEIGHT))                 # Links
-    wände.add(Wall(WIDTH - 2, 0, 2, HEIGHT))         # Rechts
+    wände.add(Wall(0, -2, WIDTH, 4))                  # Oben
+    wände.add(Wall(-2, HEIGHT - 2, WIDTH, 4))         # Unten
+    wände.add(Wall(-2, 0, 4, HEIGHT))                 # Links
+    wände.add(Wall(WIDTH - 2, 0, 4, HEIGHT))         # Rechts
 
     # Löcher laden
     for loch in map_data.get("holes", []):
@@ -687,7 +719,8 @@ def Main(screen = None):
             player.Schuss(maus_pos, jetzt)
 
         if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
-            player.kugeln = player.maxKugeln 
+            player.kugeln = player.maxKugeln
+
         GelegteMienen.update()
         spieler_gruppe.update()
         feindPanzerGR.update()
