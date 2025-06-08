@@ -1,7 +1,7 @@
 #Speicher
 import json
 
-def speichere_daten(daten, dateiname):
+def speichere_daten(dateiname, daten):
     with open(dateiname, "w") as f:
         json.dump(daten, f, indent=4)
 

@@ -16,8 +16,8 @@ def registrieren (nutzername,passwort):
 
 
     if nutzername in daten: #Ist Nutzername Vergeben ?
-        return "Nutzername bereits vergeben."
-    else:
+        return False,"Nutzername bereits vergeben."
+    else: #Wenn nein wird neuer Account angelegt
         daten[nutzername] = {
             "passwort": hash_passwort(passwort),
             "stats": {
@@ -37,19 +37,22 @@ def registrieren (nutzername,passwort):
                 "explosionsRadius": 40
             }
         }
-    #Wenn nein wird neuer Account angelegt
+        Sp.speichere_daten(Speicherort,daten)
+        return True,"Erfolgreich Registriert"
+
 
 def anmelden (nutzername,passwort):
     try :
         daten = Sp.lade_daten(Speicherort)
     except :
-        return "Noch keine Nutzer definiert."
+        return False,"Noch keine Nutzer definiert."
     if nutzername in daten:  # Ist Nutzername Vergeben ?
         if daten[nutzername]["passwort"] == hash_passwort(passwort): #Es wird überprüft ob Passwort zu Nutzername passt
-            return daten[nutzername] # Account Daten werden zurückgegeben
+            return True,daten[nutzername]["stats"] # Account Daten werden zurückgegeben
     else:
-        return "Nutzername nicht vergeben."
-
+        return False,"Nutzername nicht vergeben."
+passt , statment = anmelden ("test","1234567")
+print(statment)
 def Main (screen = None):
     AC_BREITE = 600
     AC_HOEHE = 800

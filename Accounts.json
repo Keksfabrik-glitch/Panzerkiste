@@ -1,0 +1,21 @@
+{
+    "test": {
+        "passwort": "8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414",
+        "stats": {
+            "leben": 3,
+            "abpraller": 2,
+            "geschwindigkeit": 10,
+            "drehgeschwindigkeit": 5,
+            "schuss_cooldown": 250,
+            "kugeln": 5,
+            "maxKugeln": 5,
+            "kugelSpeed": 10,
+            "nachladezeit": 3,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mine_cooldown": 5,
+            "explosionsRadius": 40
+        }
+    }
+}
