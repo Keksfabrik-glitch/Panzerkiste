@@ -42,6 +42,18 @@ def FarbPreisBerechnen(Farbe):
     print(s,v)
     print(preis,int(preis))
     print("---")
+
+class Slider(pygame.sprite.Sprite):
+    def __init__(self, x, y, länge,value,max,min,steps):
+        super().__init__()
+        self.pos = (x,y)
+        self.länge = länge
+        self.value = value
+        self.max = max
+        self.min = min
+        self.steps = steps
+
+
 def Main(screen=None):
     BREITE = 100*16  # screenbreite für Startbildschirm
     HOEHE = 100*9   # screenhöhe für Startbildschirm
@@ -57,17 +69,19 @@ def Main(screen=None):
     WEIß = (255, 255, 255)  # Weiße Farbe für nicht selektierte Optionen
 
     laeuft = True
-    screensurface = pygame.display.get_surface ()
+    #screensurface = pygame.display.get_surface ()
     clock = pygame.time.Clock()
-    image = pygame.image.load ("./ColourPicture.bmp")
-    image_rect = image.get_rect()
+    #image = pygame.image.load ("./ColourPicture.bmp")
+    #image_rect = image.get_rect()
 
     mouseUP = True
     farbe = (0,0,0,0)
+    FarbTon= (255,0,0)
+    FarbWahlHSVBereichGröße = (300,250)
     while laeuft:
         #screen.blit(hintergrund, (0, 0))
         screen.fill(SAND)
-        screen.blit (image, image_rect)
+        #screen.blit (image, image_rect)
         #pygame.display.flip()
         for event in pygame.event.get ():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -76,10 +90,22 @@ def Main(screen=None):
                 mouseUP = True
         if mouseUP == False: # Maustaste gedrückt
             mouse = pygame.mouse.get_pos()
-            if image_rect.collidepoint(mouse):  # Maus über der Auswahlfläche
-                farbe = screensurface.get_at(mouse)
-                FarbPreisBerechnen(farbe)
-        farbPreview = pygame.Rect(100, 100, 50, 50)
+            #if image_rect.collidepoint(mouse):  # Maus über der Auswahlfläche
+            #    farbe = screensurface.get_at(mouse)
+             #   FarbPreisBerechnen(farbe)
+        surf = pygame.Surface((1, 2))
+        surf.fill((255,255,255))
+        surf.set_at((0, 1), (0, 0,0))
+        surf = pygame.transform.smoothscale(surf, FarbWahlHSVBereichGröße)
+
+        surf2 = pygame.Surface((2,1))
+        surf2.fill((255,255,255))
+        surf2.set_at((1, 0), (FarbTon))
+        surf2 = pygame.transform.smoothscale(surf2, (FarbWahlHSVBereichGröße))
+        surf.blit(surf2, (0, 0), special_flags=pygame.BLEND_MULT)
+        screen.blit(surf, (0, 0))
+        
+        farbPreview = pygame.Rect(325, 200, 50, 50)
         pygame.draw.rect(screen, farbe, farbPreview, border_radius=10)
         pygame.draw.rect(screen, (0,0,0), farbPreview, width=3, border_radius=10)
         pygame.display.flip()   
