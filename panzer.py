@@ -472,7 +472,7 @@ class Kugel(pygame.sprite.Sprite):
                             wand.schaden(1)
                             self.kill()
                             return
-
+                        
                         # Abprallverhalten
                         if self.abpraller > 0 and self.abprallChance  > random.random():
                             normal = self.get_normal_vector(wand)
