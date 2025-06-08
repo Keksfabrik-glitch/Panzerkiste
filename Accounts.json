@@ -2,7 +2,7 @@
     "test": {
         "passwort": "8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414",
         "stats": {
-            "leben": 3,
+            "leben": 1,
             "abpraller": 2,
             "geschwindigkeit": 10,
             "drehgeschwindigkeit": 5,
@@ -16,6 +16,25 @@
             "mienenAnzahl": -1,
             "mine_cooldown": 5,
             "explosionsRadius": 40
+        }
+    },
+    "debug_mode": {
+        "passwort": "8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414",
+        "stats": {
+            "leben": 1000,
+            "abpraller": 100,
+            "geschwindigkeit": 100,
+            "drehgeschwindigkeit": 5,
+            "schuss_cooldown": 0,
+            "kugeln": 10000,
+            "maxKugeln": 10000,
+            "kugelSpeed": 10,
+            "nachladezeit": 0,
+            "abprallChance": 1,
+            "mieneZeit": 0,
+            "mienenAnzahl": -1,
+            "mine_cooldown": 0,
+            "explosionsRadius": 100
         }
     }
 }
