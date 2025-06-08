@@ -1,7 +1,7 @@
 
 import pygame
 import colorsys
-
+import math
 from time import sleep
 try:
     from win11toast import toast, notify, update_progress
@@ -28,10 +28,20 @@ def FarbPreisBerechnen(Farbe):
     r, g, b = r/255, g/255, b/255
     h, s, v = colorsys.rgb_to_hsv(r, g, b)
     s,v = s*100,v*100
-    Pasteleck = [(32, 95),(32, 58),(95, 74),(70, 95)]
+    PastelEck = [(32, 95),(32, 58),(95, 74),(70, 95)]
     Mitte = (57.25, 80.5)    
+    FarbPunkt = (s,v)
+    max_entfernung = 0 # 
+    for pastell in PastelEck:
+        if math.dist(Mitte, pastell) > max_entfernung:
+            max_entfernung = math.dist(Mitte, pastell)
+    entfernung = math.dist(Mitte, FarbPunkt)
+    entfernung = min(entfernung, max_entfernung)
+    f = entfernung / max_entfernung
+    preis = PastelMaxAufpreis - f #* (PastelMaxAufpreis - BASIS_PREIS)
     print(s,v)
-
+    print(preis,int(preis))
+    print("---")
 def Main(screen=None):
     BREITE = 100*16  # screenbreite für Startbildschirm
     HOEHE = 100*9   # screenhöhe für Startbildschirm
@@ -75,4 +85,4 @@ def Main(screen=None):
         pygame.display.flip()   
         clock.tick(60)
 
-#Main()
+Main()
