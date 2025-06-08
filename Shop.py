@@ -55,16 +55,16 @@ class Slider(pygame.sprite.Sprite):
 
 
 def Main(screen=None):
-    BREITE = 100*16  # screenbreite für Startbildschirm
-    HOEHE = 100*9   # screenhöhe für Startbildschirm
+    SH_BREITE = 100*16  # screenbreite für Startbildschirm
+    SH_HOEHE = 100*9   # screenhöhe für Startbildschirm
 
     if screen is None:
-        screen = pygame.display.set_mode((BREITE, HOEHE), pygame.RESIZABLE)  # screengröße für den Startbildschirm
+        screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  # screengröße für den Startbildschirm
     pygame.display.set_caption("Startbildschirm")  # screentitel
 
     # Hintergrund und Schriftart für das Menü
     #hintergrund = pygame.image.load("Hintergrund_Panzerkiste.png")
-    #hintergrund = pygame.transform.scale(hintergrund, (BREITE, HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
+    #hintergrund = pygame.transform.scale(hintergrund, (SH_BREITE, SH_HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
     BLAU = (0, 0, 255)  # Blaue Farbe für Auswahl
     WEIß = (255, 255, 255)  # Weiße Farbe für nicht selektierte Optionen
 
@@ -111,4 +111,4 @@ def Main(screen=None):
         pygame.display.flip()   
         clock.tick(60)
 
-Main()
+#Main()

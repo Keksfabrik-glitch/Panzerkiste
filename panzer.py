@@ -1,3 +1,4 @@
+#Panzer
 #+ tuple(min(c + amount, 255) for c in color)
 import pygame
 import math
@@ -10,7 +11,7 @@ pygame.init()
 clock = pygame.time.Clock()
 panzer_größe = 40
 
-WIDTH, HEIGHT = 800, 400
+P_WIDTH, P_HEIGHT = 800, 400
 #Farben
 WEISS = (255, 255, 255)
 ROT = (255, 0, 0)
@@ -28,7 +29,7 @@ löcher = pygame.sprite.Group()
 GelegteMienen = pygame.sprite.Group()
 feindPanzerGR = pygame.sprite.Group()
 
-screen = pygame.display.set_mode((WIDTH,HEIGHT))  # screengröße für den Startbildschirm
+screen = pygame.display.set_mode((P_WIDTH,P_HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
 def FarbeVerändern(farbe, amount):
     ret = []
@@ -666,10 +667,10 @@ def lade_map(map_data):
         wände.add(Wall(wand["x"], wand["y"], wand["w"], wand["h"], wand.get("destroyable", False)))
 
     # Immer die vier Randwände laden
-    wände.add(Wall(0, -2, WIDTH, 4))                  # Oben
-    wände.add(Wall(-2, HEIGHT - 2, WIDTH, 4))         # Unten
-    wände.add(Wall(-2, 0, 4, HEIGHT))                 # Links
-    wände.add(Wall(WIDTH - 2, 0, 4, HEIGHT))         # Rechts
+    wände.add(Wall(0, -2, P_WIDTH, 4))                  # Oben
+    wände.add(Wall(-2, P_HEIGHT - 2, P_WIDTH, 4))         # Unten
+    wände.add(Wall(-2, 0, 4, P_HEIGHT))                 # Links
+    wände.add(Wall(P_WIDTH - 2, 0, 4, P_HEIGHT))         # Rechts
 
     # Löcher laden
     for loch in map_data.get("holes", []):
@@ -684,9 +685,9 @@ def lade_map(map_data):
 def Main(screen = None):
     #feindPanzer.add(Player(10,10))
     global player, running
-    WIDTH, HEIGHT = 800, 400
+    P_WIDTH, P_HEIGHT = 800, 400
     if screen is None:
-        screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Fenstergröße für das Spiel
+        screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
     lade_map(M.map_test)

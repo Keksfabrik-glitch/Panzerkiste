@@ -1,3 +1,4 @@
+#Zielsystem
 import pygame
 
 # === Zielsystem für FeindPanzer ===

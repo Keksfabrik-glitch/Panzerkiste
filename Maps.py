@@ -1,4 +1,4 @@
-
+#Maps
 map_1 = {
     "walls": [
         {"x": 300, "y": 100, "w": 200, "h": 20, "destroyable": False},

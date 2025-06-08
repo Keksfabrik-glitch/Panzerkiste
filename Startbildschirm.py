@@ -11,16 +11,16 @@ except:
 pygame.init()
 # Setup für Startbildschirm
 def Main(screen=None):
-    BREITE = 600  # screenbreite für Startbildschirm
-    HOEHE = 600   # screenhöhe für Startbildschirm
+    SB_BREITE = 600  # screenbreite für Startbildschirm
+    SB_HOEHE = 600   # screenhöhe für Startbildschirm
 
     if screen is None:
-        screen = pygame.display.set_mode((BREITE, HOEHE))  # screengröße für den Startbildschirm
+        screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm
     pygame.display.set_caption("Startbildschirm")  # screentitel
 
     # Hintergrund und Schriftart für das Menü
     hintergrund = pygame.image.load("Hintergrund_Panzerkiste.png")
-    hintergrund = pygame.transform.scale(hintergrund, (BREITE, HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
+    hintergrund = pygame.transform.scale(hintergrund, (SB_BREITE, SB_HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
 
     font = pygame.font.SysFont("Arial", 36)  # Schriftart und -größe
     BLAU = (0, 0, 255)  # Blaue Farbe für Auswahl
