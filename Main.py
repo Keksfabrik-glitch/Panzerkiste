@@ -6,8 +6,9 @@ except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 import pygame
-import Startbildschirm as SB
 import panzer as P
+import Shop as S
+import Startbildschirm as SB
 
 # Setup
 pygame.init()
@@ -31,7 +32,8 @@ while running:
             notify('Fehler', 'Einstellungen sind noch nicht verfügbar.', audio='ms-winsoundevent:Notification.IM')
         else:
             print("Fehler, Einstellungen sind noch nicht verfügbar.")
-
+    elif auswahl == "Shop":
+        S.Main()
 # Ende
 pygame.quit()
 exit()

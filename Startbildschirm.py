@@ -26,7 +26,7 @@ def Main(screen=None):
     BLAU = (0, 0, 255)  # Blaue Farbe für Auswahl
     WEIß = (255, 255, 255)  # Weiße Farbe für nicht selektierte Optionen
 
-    stellen = ["Singleplayer", "Multiplayer", "Einstellungen", "Beenden"]
+    stellen = ["Singleplayer", "Multiplayer","Shop", "Einstellungen", "Beenden"]
     selected_index = 0
     laeuft = True
 
@@ -82,5 +82,7 @@ def Main(screen=None):
                         return "Einstellungen"
                     elif auswahl == "Beenden":
                         return "Beenden"
+                    elif auswahl == "Shop":
+                        return "Shop"
 
         pygame.display.flip()
