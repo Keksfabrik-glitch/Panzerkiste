@@ -4,6 +4,7 @@ import math
 import random
 import string
 import Maps as M
+import zielsystem as Z
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -279,6 +280,10 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.position)
         self.mask = pygame.mask.from_surface(self.image)
 
+        #Zielsystem
+        winkel = Z.berechne_turmwinkel(self.position, player.position, wände)
+        if winkel is not None:
+            self.turmWinkel = winkel
     # --- Bewegungsmethoden ---
     def Drehen(self, Um):
         self.richtung += Um
@@ -739,4 +744,4 @@ def Main(screen = None):
         pygame.display.flip()
         clock.tick(60)
 
-Main()
+#Main()
