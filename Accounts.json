@@ -23,6 +23,26 @@
         "passwort": "b282c1560e3628950e3e87d1fc6c32c9da80dc9a3f41e95af073fb73ee2d1a18",
         "stats": {
             "punkte": 0,
+            "farbe": "[16, 57, 121, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 10,
+            "maxKugeln": 5,
+            "kugelSpeed": 10,
+            "nachladezeit": 3,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "Andreas": {
+        "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
+        "stats": {
+            "punkte": 0,
             "farbe": "[98, 113, 250, 255]",
             "leben": 3,
             "schussCooldown": 250,
