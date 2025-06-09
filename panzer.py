@@ -285,6 +285,9 @@ class FeindPanzer(pygame.sprite.Sprite):
         winkel = Z.berechne_turmwinkel(self.position, player.position, wände)
         if winkel is not None:
             self.turmWinkel = winkel
+            if Z.hat_sichtlinie(self.position, player.position, wände) == True:
+                self.Schuss(winkel*-1)
+
     # --- Bewegungsmethoden ---
     def Drehen(self, Um):
         self.richtung += Um
@@ -343,33 +346,29 @@ class FeindPanzer(pygame.sprite.Sprite):
                     GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
                     self.letzte_mine_zeit = jetzt
                     
-    def Schuss(self, maus_pos=None, jetzt=None, winkel=None):
+    def Schuss(self, winkel):
+        jetzt = pygame.time.get_ticks()
         if self.kugeln > 0 and jetzt - self.letzterEinzelschuss >= self.schuss_cooldown:
             if winkel is not None:
                 rad = math.radians(winkel)
                 richtung = pygame.Vector2(math.cos(rad), -math.sin(rad))
-            elif maus_pos is not None:
-                richtung = pygame.Vector2(maus_pos) - self.position
-                if richtung.length() == 0:
-                    return
-                richtung = richtung.normalize()
             else:
                 return  # Weder Winkel noch Mausposition
 
-        panzer_radius = panzer_größe * 0.5
-        kugel_radius = 5
-        abstand = panzer_radius + kugel_radius + 2
+            panzer_radius = panzer_größe * 0.5
+            kugel_radius = 5
+            abstand = panzer_radius + kugel_radius + 2
 
-        start_pos = self.position + richtung * abstand
+            start_pos = self.position + richtung * abstand
 
-        neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
-                           abpraller=self.abpraller, abprallChance=self.abprallChance,
-                           shooter_id=self.ID)
-        kugel_gruppe.add(neue_kugel)
-        self.kugeln -= 1
-        self.letzterEinzelschuss = jetzt
-        if self.kugeln == 0:
-            self.letzterSchuss = jetzt
+            neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
+                            abpraller=self.abpraller, abprallChance=self.abprallChance,
+                            shooter_id=self.ID)
+            kugel_gruppe.add(neue_kugel)
+            self.kugeln -= 1
+            self.letzterEinzelschuss = jetzt
+            if self.kugeln == 0:
+                self.letzterSchuss = jetzt
     def Schaden(self,amount=1):
         self.leben -= amount
         #if self.leben <= 0:
@@ -388,7 +387,7 @@ class FeindPanzerManage():
             schuss_cooldown = int(max(50, 500 + (level - 1) *-20)) # sinkt um -20
             kugeln = int(min(20, 1 + (level - 1) *0.8)) #steigt: [a,a,][b][c][d,d]... max 20 [19]
             #maxKugeln = kugeln
-            kugelSpeed = int(min(12, 8 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
+            kugelSpeed = int(min(8, 3 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
             nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
             farbe = (222, 166, 44)
             neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe)
@@ -726,7 +725,9 @@ def Main(screen = None):
 
         if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
             player.kugeln = player.maxKugeln
-
+        for panzer in feindPanzerGR:
+            if panzer.kugeln == 0 and jetzt - panzer.letzterSchuss >= panzer.nachladezeit * 1000:
+                panzer.kugeln = panzer.maxKugeln
         GelegteMienen.update()
         spieler_gruppe.update()
         feindPanzerGR.update()
@@ -745,4 +746,4 @@ def Main(screen = None):
         pygame.display.flip()
         clock.tick(60)
 
-#Main()
+Main()
