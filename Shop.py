@@ -70,7 +70,7 @@ def Main(screen=None):
 
     BLAU = (0, 0, 255)  
     WEIß = (255, 255, 255)  
-
+    SCHWARZ = (0,0,0)
     laeuft = True
     clock = pygame.time.Clock()
 
@@ -90,6 +90,7 @@ def Main(screen=None):
     basis = pygame.transform.rotate(basis, 90)
     FarbTonSurface = pygame.transform.smoothscale(basis, FarbTonSliderGröße)
     FarbWahlSurface = pygame.Surface(FarbWahlHSVBereichGröße)
+    Farbpreis = 10
     while laeuft:
         screen.fill(SAND)
         for event in pygame.event.get ():
@@ -112,7 +113,7 @@ def Main(screen=None):
                 else:
                     print("ELSE")
                     farbe = (255, 0,0, 0)
-            FarbPreisBerechnen(farbe)
+            Farbpreis = FarbPreisBerechnen(farbe)
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
         pygame.draw.rect(screen, (0, 0, 0), ((FarbTonSlider_pos[0],FarbTonSlider_pos[1]), (FarbTonSliderGröße[0],FarbTonSliderGröße[1])), 2, )
         
@@ -133,6 +134,9 @@ def Main(screen=None):
         pygame.draw.rect(screen, (0, 0, 0), (FARBBEREICH_POS, FarbWahlHSVBereichGröße), 2)
         pygame.draw.rect(screen, farbe, farbPreview, border_radius=10)
         pygame.draw.rect(screen, (0,0,0), farbPreview, width=3, border_radius=10)
+
+        screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
+        screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         pygame.display.flip()   
         clock.tick(60)
 
