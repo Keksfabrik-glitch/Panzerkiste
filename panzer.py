@@ -43,10 +43,10 @@ def randomNameID(länge=5,idOrName=True):
         return "".join(random.choices(Zeichen, k = länge))
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position,Name,farbe):
+    def __init__(self, position,Name):
         super().__init__()
         self.Punkte = 0
-        self.farbe = farbe
+        self.farbe = (23, 133, 227)
         self.ID = Name
         self.position = pygame.Vector2(position)
         self.richtung = 90
@@ -677,7 +677,7 @@ def lade_map(map_data):
 
     # Spieler neu platzieren
     global player
-    player = Player(map_data["player_start"], "Spieler1",(23, 133, 227))
+    player = Player(map_data["player_start"], "Spieler1",)
     spieler_gruppe.empty()
     spieler_gruppe.add(player)
 

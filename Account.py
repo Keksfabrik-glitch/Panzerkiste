@@ -17,21 +17,21 @@ def registrieren (nutzername,passwort):
     if nutzername in daten: #Ist Nutzername Vergeben ?
         return False,"Nutzername bereits vergeben."
     else: #Wenn nein wird neuer Account angelegt
-        daten[nutzername] = {
+        daten[nutzername] = {  #Name
             "passwort": hash_passwort(passwort),
             "stats": {
+                "punkte": 0, #Gelf
+                "farbe": (23, 133, 227),
                 "leben": 3,
-                "abpraller": 2,
-                "geschwindigkeit": 10,
                 "drehgeschwindigkeit": 5,
-                "schuss_cooldown": 250,
-                "kugeln": 5,
+                "geschwindigkeit": 10,
                 "maxKugeln": 5,
                 "kugelSpeed": 10,
                 "nachladezeit": 3,
+                "abpraller":2,
                 "abprallChance": 0.75,
                 "mieneZeit": 15,
-                "mienenAnzahl": -1,
+                "mienenAnzahl": -1, # unendlich -1
                 "mine_cooldown": 5,
                 "explosionsRadius": 40
             }
