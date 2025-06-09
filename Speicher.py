@@ -30,7 +30,7 @@ def write(nutzername, value, set):
         return True
     return False 
 
-#print(read("Andreas","leben"))
+#
 #print(write("Andreas","leben",0))
 #print(read("Andreas","leben"))
    

@@ -2,6 +2,8 @@
 import pygame
 import colorsys
 import math
+import json
+import Speicher as Daten
 from time import sleep
 try:
     from win11toast import toast, notify, update_progress
@@ -60,12 +62,11 @@ class Slider(pygame.sprite.Sprite):
         self.steps = steps
 
 
-def Main(screen=None):
+def Main(Nutzername):
     SH_BREITE = 30*16  
     SH_HOEHE = 30*9   
 
-    if screen is None:
-        screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
+    screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
     pygame.display.set_caption("Shop")  
 
     BLAU = (0, 0, 255)  
@@ -98,6 +99,8 @@ def Main(screen=None):
                 mouseUP = False
             if event.type == pygame.MOUSEBUTTONUP:
                 mouseUP = True
+            if event.type == pygame.QUIT:
+                laeuft = False
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
             RelX = MausX - FarbTonSlider_pos[0]
@@ -111,9 +114,9 @@ def Main(screen=None):
                 if 0 <= RelX < FarbWahlHSVBereichGröße[0] and 0 <= RelY < FarbWahlHSVBereichGröße[1]:
                     farbe = FarbWahlSurface.get_at((int(RelX), int(RelY)))
                 else:
-                    print("ELSE")
                     farbe = (255, 0,0, 0)
-            Farbpreis = FarbPreisBerechnen(farbe)
+            Farbpreis = FarbPreisBerechnen(farbe) # Punkte
+            Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
         pygame.draw.rect(screen, (0, 0, 0), ((FarbTonSlider_pos[0],FarbTonSlider_pos[1]), (FarbTonSliderGröße[0],FarbTonSliderGröße[1])), 2, )
         
@@ -140,4 +143,3 @@ def Main(screen=None):
         pygame.display.flip()   
         clock.tick(60)
 
-Main()

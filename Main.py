@@ -9,17 +9,20 @@ import pygame
 import panzer as P
 import Shop as S
 import Startbildschirm as SB
-
+import Account as Acc
 # Setup
 pygame.init()
 pygame.display.set_caption("Panzerkiste")
+pygame.font.init()
 
 # Hauptschleife
+Nutzername = Acc.Main()
+print(Nutzername)
 running = True
 while running:
-    auswahl = SB.Main()  # Fenster übergeben
+    auswahl = SB.Main(Nutzername)  # Fenster übergeben
     if auswahl == "Singleplayer":
-        P.Main()          # Fenster übergeben
+        P.Main(Nutzername)          # Fenster übergeben
     elif auswahl == "Beenden":
         running = False
     elif auswahl == "Multiplayer":
@@ -33,7 +36,7 @@ while running:
         else:
             print("Fehler, Einstellungen sind noch nicht verfügbar.")
     elif auswahl == "Shop":
-        S.Main()
+        S.Main(Nutzername)
 # Ende
 pygame.quit()
 exit()

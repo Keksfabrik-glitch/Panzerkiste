@@ -10,12 +10,12 @@ except:
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 pygame.init()
 # Setup für Startbildschirm
-def Main(screen=None):
+def Main(Nutzername):
     SB_BREITE = 600  # screenbreite für Startbildschirm
     SB_HOEHE = 600   # screenhöhe für Startbildschirm
 
-    if screen is None:
-        screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm
+
+    screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm
     pygame.display.set_caption("Startbildschirm")  # screentitel
 
     # Hintergrund und Schriftart für das Menü

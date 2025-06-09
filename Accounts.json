@@ -1,58 +1,65 @@
 {
-    "test": {
-        "passwort": "8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414",
+    "Hannes_": {
+        "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "leben": 1,
-            "abpraller": 2,
-            "geschwindigkeit": 10,
+            "punkte": 0,
+            "farbe": "(94, 229, 173, 255)",
+            "leben": 3,
+            "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
-            "schuss_cooldown": 250,
-            "kugeln": 5,
+            "geschwindigkeit": 10,
             "maxKugeln": 5,
             "kugelSpeed": 10,
             "nachladezeit": 3,
+            "abpraller": 2,
             "abprallChance": 0.75,
             "mieneZeit": 15,
             "mienenAnzahl": -1,
-            "mine_cooldown": 5,
+            "mieneCooldown": 5,
             "explosionsRadius": 40
         }
     },
-    "debug_mode": {
-        "passwort": "8bb0cf6eb9b17d0f7d22b456f121257dc1254e1f01665370476383ea776df414",
+    "LETZTER TEST HOFFENLICH": {
+        "passwort": "bdbaf4b7c71e309988a0bf9045ba9cc6838c0d88cf901a7d9eac00e03841f657",
         "stats": {
-            "leben": 1000,
-            "abpraller": 100,
-            "geschwindigkeit": 100,
+            "punkte": 0,
+            "farbe": [
+                23,
+                133,
+                227
+            ],
+            "leben": 3,
+            "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
-            "schuss_cooldown": 0,
-            "kugeln": 10000,
-            "maxKugeln": 10000,
-            "kugelSpeed": 10,
-            "nachladezeit": 0,
-            "abprallChance": 1,
-            "mieneZeit": 0,
-            "mienenAnzahl": -1,
-            "mine_cooldown": 0,
-            "explosionsRadius": 100
-        }
-    },
-    "Andreas": {
-        "passwort": "712b2cb918772120cee125c180437cd3068cae046f23c4fcf6b72c2a19540584",
-        "stats": {
-            "leben": 0,
-            "abpraller": 2,
             "geschwindigkeit": 10,
-            "drehgeschwindigkeit": 5,
-            "schuss_cooldown": 250,
-            "kugeln": 5,
             "maxKugeln": 5,
             "kugelSpeed": 10,
             "nachladezeit": 3,
+            "abpraller": 2,
             "abprallChance": 0.75,
             "mieneZeit": 15,
             "mienenAnzahl": -1,
-            "mine_cooldown": 5,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "bitte": {
+        "passwort": "c66bbe55fc89f147854c957d5e66dea929ec28d1ede77d7554b6660c31b78a0d",
+        "stats": {
+            "punkte": 0,
+            "farbe": "[165, 28, 28, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 10,
+            "maxKugeln": 5,
+            "kugelSpeed": 10,
+            "nachladezeit": 3,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
             "explosionsRadius": 40
         }
     }

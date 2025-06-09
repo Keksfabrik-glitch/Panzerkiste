@@ -6,7 +6,8 @@ import random
 import string
 import Maps as M
 import zielsystem as Z
-
+import Speicher as Daten
+import json
 pygame.init()
 clock = pygame.time.Clock()
 panzer_größe = 40
@@ -45,29 +46,29 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, position,Name):
         super().__init__()
-        self.Punkte = 0
-        self.farbe = (23, 133, 227)
+        self.Punkte = Daten.read(Name,"punkte")
+        self.farbe = pygame.Color(*tuple(json.loads(Daten.read(Name,"farbe"))))
         self.ID = Name
         self.position = pygame.Vector2(position)
         self.richtung = 90
         self.turmWinkel = 0
-        self.leben = 1
-        self.geschwindigkeit = 10
-        self.drehgeschwindigkeit = 5
-        self.schuss_cooldown = 250
-        self.kugeln = 5
-        self.maxKugeln = 5
-        self.kugelSpeed = 10 #bei manchen
-        self.nachladezeit = 3
+        self.leben = Daten.read(Name,"leben")
+        self.geschwindigkeit = Daten.read(Name,"geschwindigkeit")
+        self.drehgeschwindigkeit = Daten.read(Name,"drehgeschwindigkeit")
+        self.schuss_cooldown = Daten.read(Name,"schussCooldown")
+        self.kugeln = Daten.read(Name,"maxKugeln")
+        self.maxKugeln = self.kugeln
+        self.kugelSpeed = Daten.read(Name,"kugelSpeed")
+        self.nachladezeit = Daten.read(Name,"nachladezeit")
         self.letzterSchuss = 0
         self.letzterEinzelschuss = 0
-        self.mieneZeit = 15
-        self.mienenAnzahl = -1
+        self.mieneZeit = Daten.read(Name,"mieneZeit")
+        self.mienenAnzahl = Daten.read(Name,"mienenAnzahl")
         self.letzte_mine_zeit = -2000
-        self.mine_cooldown = 5
-        self.explosionsRadius = 40
-        self.abpraller = 2
-        self.abprallChance = 0.75
+        self.mine_cooldown = Daten.read(Name,"mieneCooldown")
+        self.explosionsRadius = Daten.read(Name,"explosionsRadius")
+        self.abpraller = Daten.read(Name,"abpraller")
+        self.abprallChance = Daten.read(Name,"abprallChance")
         self.mienenPos = []
 
         #  Grafik:
@@ -657,7 +658,7 @@ class Miene(pygame.sprite.Sprite):
            # pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), self.radius)
             pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), self.radius)
 
-def lade_map(map_data):
+def lade_map(map_data,Nutzername):
     wände.empty()
     löcher.empty()
 
@@ -677,19 +678,18 @@ def lade_map(map_data):
 
     # Spieler neu platzieren
     global player
-    player = Player(map_data["player_start"], "Spieler1",)
+    player = Player(map_data["player_start"], Nutzername)
     spieler_gruppe.empty()
     spieler_gruppe.add(player)
 
-def Main(screen = None):
+def Main(Nutzername):
     #feindPanzer.add(Player(10,10))
     global player, running
     P_WIDTH, P_HEIGHT = 800, 400
-    if screen is None:
-        screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
+    screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
-    lade_map(M.map_test)
+    lade_map(M.map_test,Nutzername)
     running = True
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 24)
@@ -746,4 +746,4 @@ def Main(screen = None):
         pygame.display.flip()
         clock.tick(60)
 
-Main()
+#Main()

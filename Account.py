@@ -20,9 +20,10 @@ def registrieren (nutzername,passwort):
         daten[nutzername] = {  #Name
             "passwort": hash_passwort(passwort),
             "stats": {
-                "punkte": 0, #Gelf
+                "punkte": 0, #Geld
                 "farbe": (23, 133, 227),
                 "leben": 3,
+                "schussCooldown": 250,
                 "drehgeschwindigkeit": 5,
                 "geschwindigkeit": 10,
                 "maxKugeln": 5,
@@ -32,7 +33,7 @@ def registrieren (nutzername,passwort):
                 "abprallChance": 0.75,
                 "mieneZeit": 15,
                 "mienenAnzahl": -1, # unendlich -1
-                "mine_cooldown": 5,
+                "mieneCooldown": 5,
                 "explosionsRadius": 40
             }
         }
@@ -47,7 +48,9 @@ def anmelden (nutzername,passwort):
         return False,"Noch keine Nutzer definiert."
     if nutzername in daten:  # Ist Nutzername Vergeben ?
         if daten[nutzername]["passwort"] == hash_passwort(passwort): #Es wird überprüft ob Passwort zu Nutzername passt
-            return True,daten[nutzername]["stats"] # Account Daten werden zurückgegeben
+            return True,"Erfolg" # Account Daten werden zurückgegeben
+        else:
+            return False,"Falsches Passwort"
     else:
         return False,"Nutzername nicht vergeben."
 
@@ -82,9 +85,7 @@ class InputBox(pygame.sprite.Sprite):
             self.active = self.rect.collidepoint(event.pos)
 
         if event.type == pygame.KEYDOWN and self.active:
-            if event.key == pygame.K_RETURN:
-                print(f"Eingabe ({self.placeholder}): {self.text}")
-            elif event.key == pygame.K_BACKSPACE:
+            if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
             else:
                 self.text += event.unicode
@@ -176,25 +177,36 @@ def Main(screen=None):
 
     meldung = ""
     meldung_surface = None
-
+    laeuft = True
     # Callback-Funktionen
     def versuche_anmeldung():
-        nonlocal meldung, meldung_surface
+        nonlocal meldung, meldung_surface, laeuft
         erfolg, result = anmelden(input_nutzer.text, input_pass.text)
-        meldung = "Anmeldung erfolgreich!" if erfolg else result
+        meldung = "" if erfolg else result
+        if erfolg:
+            laeuft = False
         meldung_surface = font.render(meldung, True, SCHWARZ)
 
     def versuche_registrierung():
-        nonlocal meldung, meldung_surface
-        erfolg, result = registrieren(input_nutzer.text, input_pass.text)
+        nonlocal meldung, meldung_surface,laeuft
+        passwort = input_pass.text
+        erfolg,result = False,False
+        if len(passwort) < 5:
+            erfolg = False
+            result = "Passwort muss mindestens 5 Zeichen lang sein"
+        else:
+            erfolg, result = registrieren(input_nutzer.text, input_pass.text)
         meldung = "Registrierung erfolgreich!" if erfolg else result
+        if erfolg:
+            laeuft = False
         meldung_surface = font.render(meldung, True, SCHWARZ)
+
 
     # Buttons
     button_anmelden = Button(150, 300, 130, 40, "Anmelden", versuche_anmeldung)
     button_registrieren = Button(320, 300, 130, 40, "Registrieren", versuche_registrierung)
 
-    laeuft = True
+
     while laeuft:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -223,6 +235,4 @@ def Main(screen=None):
 
         pygame.display.flip()
         clock.tick(60)
-
-    pygame.quit()
-Main()
+    return str(input_nutzer.text)
