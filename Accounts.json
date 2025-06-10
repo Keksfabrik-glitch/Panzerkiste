@@ -2,8 +2,8 @@
     "_Hannes_": {
         "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "punkte": 0,
-            "farbe": "[98, 113, 250, 255]",
+            "punkte": 416,
+            "farbe": "[34, 229, 149, 255]",
             "leben": 3,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
@@ -23,7 +23,7 @@
         "passwort": "b282c1560e3628950e3e87d1fc6c32c9da80dc9a3f41e95af073fb73ee2d1a18",
         "stats": {
             "punkte": 0,
-            "farbe": "[16, 57, 121, 255]",
+            "farbe": "[255, 0, 0, 0]",
             "leben": 3,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,

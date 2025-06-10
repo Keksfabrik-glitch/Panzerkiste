@@ -21,7 +21,7 @@ pygame.init()
 # Setup für Startbildschirm
 font = pygame.font.SysFont(None, 24)
 SAND = (239, 228, 176)
-
+SCHWARZ = (0,0,0)
 FarbStartPreis = 20
 PastelMaxAufpreis = 90
 def FarbPreisBerechnen(Farbe):
@@ -45,7 +45,7 @@ def FarbPreisBerechnen(Farbe):
     if s < 20:
         steps = (FarbStartPreis-5)/20
         preis -= int((20-s)*steps)
-    if v > 80:
+    if v > 80 and s > 20:
         steps = (FarbStartPreis+5)/20
         preis += int((v-80)*steps)
     preis = max(preis,1)
@@ -60,6 +60,33 @@ class Slider(pygame.sprite.Sprite):
         self.max = max
         self.min = min
         self.steps = steps
+class Button:
+    def __init__(self, x, y, w, h, text, callback, font=font):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = (180, 180, 180)
+        self.hover_color = (150, 150, 150)
+        self.text = text
+        self.callback = callback
+        self.font = font
+        self.text_surf = self.font.render(self.text, True, SCHWARZ)
+
+    def draw(self, screen):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hover = self.rect.collidepoint(mouse_pos)
+        if is_hover:
+            color = self.hover_color
+        else:
+            color = self.color
+        pygame.draw.rect(screen, color, self.rect)
+        pygame.draw.rect(screen, SCHWARZ, self.rect, 2)
+
+        text_rect = self.text_surf.get_rect(center=self.rect.center)
+        screen.blit(self.text_surf, text_rect)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.callback()
 
 
 def Main(Nutzername):
@@ -75,6 +102,8 @@ def Main(Nutzername):
     laeuft = True
     clock = pygame.time.Clock()
 
+    
+
     mouseUP = True
     FARBBEREICH_POS = (10,10)
     farbe = (255,0,0,0)
@@ -82,6 +111,17 @@ def Main(Nutzername):
     FarbWahlHSVBereichGröße = (300,250)
     FarbTonSliderGröße = (25,250)
     FarbTonSlider_pos = (310+FARBBEREICH_POS[0], FARBBEREICH_POS[1]) 
+
+    def FarbeKaufen():
+        Farbpreis = FarbPreisBerechnen(farbe)
+        Geld = Daten.read(Nutzername,"punkte")
+        if Geld >= Farbpreis:
+            Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Farbpreis))
+            Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
+            if wintoast == True:
+                toast("Erfolg", "Dein Panzer wurde eingefärbt")
+        else:
+            toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
 
     basis = pygame.Surface((360, 1))
     for x in range(360):
@@ -94,6 +134,7 @@ def Main(Nutzername):
     Farbpreis = 10
     while laeuft:
         screen.fill(SAND)
+        FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
         for event in pygame.event.get ():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseUP = False
@@ -101,6 +142,7 @@ def Main(Nutzername):
                 mouseUP = True
             if event.type == pygame.QUIT:
                 laeuft = False
+            FarbeKaufenButton.handle_event(event)
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
             RelX = MausX - FarbTonSlider_pos[0]
@@ -114,7 +156,7 @@ def Main(Nutzername):
                 if 0 <= RelX < FarbWahlHSVBereichGröße[0] and 0 <= RelY < FarbWahlHSVBereichGröße[1]:
                     farbe = FarbWahlSurface.get_at((int(RelX), int(RelY)))
                 else:
-                    farbe = (255, 0,0, 0)
+                    farbe = farbe
             Farbpreis = FarbPreisBerechnen(farbe) # Punkte
             Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
@@ -140,6 +182,7 @@ def Main(Nutzername):
 
         screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
+        FarbeKaufenButton.draw(screen)
         pygame.display.flip()   
         clock.tick(60)
 

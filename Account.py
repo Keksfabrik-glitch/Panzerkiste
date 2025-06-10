@@ -1,6 +1,13 @@
 import pygame
 import hashlib
 import Speicher as Sp
+
+try:
+    from win11toast import toast, notify, update_progress
+    wintoast = True
+except:
+    wintoast = False
+    print("Bitte installiere Win11toast, um alle Features freizuschalten")
 pygame.init()
 Speicherort = "Accounts.json"
 
@@ -182,10 +189,14 @@ def Main(screen=None):
     def versuche_anmeldung():
         nonlocal meldung, meldung_surface, laeuft
         erfolg, result = anmelden(input_nutzer.text, input_pass.text)
-        meldung = "" if erfolg else result
+        meldung = "Erfolgreich Angemeldet" if erfolg else result
         if erfolg:
             laeuft = False
-        meldung_surface = font.render(meldung, True, SCHWARZ)
+        if wintoast == False:
+            meldung_surface = font.render(meldung, True, SCHWARZ)
+        else:
+            if erfolg == False:
+                toast("Anmeldung fehlgeschlagen",meldung,audio='ms-winsoundevent:Notification.IM')
 
     def versuche_registrierung():
         nonlocal meldung, meldung_surface,laeuft
@@ -199,8 +210,11 @@ def Main(screen=None):
         meldung = "Registrierung erfolgreich!" if erfolg else result
         if erfolg:
             laeuft = False
-        meldung_surface = font.render(meldung, True, SCHWARZ)
-
+        if wintoast == False:
+            meldung_surface = font.render(meldung, True, SCHWARZ)
+        else:
+            if erfolg == False:
+                toast("Registrierung fehlgeschlagen",meldung,audio='ms-winsoundevent:Notification.IM')
 
     # Buttons
     button_anmelden = Button(150, 300, 130, 40, "Anmelden", versuche_anmeldung)
