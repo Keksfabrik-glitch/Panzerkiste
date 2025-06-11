@@ -22,6 +22,8 @@ pygame.init()
 font = pygame.font.SysFont(None, 24)
 SAND = (239, 228, 176)
 SCHWARZ = (0,0,0)
+GRAU = (200, 200, 200)
+BLAU = (50, 100, 255)
 FarbStartPreis = 20
 PastelMaxAufpreis = 90
 def FarbPreisBerechnen(Farbe):
@@ -52,14 +54,41 @@ def FarbPreisBerechnen(Farbe):
     return preis
 
 class Slider(pygame.sprite.Sprite):
-    def __init__(self, x, y, länge,value,max,min,steps):
+    def __init__(self, x, y, breite,höhe,value,max,min,steps = 1,interaktions_padding = 5):
         super().__init__()
+        self.rect = pygame.Rect(x,y,breite,höhe)
+        self.interaktions_padding = interaktions_padding
+        self.InteractionRect = pygame.Rect(x- interaktions_padding, y - interaktions_padding, breite + 2 * interaktions_padding, höhe + 2 * interaktions_padding)
         self.pos = (x,y)
-        self.länge = länge
+        self.größe = (breite,höhe)
+        self.color = (0,0,0)
         self.value = value
         self.max = max
         self.min = min
         self.steps = steps
+        self.sliderPos = self.pos
+        self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
+        pygame.draw.rect(screen, SCHWARZ, self.rect, 2)
+        pygame.draw.rect(screen, BLAU, self.handle_rect)
+        pygame.draw.rect(screen, SCHWARZ, self.handle_rect, 1)
+
+    def SliderButtonPos(self):
+        relPos = (self.value - self.min) / (self.max - self.min)
+        x = self.pos[0] + relPos * self.größe[0]
+        y = self.pos[1]
+        self.sliderPos = (x,y)
+
+    def valueVonPos(self,touch):
+        diff = touch[0] - (self.pos[0] - self.interaktions_padding)
+        self.value = round(((self.max-self.min)*(1/self.steps)/self.größe[0])*diff)+1
+        self.SliderButtonPos()
+        self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+    def handle_event(self, pos):
+        if self.InteractionRect.collidepoint(pos): 
+            self.valueVonPos(pos)
+
 class Button:
     def __init__(self, x, y, w, h, text, callback, font=font):
         self.rect = pygame.Rect(x, y, w, h)
@@ -90,8 +119,8 @@ class Button:
 
 
 def Main(Nutzername):
-    SH_BREITE = 30*16  
-    SH_HOEHE = 30*9   
+    SH_BREITE = 50*16  
+    SH_HOEHE = 50*9   
 
     screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
     pygame.display.set_caption("Shop")  
@@ -111,6 +140,9 @@ def Main(Nutzername):
     FarbWahlHSVBereichGröße = (300,250)
     FarbTonSliderGröße = (25,250)
     FarbTonSlider_pos = (310+FARBBEREICH_POS[0], FARBBEREICH_POS[1]) 
+
+    STATS_POS = (FARBBEREICH_POS[0]+360,10)
+    slider = Slider(STATS_POS[0]+100, STATS_POS[1], 200, 5, 1, 10,1, 1)
 
     def FarbeKaufen():
         Farbpreis = FarbPreisBerechnen(farbe)
@@ -143,8 +175,10 @@ def Main(Nutzername):
             if event.type == pygame.QUIT:
                 laeuft = False
             FarbeKaufenButton.handle_event(event)
+            
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
+            slider.handle_event(pygame.mouse.get_pos())
             RelX = MausX - FarbTonSlider_pos[0]
             RelY = MausY - FarbTonSlider_pos[1]
             if 0 <= RelX < FarbTonSliderGröße[0] and 0 <= RelY < FarbTonSliderGröße[1]:
@@ -183,6 +217,9 @@ def Main(Nutzername):
         screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         FarbeKaufenButton.draw(screen)
+
+        slider.draw(screen)
+
         pygame.display.flip()   
         clock.tick(60)
 
