@@ -58,7 +58,7 @@ def Main(Nutzername):
                             })
 
                             for i in range(1, 102,1):
-                                sleep(0.05)
+                                sleep(0.025)
                                 update_progress({'value': i/100, 'valueStringOverride': f'{i}/100%'})
                                 if i == 1: 
                                     update_progress({'status': 'Map wird geladen!'})
