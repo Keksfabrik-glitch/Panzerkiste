@@ -154,12 +154,11 @@ def Main(Nutzername):
         def sliderEvent(self,mousePos):
             self.slider.handle_event(mousePos)
             self.value = self.slider.value
-            print(self.value,self.maxOwnedValue,self.PreisPS)
             self.preis = (int(self.value) - int(self.maxOwnedValue))*self.PreisPS
             if self.preis < 0:
                 self.preis = self.preis/2
             else:
-                self.preis*(1-(int(self.value) - int(self.maxOwnedValue))/100)
+                self.preis = self.preis*(1-(int(self.value) - int(self.maxOwnedValue))/100)
         def buttonEvent(self,event):
             self.Button.handle_event(event)
         def draw(self,screen):
