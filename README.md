@@ -5,4 +5,7 @@ Mischung aus State Machiene, Raycast und N Netzwerk
 
 
 
-https://python-forum.io/thread-32093.html
+
+
+
+![image](https://github.com/user-attachments/assets/c35a38b7-e378-4b9e-a10b-718db77f8c13)
