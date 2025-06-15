@@ -128,7 +128,7 @@ def Main(Nutzername):
             Preis = self.preis
             if Geld >= Preis:
                 Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Preis))
-                Daten.write(Nutzername, self.SaveName, str(self.value))
+                Daten.write(Nutzername, self.SaveName, self.value)
                 self.maxOwnedValue = int(Daten.read(Nutzername,self.SaveName))
                 self.slider.internValue = self.value -self.min
                 self.slider.SliderButtonPos()
