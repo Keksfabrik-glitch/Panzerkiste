@@ -2,9 +2,9 @@
     "_Hannes_": {
         "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "punkte": 50.0,
+            "punkte": 200.0,
             "farbe": "[203, 39, 39, 255]",
-            "leben": "6",
+            "leben": "3",
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
             "geschwindigkeit": 10,

@@ -135,7 +135,7 @@ def Main(Nutzername):
                 #if wintoast == True:
                     
             else:
-                toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
+                toast("Fehler","Du hast zu wenig Geld. Upgrade um weniger Stats, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
         def __init__(self,x,y,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10):
             self.pos = (x,y)
             
@@ -159,6 +159,7 @@ def Main(Nutzername):
                 self.preis = self.preis/2
             else:
                 self.preis = self.preis*(1-(int(self.value) - int(self.maxOwnedValue))/100)
+            self.preis = int(self.preis)
         def buttonEvent(self,event):
             self.Button.handle_event(event)
         def draw(self,screen):
