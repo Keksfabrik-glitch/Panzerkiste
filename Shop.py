@@ -54,7 +54,7 @@ def FarbPreisBerechnen(Farbe):
     return preis
 
 class Slider(pygame.sprite.Sprite):
-    def __init__(self, x, y, breite,höhe,value,max,min,steps = 1,interaktions_padding = 5):
+    def __init__(self, x, y, breite,höhe,value,min,max,steps = 1,interaktions_padding = 5):
         super().__init__()
         self.rect = pygame.Rect(x,y,breite,höhe)
         self.interaktions_padding = interaktions_padding
@@ -62,12 +62,13 @@ class Slider(pygame.sprite.Sprite):
         self.pos = (x,y)
         self.größe = (breite,höhe)
         self.color = (0,0,0)
-        self.value = value
-        self.max = max
         self.min = min
+        self.max = max-min
         self.steps = steps
         self.sliderPos = self.pos
         self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+        self.internValue = value
+        self.value = self.internValue
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
         pygame.draw.rect(screen, SCHWARZ, self.rect, 2)
@@ -75,16 +76,18 @@ class Slider(pygame.sprite.Sprite):
         pygame.draw.rect(screen, SCHWARZ, self.handle_rect, 1)
 
     def SliderButtonPos(self):
-        relPos = (self.value - self.min) / (self.max - self.min)
+        relPos = self.internValue / self.max
         x = self.pos[0] + relPos * self.größe[0]
         y = self.pos[1]
         self.sliderPos = (x,y)
+        self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
 
     def valueVonPos(self,touch):
         diff = touch[0] - (self.pos[0] - self.interaktions_padding)
-        self.value = round(((self.max-self.min)*(1/self.steps)/self.größe[0])*diff)+1
+        self.internValue = round((self.max*(1/self.steps)/self.größe[0])*diff)
+        self.value = self.internValue+self.min
         self.SliderButtonPos()
-        self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+        
     def handle_event(self, pos):
         if self.InteractionRect.collidepoint(pos): 
             self.valueVonPos(pos)
@@ -112,13 +115,59 @@ class Button:
         text_rect = self.text_surf.get_rect(center=self.rect.center)
         screen.blit(self.text_surf, text_rect)
 
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.callback()
+    def handle_event(self,mousePos):
+        if self.rect.collidepoint(mousePos):
+            self.callback()
+
 
 
 def Main(Nutzername):
+    class SettingsGroup():
+        def kaufen(self):
+            Geld = Daten.read(Nutzername,"punkte")
+            Preis = self.preis
+            if Geld >= Preis:
+                Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Preis))
+                Daten.write(Nutzername, self.SaveName, str(self.value))
+                self.maxOwnedValue = int(Daten.read(Nutzername,self.SaveName))
+                self.slider.internValue = self.value -self.min
+                self.slider.SliderButtonPos()
+                #if wintoast == True:
+                    
+            else:
+                toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
+        def __init__(self,x,y,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10):
+            self.pos = (x,y)
+            
+            self.Titel = name
+            self.Beschreibung = Beschreibung
+            self.PreisPS = Preis
+            self.preis = 0
+            self.min = min
+            self.SaveName = saveName
+            self.maxOwnedValue = int(Daten.read(Nutzername,self.SaveName))
+            self.value = self.maxOwnedValue
+            self.Button = Button(x,y+55, 100, 40, "Kaufen", self.kaufen)
+            self.slider = Slider(x, y+20, 200, 5, self.maxOwnedValue,min,max, steps)
+            self.slider.internValue = self.value -self.min
+            self.slider.SliderButtonPos()
+        def sliderEvent(self,mousePos):
+            self.slider.handle_event(mousePos)
+            self.value = self.slider.value
+            print(self.value,self.maxOwnedValue,self.PreisPS)
+            self.preis = (int(self.value) - int(self.maxOwnedValue))*self.PreisPS
+            if self.preis < 0:
+                self.preis = self.preis/2
+            else:
+                self.preis*(1-(int(self.value) - int(self.maxOwnedValue))/100)
+        def buttonEvent(self,event):
+            self.Button.handle_event(event)
+        def draw(self,screen):
+            self.slider.draw(screen)
+            screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.value,self.preis),True, SCHWARZ), (self.pos))
+            screen.blit(font.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
+            self.Button.draw(screen)
+
     SH_BREITE = 50*16  
     SH_HOEHE = 50*9   
 
@@ -141,7 +190,10 @@ def Main(Nutzername):
     FarbTonSliderGröße = (25,250)
     FarbTonSlider_pos = (310+FARBBEREICH_POS[0], FARBBEREICH_POS[1]) 
 
-    STATS_POS = (FARBBEREICH_POS[0]+360,10)
+    STATS_POS = (FARBBEREICH_POS[0]+460,10)
+    #Nutzername,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10
+    lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1],3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
+    SettingGroupsss = [lebenGroup]
     slider = Slider(STATS_POS[0]+100, STATS_POS[1], 200, 5, 1, 10,1, 1)
 
     def FarbeKaufen():
@@ -150,8 +202,9 @@ def Main(Nutzername):
         if Geld >= Farbpreis:
             Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Farbpreis))
             Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
-            if wintoast == True:
-                toast("Erfolg", "Dein Panzer wurde eingefärbt")
+            
+            #if wintoast == True:
+                
         else:
             toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
 
@@ -164,21 +217,29 @@ def Main(Nutzername):
     FarbTonSurface = pygame.transform.smoothscale(basis, FarbTonSliderGröße)
     FarbWahlSurface = pygame.Surface(FarbWahlHSVBereichGröße)
     Farbpreis = 10
+
+    FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
     while laeuft:
         screen.fill(SAND)
-        FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
+        
         for event in pygame.event.get ():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseUP = False
+                for group in SettingGroupsss:
+                    group.buttonEvent(pygame.mouse.get_pos())
+                FarbeKaufenButton.handle_event(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEBUTTONUP:
                 mouseUP = True
             if event.type == pygame.QUIT:
                 laeuft = False
-            FarbeKaufenButton.handle_event(event)
-            
+  
+
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
-            slider.handle_event(pygame.mouse.get_pos())
+            for group in SettingGroupsss:
+                group.sliderEvent(pygame.mouse.get_pos())
+
+
             RelX = MausX - FarbTonSlider_pos[0]
             RelY = MausY - FarbTonSlider_pos[1]
             if 0 <= RelX < FarbTonSliderGröße[0] and 0 <= RelY < FarbTonSliderGröße[1]:
@@ -192,7 +253,7 @@ def Main(Nutzername):
                 else:
                     farbe = farbe
             Farbpreis = FarbPreisBerechnen(farbe) # Punkte
-            Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
+            
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
         pygame.draw.rect(screen, (0, 0, 0), ((FarbTonSlider_pos[0],FarbTonSlider_pos[1]), (FarbTonSliderGröße[0],FarbTonSliderGröße[1])), 2, )
         
@@ -218,8 +279,8 @@ def Main(Nutzername):
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         FarbeKaufenButton.draw(screen)
 
-        slider.draw(screen)
-
+        for group in SettingGroupsss:
+            group.draw(screen)
         pygame.display.flip()   
         clock.tick(60)
 
