@@ -4,7 +4,7 @@
         "stats": {
             "punkte": 200.0,
             "farbe": "[203, 39, 39, 255]",
-            "leben": "3",
+            "leben": 3,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
             "geschwindigkeit": 10,
