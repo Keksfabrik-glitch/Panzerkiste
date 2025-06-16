@@ -43,7 +43,7 @@
         "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
         "stats": {
             "punkte": 0,
-            "farbe": "[98, 113, 250, 255]",
+            "farbe": "[255, 0, 0, 0]",
             "leben": 3,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,

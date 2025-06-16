@@ -53,6 +53,56 @@ def FarbPreisBerechnen(Farbe):
     preis = max(preis,1)
     return preis
 
+class UpgradeButton(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h, stat_name, nutzername, font=font):
+        super().__init__()
+        self.rect = pygame.Rect(x, y, w, h)
+        self.image = pygame.Surface((w, h))
+        self.stat_name = stat_name
+        self.nutzername = nutzername
+        self.font = font
+        self.hover = False
+        self.update_stat_and_price()
+
+    def update_stat_and_price(self):
+        self.stat_wert = Daten.read(self.nutzername, self.stat_name)
+        self.preis = int(10 + self.stat_wert * 5)
+        self.text = f"{self.stat_name.capitalize()} +1 ({self.preis}P)"
+        self.text_surf = self.font.render(self.text, True, SCHWARZ)
+        self.update_image()
+
+    def update_image(self):
+        self.image.fill((150, 150, 150) if self.hover else (180, 180, 180))
+        pygame.draw.rect(self.image, SCHWARZ, self.image.get_rect(), 2)
+        text_rect = self.text_surf.get_rect(center=self.image.get_rect().center)
+        self.image.blit(self.text_surf, text_rect)
+
+    def update(self):
+        mouse_pos = pygame.mouse.get_pos()
+        self.hover = self.rect.collidepoint(mouse_pos)
+        self.update_image()
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+            self.versuche_upgrade()
+
+    def versuche_upgrade(self):
+        punkte = Daten.read(self.nutzername, "punkte")
+        if punkte >= self.preis:
+            neuer_stat_wert = self.stat_wert + 1
+            Daten.write(self.nutzername, self.stat_name, neuer_stat_wert)
+            Daten.write(self.nutzername, "punkte", punkte - self.preis)
+            self.update_stat_and_price()
+            if wintoast:
+                toast("Upgrade", f"{self.stat_name} erhöht auf {neuer_stat_wert}")
+            else:
+                print(f"{self.stat_name} erhöht auf {neuer_stat_wert}")
+        else:
+            if wintoast:
+                toast("Nicht genug Punkte", f"{self.stat_name}-Upgrade kostet {self.preis}")
+            else:
+                print("Nicht genug Punkte für Upgrade")
+
 class Slider(pygame.sprite.Sprite):
     def __init__(self, x, y, breite,höhe,value,min,max,steps = 1,interaktions_padding = 5):
         super().__init__()
@@ -180,7 +230,6 @@ def Main(Nutzername):
     laeuft = True
     clock = pygame.time.Clock()
 
-    
 
     mouseUP = True
     FARBBEREICH_POS = (10,10)
@@ -190,11 +239,13 @@ def Main(Nutzername):
     FarbTonSliderGröße = (25,250)
     FarbTonSlider_pos = (310+FARBBEREICH_POS[0], FARBBEREICH_POS[1]) 
 
+
     STATS_POS = (FARBBEREICH_POS[0]+460,10)
     #Nutzername,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10
     lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1],3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
     SettingGroupsss = [lebenGroup]
     slider = Slider(STATS_POS[0]+100, STATS_POS[1], 200, 5, 1, 10,1, 1)
+
 
     def FarbeKaufen():
         Farbpreis = FarbPreisBerechnen(farbe)
@@ -206,7 +257,7 @@ def Main(Nutzername):
             #if wintoast == True:
                 
         else:
-            toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
+            toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiene mehr Geld.",audio='ms-winsoundevent:Notification.IM')
 
     basis = pygame.Surface((360, 1))
     for x in range(360):
@@ -219,6 +270,7 @@ def Main(Nutzername):
     Farbpreis = 10
 
     FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
+
     while laeuft:
         screen.fill(SAND)
         
@@ -232,7 +284,6 @@ def Main(Nutzername):
                 mouseUP = True
             if event.type == pygame.QUIT:
                 laeuft = False
-  
 
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
@@ -256,7 +307,7 @@ def Main(Nutzername):
             
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
         pygame.draw.rect(screen, (0, 0, 0), ((FarbTonSlider_pos[0],FarbTonSlider_pos[1]), (FarbTonSliderGröße[0],FarbTonSliderGröße[1])), 2, )
-        
+
         surf = pygame.Surface((1, 2))
         surf.fill((255,255,255))
         surf.set_at((0, 1), (0, 0,0))
@@ -278,6 +329,7 @@ def Main(Nutzername):
         screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         FarbeKaufenButton.draw(screen)
+
 
         for group in SettingGroupsss:
             group.draw(screen)
