@@ -28,14 +28,14 @@ def registrieren (nutzername,passwort):
             "passwort": hash_passwort(passwort),
             "stats": {
                 "punkte": 0, #Geld
-                "farbe": "[98, 113, 250, 255]",
+                "farbe": "[98, 255, 255, 255]",
                 "leben": 3,
                 "schussCooldown": 250,
                 "drehgeschwindigkeit": 5,
                 "geschwindigkeit": 10,
                 "maxKugeln": 5,
-                "kugelSpeed": 10,
-                "nachladezeit": 3,
+                "kugelSpeed": 5,
+                "nachladezeit": 5,
                 "abpraller":2,
                 "abprallChance": 0.75,
                 "mieneZeit": 15,
@@ -197,6 +197,7 @@ def Main(screen=None):
         else:
             if erfolg == False:
                 toast("Anmeldung fehlgeschlagen",meldung,audio='ms-winsoundevent:Notification.IM')
+                input_pass.text = ""
 
     def versuche_registrierung():
         nonlocal meldung, meldung_surface,laeuft

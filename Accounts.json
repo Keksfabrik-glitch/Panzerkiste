@@ -2,61 +2,22 @@
     "_Hannes_": {
         "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "punkte": 200.0,
+            "punkte": 999994168,
             "farbe": "[203, 39, 39, 255]",
-            "leben": 3,
-            "schussCooldown": 250,
-            "drehgeschwindigkeit": 5,
-            "geschwindigkeit": 10,
-            "maxKugeln": 5,
-            "kugelSpeed": 10,
-            "nachladezeit": 3,
-            "abpraller": 2,
-            "abprallChance": 0.75,
-            "mieneZeit": 15,
+            "leben": 10,
+            "schussCooldown": 40,
+            "drehgeschwindigkeit": 15,
+            "geschwindigkeit": 50,
+            "maxKugeln": 10,
+            "kugelSpeed": 35,
+            "nachladezeit": 5,
+            "abpraller": 7,
+            "abprallChance": 1,
+            "mieneZeit": 35,
             "mienenAnzahl": -1,
-            "mieneCooldown": 5,
-            "explosionsRadius": 40
-        }
-    },
-    "TestAcc": {
-        "passwort": "b282c1560e3628950e3e87d1fc6c32c9da80dc9a3f41e95af073fb73ee2d1a18",
-        "stats": {
-            "punkte": 0,
-            "farbe": "[255, 0, 0, 0]",
-            "leben": 3,
-            "schussCooldown": 250,
-            "drehgeschwindigkeit": 5,
-            "geschwindigkeit": 10,
-            "maxKugeln": 5,
-            "kugelSpeed": 10,
-            "nachladezeit": 3,
-            "abpraller": 2,
-            "abprallChance": 0.75,
-            "mieneZeit": 15,
-            "mienenAnzahl": -1,
-            "mieneCooldown": 5,
-            "explosionsRadius": 40
-        }
-    },
-    "Andreas": {
-        "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
-        "stats": {
-            "punkte": 0,
-            "farbe": "[255, 0, 0, 0]",
-            "leben": 3,
-            "schussCooldown": 250,
-            "drehgeschwindigkeit": 5,
-            "geschwindigkeit": 10,
-            "maxKugeln": 5,
-            "kugelSpeed": 10,
-            "nachladezeit": 3,
-            "abpraller": 2,
-            "abprallChance": 0.75,
-            "mieneZeit": 15,
-            "mienenAnzahl": -1,
-            "mieneCooldown": 5,
-            "explosionsRadius": 40
+            "mieneCooldown": 1,
+            "explosionsRadius": 80
         }
     }
+
 }

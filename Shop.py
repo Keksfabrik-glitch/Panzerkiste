@@ -53,55 +53,7 @@ def FarbPreisBerechnen(Farbe):
     preis = max(preis,1)
     return preis
 
-class UpgradeButton(pygame.sprite.Sprite):
-    def __init__(self, x, y, w, h, stat_name, nutzername, font=font):
-        super().__init__()
-        self.rect = pygame.Rect(x, y, w, h)
-        self.image = pygame.Surface((w, h))
-        self.stat_name = stat_name
-        self.nutzername = nutzername
-        self.font = font
-        self.hover = False
-        self.update_stat_and_price()
 
-    def update_stat_and_price(self):
-        self.stat_wert = Daten.read(self.nutzername, self.stat_name)
-        self.preis = int(10 + self.stat_wert * 5)
-        self.text = f"{self.stat_name.capitalize()} +1 ({self.preis}P)"
-        self.text_surf = self.font.render(self.text, True, SCHWARZ)
-        self.update_image()
-
-    def update_image(self):
-        self.image.fill((150, 150, 150) if self.hover else (180, 180, 180))
-        pygame.draw.rect(self.image, SCHWARZ, self.image.get_rect(), 2)
-        text_rect = self.text_surf.get_rect(center=self.image.get_rect().center)
-        self.image.blit(self.text_surf, text_rect)
-
-    def update(self):
-        mouse_pos = pygame.mouse.get_pos()
-        self.hover = self.rect.collidepoint(mouse_pos)
-        self.update_image()
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
-            self.versuche_upgrade()
-
-    def versuche_upgrade(self):
-        punkte = Daten.read(self.nutzername, "punkte")
-        if punkte >= self.preis:
-            neuer_stat_wert = self.stat_wert + 1
-            Daten.write(self.nutzername, self.stat_name, neuer_stat_wert)
-            Daten.write(self.nutzername, "punkte", punkte - self.preis)
-            self.update_stat_and_price()
-            if wintoast:
-                toast("Upgrade", f"{self.stat_name} erhöht auf {neuer_stat_wert}")
-            else:
-                print(f"{self.stat_name} erhöht auf {neuer_stat_wert}")
-        else:
-            if wintoast:
-                toast("Nicht genug Punkte", f"{self.stat_name}-Upgrade kostet {self.preis}")
-            else:
-                print("Nicht genug Punkte für Upgrade")
 
 class Slider(pygame.sprite.Sprite):
     def __init__(self, x, y, breite,höhe,value,min,max,steps = 1,interaktions_padding = 5):
@@ -134,7 +86,7 @@ class Slider(pygame.sprite.Sprite):
 
     def valueVonPos(self,touch):
         diff = touch[0] - (self.pos[0] - self.interaktions_padding)
-        self.internValue = round((self.max*(1/self.steps)/self.größe[0])*diff)
+        self.internValue = round((self.max*(1/self.steps)/self.größe[0])*diff) * self.steps
         self.value = self.internValue+self.min
         self.SliderButtonPos()
         
@@ -172,14 +124,20 @@ class Button:
 
 
 def Main(Nutzername):
+    laeuft = True
     class SettingsGroup():
         def kaufen(self):
             Geld = Daten.read(Nutzername,"punkte")
             Preis = self.preis
             if Geld >= Preis:
+                self.saveValue = self.value
+                if self.SaveName == "abprallChance":
+                    self.saveValuevalue = self.value/100
                 Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Preis))
-                Daten.write(Nutzername, self.SaveName, self.value)
-                self.maxOwnedValue = int(Daten.read(Nutzername,self.SaveName))
+                Daten.write(Nutzername, self.SaveName, self.saveValue)
+                self.maxOwnedValue = Daten.read(Nutzername,self.SaveName)
+                if self.SaveName == "abprallChance":
+                    self.maxOwnedValue = self.maxOwnedValue*100
                 self.slider.internValue = self.value -self.min
                 self.slider.SliderButtonPos()
                 #if wintoast == True:
@@ -194,8 +152,14 @@ def Main(Nutzername):
             self.PreisPS = Preis
             self.preis = 0
             self.min = min
+            self.max = max
             self.SaveName = saveName
-            self.maxOwnedValue = int(Daten.read(Nutzername,self.SaveName))
+            self.maxOwnedValue = Daten.read(Nutzername,self.SaveName)
+            if self.SaveName == "abprallChance":
+                self.maxOwnedValue = self.maxOwnedValue*100
+
+
+            
             self.value = self.maxOwnedValue
             self.Button = Button(x,y+55, 100, 40, "Kaufen", self.kaufen)
             self.slider = Slider(x, y+20, 200, 5, self.maxOwnedValue,min,max, steps)
@@ -204,22 +168,28 @@ def Main(Nutzername):
         def sliderEvent(self,mousePos):
             self.slider.handle_event(mousePos)
             self.value = self.slider.value
-            self.preis = (int(self.value) - int(self.maxOwnedValue))*self.PreisPS
+            self.preis = (int(self.value) - self.maxOwnedValue)*self.PreisPS
+        
+            if self.max < self.min:
+                self.preis = self.preis *-1
             if self.preis < 0:
                 self.preis = self.preis/2
             else:
-                self.preis = self.preis*(1-(int(self.value) - int(self.maxOwnedValue))/100)
+                self.preis = self.preis*(1-(int(self.value) - self.maxOwnedValue)/200)
             self.preis = int(self.preis)
         def buttonEvent(self,event):
             self.Button.handle_event(event)
         def draw(self,screen):
             self.slider.draw(screen)
-            screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.value,self.preis),True, SCHWARZ), (self.pos))
+            self.displayValue = self.value
+            if self.SaveName == "abprallChance":
+                self.displayValue = self.value/100
+            screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
             screen.blit(font.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
             self.Button.draw(screen)
 
-    SH_BREITE = 50*16  
-    SH_HOEHE = 50*9   
+    SH_BREITE = 825
+    SH_HOEHE = 950
 
     screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
     pygame.display.set_caption("Shop")  
@@ -227,24 +197,49 @@ def Main(Nutzername):
     BLAU = (0, 0, 255)  
     WEIß = (255, 255, 255)  
     SCHWARZ = (0,0,0)
-    laeuft = True
     clock = pygame.time.Clock()
 
 
     mouseUP = True
     FARBBEREICH_POS = (10,10)
-    farbe = (255,0,0,0)
+    farbe =  pygame.Color(*tuple(json.loads(Daten.read(Nutzername,"farbe"))))
     FarbTon= (255,0,0)
     FarbWahlHSVBereichGröße = (300,250)
     FarbTonSliderGröße = (25,250)
     FarbTonSlider_pos = (310+FARBBEREICH_POS[0], FARBBEREICH_POS[1]) 
 
 
-    STATS_POS = (FARBBEREICH_POS[0]+460,10)
+    STATS_POS = (FARBBEREICH_POS[0]+470,10)
     #Nutzername,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10
-    lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1],3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
-    SettingGroupsss = [lebenGroup]
-    slider = Slider(STATS_POS[0]+100, STATS_POS[1], 200, 5, 1, 10,1, 1)
+     #-          "schussCooldown": 250,
+     #-       "drehgeschwindigkeit": 5,
+     #-      "geschwindigkeit": 10,
+    #-       "maxKugeln": 5,
+    #-        "kugelSpeed": 5,
+    #- "nachladezeit": 3,
+          #  "abpraller": 3,
+          #  "abprallChance": 0.75,
+          #  "mieneZeit": 15,
+          #  "mienenAnzahl": -1,
+          #  "mieneCooldown": 5,
+          #  "explosionsRadius": 40
+    AbstandY = 135
+    lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*0,3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
+    GeschwindigkeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*1,10,50,2,"Geschwindigkeit","geschwindigkeit","Die Geschwindigkeit deines Panzers",50/2)
+    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",75)
+    MaxKugelnGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*3,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75)
+    KugelSpeedGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*4,5,35,10,"Kugel Geschwindigkeit","kugelSpeed","Die Geschwindigkeit einer Kugel",150/10)
+    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*5,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)
+    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,1,5,1,"Nachladezeit","nachladezeit","Nachladedauer bis du wieder alle Schüsse hast in ms.",150)
+
+    AbprallerGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*2,2,7,1,"Abpraller","abpraller","Maximale Abpraller deiner Kugeln",125) 
+    AbprallChanceGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*3,75,100,5,"Abprallchance","abprallChance","Die Chance das deine Kugel Abprallt",100/5) 
+    mieneZeitGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*4,15,35,5,"Zünddauer Miene","mieneZeit","Zeit bis eine Miene Explodiert.",75/5) 
+    #mienenAnzahlGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75) UNENDLICH PRO SPIEL ZURZEIT. LEVELABHÄNGIG
+    mienenCooldownGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*5,5,1,1,"Mienen Cooldown","mieneCooldown","Zeitspanne bis du eine neue Miene legen kannst.",150)
+    explosionsRadiusGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*6,40,80,10,"Explosionsradius","explosionsRadius","Der Betroffene Bereich bei einer Explosion.",100/10)
+    SettingGroupsss = [lebenGroup,GeschwindigkeitGroup,DrehGeschwindigkeitsGroup,MaxKugelnGroup,KugelSpeedGroup,SchussCooldownGroup,NachladezeitGroup,AbprallerGroup,AbprallChanceGroup,mieneZeitGroup,mienenCooldownGroup,explosionsRadiusGroup]    
+
 
 
     def FarbeKaufen():
@@ -271,6 +266,7 @@ def Main(Nutzername):
 
     FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
 
+
     while laeuft:
         screen.fill(SAND)
         
@@ -284,7 +280,6 @@ def Main(Nutzername):
                 mouseUP = True
             if event.type == pygame.QUIT:
                 laeuft = False
-
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
             for group in SettingGroupsss:
@@ -330,7 +325,7 @@ def Main(Nutzername):
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         FarbeKaufenButton.draw(screen)
 
-
+    
         for group in SettingGroupsss:
             group.draw(screen)
         pygame.display.flip()   
