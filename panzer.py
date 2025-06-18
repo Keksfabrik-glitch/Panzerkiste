@@ -20,6 +20,7 @@ SCHWARZ = (0, 0, 0)
 SAND = (239, 228, 176)
 BLAU = (0, 0, 255)
 GRÜN = (0,255,0)
+GOLD = (212, 175, 55)
 TRANSPARENT = (0,0,0,0)
 #Sprite Groups
 wände = pygame.sprite.Group()
@@ -29,6 +30,7 @@ spieler_gruppe = pygame.sprite.Group()
 löcher = pygame.sprite.Group()
 GelegteMienen = pygame.sprite.Group()
 feindPanzerGR = pygame.sprite.Group()
+label_gruppe = pygame.sprite.Group()
 
 screen = pygame.display.set_mode((P_WIDTH,P_HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
@@ -658,6 +660,55 @@ class Miene(pygame.sprite.Sprite):
            # pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), self.radius)
             pygame.draw.circle(screen, farbe, (int(self.pos.x), int(self.pos.y)), self.radius)
 
+class StartLabel(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h, level, fpanzer, time, letzte=False, color=(150,0,0)):
+        super().__init__()
+        jetzt = pygame.time.get_ticks()
+
+        self.level = level
+        self.fpanzer = fpanzer
+        self.time = time
+        self.ende = jetzt + self.time
+
+        if letzte:
+            self.mission = "Letzte Mission"
+        else:
+            self.mission = "Mission: " + str(self.level)
+        self.fpanzer_text = "Feindpanzer: " + str(self.fpanzer)
+
+        # Rechteck-Fläche
+        self.image = pygame.Surface((w, h))
+        self.image.fill(color)
+
+        # Goldränder oben und unten
+        pygame.draw.rect(self.image, GOLD, (0, 0, w, 5))           # obere Leiste
+        pygame.draw.rect(self.image, GOLD, (0, h - 5, w, 5))       # untere Leiste
+
+        # Schrift vorbereiten
+        font = pygame.font.SysFont("Arial", 20, bold=True)
+
+        # Missionstext zentrieren
+        mission_surf = font.render(self.mission, True, (255, 255, 255))
+        mission_rect = mission_surf.get_rect(centerx=self.image.get_width() // 2)
+        mission_rect.top = self.image.get_height() // 2 - mission_surf.get_height() - 5
+
+        # Feindpanzer-Text zentrieren
+        panzer_surf = font.render(self.fpanzer_text, True, (255, 255, 255))
+        panzer_rect = panzer_surf.get_rect(centerx=self.image.get_width() // 2)
+        panzer_rect.top = mission_rect.bottom + 10
+
+        # Texte auf die Fläche zeichnen
+        self.image.blit(mission_surf, mission_rect)
+        self.image.blit(panzer_surf, panzer_rect)
+
+        # Position
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+    def update(self):
+        jetzt = pygame.time.get_ticks()
+        if jetzt >= self.ende:
+            self.kill()
+
 def lade_map(map_data,Nutzername):
     wände.empty()
     löcher.empty()
@@ -693,11 +744,25 @@ def Main(Nutzername):
     running = True
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 24)
+    #Startlabel Test
+    start_running = True
+    label_gruppe.add(StartLabel(0,0,P_WIDTH,P_HEIGHT,0,1,2000))
+    while start_running:
+        clock.tick(60)
+        screen.fill((255, 255, 255))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                start_running = False
+                running = False
+        label_gruppe.update()
+        label_gruppe.draw(screen)
+        if len(label_gruppe) == 0:
+            start_running = False
+        pygame.display.flip()
     while running:
         screen.fill(SAND)
         löcher.draw(screen)
         jetzt = pygame.time.get_ticks()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
