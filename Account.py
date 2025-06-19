@@ -225,7 +225,7 @@ def Main(screen=None):
     while laeuft:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                laeuft = False
+                return None
 
             for box in input_group:
                 box.handle_event(event)

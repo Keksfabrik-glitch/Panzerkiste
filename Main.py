@@ -17,8 +17,11 @@ pygame.font.init()
 
 # Hauptschleife
 Nutzername = Acc.Main()
-print(Nutzername)
-running = True
+if Nutzername == None:
+    running = False
+else:
+    running = True
+    print(Nutzername)
 while running:
     auswahl = SB.Main(Nutzername)  # Fenster übergeben
     if auswahl == "Singleplayer":
