@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="83e025ae-83b6-4423-a893-5b42d16ef471" name="Changes" comment="Start_Label für Panzer.py" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Keksfabrik-glitch&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Keksfabrik-glitch/Panzerkiste.git&quot;,
+    &quot;accountId&quot;: &quot;6bed33cb-2ae7-49e2-a999-2d173f1167e0&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2xJYOrpeHVaswrzuYK7ZJ222nTh" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.Account.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Eingabe_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Kugel_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Maps.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Shop.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Speicher.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Startbildschirm.executor&quot;: &quot;Run&quot;,
+    &quot;Python.panzer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.zielsystem.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/Desktop/Panzerkiste&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.10 (.venv)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Startbildschirm" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.10 (.venv)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Startbildschirm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-e0ed3721d81e-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.159" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="83e025ae-83b6-4423-a893-5b42d16ef471" name="Changes" comment="" />
+      <created>1747657615848</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1747657615848</updated>
+      <workItem from="1747657617865" duration="1203000" />
+      <workItem from="1747660488310" duration="105000" />
+      <workItem from="1747660752151" duration="787000" />
+      <workItem from="1747669269746" duration="116000" />
+      <workItem from="1747675952914" duration="587000" />
+      <workItem from="1747767019287" duration="35000" />
+      <workItem from="1747767073890" duration="816000" />
+      <workItem from="1747836340619" duration="3902000" />
+      <workItem from="1747846527556" duration="4501000" />
+      <workItem from="1747943198530" duration="1113000" />
+      <workItem from="1748008893179" duration="2257000" />
+      <workItem from="1748021498359" duration="15000" />
+      <workItem from="1748021528076" duration="176000" />
+      <workItem from="1748077281650" duration="15000" />
+      <workItem from="1748077702926" duration="4031000" />
+      <workItem from="1748963975284" duration="6549000" />
+      <workItem from="1749225283704" duration="20000" />
+      <workItem from="1749225355019" duration="96000" />
+      <workItem from="1749225805639" duration="1069000" />
+      <workItem from="1749229679141" duration="4570000" />
+      <workItem from="1749378028841" duration="14431000" />
+      <workItem from="1749420583556" duration="867000" />
+      <workItem from="1749452012001" duration="4197000" />
+      <workItem from="1749472704246" duration="461000" />
+      <workItem from="1749475245382" duration="130000" />
+      <workItem from="1749480852469" duration="1326000" />
+      <workItem from="1749482220145" duration="287000" />
+      <workItem from="1749994733681" duration="7909000" />
+      <workItem from="1750229647267" duration="4309000" />
+      <workItem from="1750234146593" duration="16000" />
+      <workItem from="1750356754892" duration="14000" />
+    </task>
+    <task id="LOCAL-00001" summary="Löcher kollidieren mit Spieler">
+      <option name="closed" value="true" />
+      <created>1747767787530</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1747767787530</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Kugeln verbessert">
+      <option name="closed" value="true" />
+      <created>1747836866178</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1747836866178</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Kugeln verbessert">
+      <option name="closed" value="true" />
+      <created>1747837384316</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747837384316</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Kugeln verbessert 3.0">
+      <option name="closed" value="true" />
+      <created>1747838149656</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1747838149656</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Main.py an Starbildschirm.py und panzer.py angeschlossen">
+      <option name="closed" value="true" />
+      <created>1747849466499</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1747849466499</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Main.py an Starbildschirm.py und panzer.py angeschlossen .2">
+      <option name="closed" value="true" />
+      <created>1747849935076</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1747849935076</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Debug: Größe der Bildschirme">
+      <option name="closed" value="true" />
+      <created>1747851265022</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1747851265022</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Maps können in Maps.py erstellt werden">
+      <option name="closed" value="true" />
+      <created>1748011127588</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1748011127589</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Debug: Panzer steck in map 2 nicht mehr in der wand fest">
+      <option name="closed" value="true" />
+      <created>1748083417728</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1748083417728</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Kugeln werden in Microsteps gerendert , Kugeln haben Schützten Idea für Friendly fire für erste 150 milli sekunden">
+      <option name="closed" value="true" />
+      <created>1748980650690</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1748980650690</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Abraller + Kugeln gefixt . Dafür leider Kugeln größer">
+      <option name="closed" value="true" />
+      <created>1749284289753</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1749284289753</updated>
+    </task>
+    <task id="LOCAL-00012" summary="zielsystem.py für feinpanzer , shop kann vom statrtbildschirm aufgerufen werden">
+      <option name="closed" value="true" />
+      <created>1749380901658</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1749380901658</updated>
+    </task>
+    <task id="LOCAL-00013" summary="DEBUG + Speichermethodik">
+      <option name="closed" value="true" />
+      <created>1749416620922</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1749416620922</updated>
+    </task>
+    <task id="LOCAL-00014" summary="DEBUG">
+      <option name="closed" value="true" />
+      <created>1749417307577</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1749417307577</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Speichersystem + Account-struktur">
+      <option name="closed" value="true" />
+      <created>1749419998238</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1749419998238</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Debug der Accounts ,erster test account">
+      <option name="closed" value="true" />
+      <created>1749421174151</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1749421174151</updated>
+    </task>
+    <task id="LOCAL-00017" summary="debug_mode account">
+      <option name="closed" value="true" />
+      <created>1749421380657</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1749421380657</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Pygame UI für Account.py">
+      <option name="closed" value="true" />
+      <created>1749455425068</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1749455425068</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Test Account Andreas">
+      <option name="closed" value="true" />
+      <created>1749475371769</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1749475371769</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Eingabefeld bleibt zentriert + Debug">
+      <option name="closed" value="true" />
+      <created>1749482180539</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1749482180539</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Erste Stat-Upgrade Buttons">
+      <option name="closed" value="true" />
+      <created>1750008058947</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1750008058947</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Erste Stat-Upgrade Buttons mit mini fix">
+      <option name="closed" value="true" />
+      <created>1750008208736</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1750008208736</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Start_Label für Panzer.py">
+      <option name="closed" value="true" />
+      <created>1750234044922</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1750234044922</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Löcher kollidieren mit Spieler" />
+    <MESSAGE value="Kugeln verbessert" />
+    <MESSAGE value="Kugeln verbessert 3.0" />
+    <MESSAGE value="Main.py an Starbildschirm.py und panzer.py angeschlossen" />
+    <MESSAGE value="Main.py an Starbildschirm.py und panzer.py angeschlossen .2" />
+    <MESSAGE value="Großes Mienen Update Teil I&#10;&#10;Debug&#10;Schüsse müssen die Mienen genau treffen." />
+    <MESSAGE value="Debug: Größe der Bildschirme" />
+    <MESSAGE value="Maps können in Maps.py erstellt werden" />
+    <MESSAGE value="Debug: Panzer steck in map 2 nicht mehr in der wand fest" />
+    <MESSAGE value="Kugeln werden in Microsteps gerendert , Kugeln haben Schützten Idea für Friendly fire für erste 150 milli sekunden" />
+    <MESSAGE value="Abraller + Kugeln gefixt . Dafür leider Kugeln größer" />
+    <MESSAGE value="zielsystem.py für feinpanzer , shop kann vom statrtbildschirm aufgerufen werden" />
+    <MESSAGE value="DEBUG + Speichermethodik" />
+    <MESSAGE value="DEBUG" />
+    <MESSAGE value="Speichersystem + Account-struktur" />
+    <MESSAGE value="Debug der Accounts ,erster test account" />
+    <MESSAGE value="debug_mode account" />
+    <MESSAGE value="Pygame UI für Account.py" />
+    <MESSAGE value="Test Account Andreas" />
+    <MESSAGE value="Eingabefeld bleibt zentriert + Debug" />
+    <MESSAGE value="Erste Stat-Upgrade Buttons" />
+    <MESSAGE value="Erste Stat-Upgrade Buttons mit mini fix" />
+    <MESSAGE value="Start_Label für Panzer.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="Start_Label für Panzer.py" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/panzer_py$Speicher.coverage" NAME="Speicher Coverage Results" MODIFIED="1749421023510" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/zusammenführen_py$panzer.coverage" NAME="panzer Coverage Results" MODIFIED="1748980443988" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$Main.coverage" NAME="Main Coverage Results" MODIFIED="1749472773526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Panzerkiste$Main.coverage" NAME="Main Coverage Results" MODIFIED="1748010844116" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$Startbildschirm.coverage" NAME="Startbildschirm Coverage Results" MODIFIED="1749417029857" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Main_py$Startbildschirm.coverage" NAME="Startbildschirm Coverage Results" MODIFIED="1747848854298" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$panzer.coverage" NAME="panzer Coverage Results" MODIFIED="1749417176162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$Eingabe_test.coverage" NAME="Eingabe_test Coverage Results" MODIFIED="1749453297876" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Main_py$Main.coverage" NAME="Main Coverage Results" MODIFIED="1750233856454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$Account.coverage" NAME="Account Coverage Results" MODIFIED="1749472763730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Panzerkiste$panzer.coverage" NAME="panzer Coverage Results" MODIFIED="1748010835147" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Main_py$Account.coverage" NAME="Account Coverage Results" MODIFIED="1749481973471" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Panzerkiste$Maps.coverage" NAME="Maps Coverage Results" MODIFIED="1748010831427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$Maps.coverage" NAME="Maps Coverage Results" MODIFIED="1748082113177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Main_py$Shop.coverage" NAME="Shop Coverage Results" MODIFIED="1750007773967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$zielsystem.coverage" NAME="zielsystem Coverage Results" MODIFIED="1749379430544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/panzer_py$Shop.coverage" NAME="Shop Coverage Results" MODIFIED="1749412251641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Main_py$panzer.coverage" NAME="panzer Coverage Results" MODIFIED="1750234035124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Panzerkiste$Startbildschirm.coverage" NAME="Startbildschirm Coverage Results" MODIFIED="1747840391521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/zusammenführen_py$Kugel_test.coverage" NAME="Kugel_test Coverage Results" MODIFIED="1749226044723" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
