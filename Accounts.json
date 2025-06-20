@@ -18,6 +18,25 @@
             "mieneCooldown": 1,
             "explosionsRadius": 80
         }
+    },
+    "Andreas": {
+        "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
+        "stats": {
+            "punkte": 0,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 10,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
     }
-
 }
