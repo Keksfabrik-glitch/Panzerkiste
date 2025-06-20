@@ -630,7 +630,7 @@ class Miene(pygame.sprite.Sprite):
             for spieler in spieler_gruppe:
                 if explosions_sprite.mask.overlap(spieler.mask, offset):
                     spieler.Schaden(2)
-            self.kill()
+                    self.kill()
 
             ##!!! Bei den getroffenem Panzer, nicht immer Player
         else:
