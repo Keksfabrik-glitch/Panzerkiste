@@ -455,6 +455,7 @@ class Kugel(pygame.sprite.Sprite):
         self.freund_ignorieren_bis = pygame.time.get_ticks() + 150
         self.shooter = shooter
         self.update_rotation()
+        self.id = randomNameID().join(shooter_id)
     def remove_self(self):
         self.kill()
     def update_rotation(self):
@@ -522,6 +523,12 @@ class Kugel(pygame.sprite.Sprite):
                                 self.shooter.PunkteGeben(1*ziel.level)
                         self.kill()
                         return
+            # Kollision mit anderen Kugeln
+            for kugel in kugel_gruppe:
+                if self.rect.colliderect(kugel.rect) and self.id != kugel.id:
+                    explosions_gruppe.add(Explosion(*self.rect.center))
+                    self.kill()
+                    kugel.kill()
 
             # --- Spielfeld verlassen ---
             if not screen.get_rect().inflate(40, 40).collidepoint(self.rect.center):
