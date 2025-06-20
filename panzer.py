@@ -637,7 +637,7 @@ class Miene(pygame.sprite.Sprite):
             for spieler in spieler_gruppe:
                 if explosions_sprite.mask.overlap(spieler.mask, offset):
                     spieler.Schaden(2)
-                    self.kill()
+            self.kill()
 
             ##!!! Bei den getroffenem Panzer, nicht immer Player
         else:
@@ -674,7 +674,6 @@ class Miene(pygame.sprite.Sprite):
                                 if self.ErstellerLastIn - self.rest >= self.toleranz:
                                     self.early = True
                                     self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-                                    
                                 self.ErstellerLastIn = self.rest
                                 if self.rest <= self.ZeitBisEx - 4: #4 Sekunden zum rausgehen 
                                     self.early = True
