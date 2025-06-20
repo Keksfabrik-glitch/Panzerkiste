@@ -144,6 +144,7 @@ def Main(Nutzername):
                     
             else:
                 toast("Fehler","Du hast zu wenig Geld. Upgrade um weniger Stats, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
+            pygame.display.set_caption("Shop | Guthaben: {}$".format(Daten.read(Nutzername,"punkte")))
         def __init__(self,x,y,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10):
             self.pos = (x,y)
             
@@ -192,7 +193,8 @@ def Main(Nutzername):
     SH_HOEHE = 950
 
     screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
-    pygame.display.set_caption("Shop")  
+    Geld = Daten.read(Nutzername,"punkte")
+    pygame.display.set_caption("Shop | Guthaben: {}$".format(Geld))  
 
     BLAU = (0, 0, 255)  
     WEIß = (255, 255, 255)  
@@ -226,11 +228,11 @@ def Main(Nutzername):
     AbstandY = 135
     lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*0,3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
     GeschwindigkeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*1,10,50,2,"Geschwindigkeit","geschwindigkeit","Die Geschwindigkeit deines Panzers",50/2)
-    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",75)
+    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",25)
     MaxKugelnGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*3,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75)
     KugelSpeedGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*4,5,35,10,"Kugel Geschwindigkeit","kugelSpeed","Die Geschwindigkeit einer Kugel",150/10)
-    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*5,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)
-    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,1,5,1,"Nachladezeit","nachladezeit","Nachladedauer bis du wieder alle Schüsse hast in ms.",150)
+    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*5,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)   
+    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,1,5,1,"Nachladezeit","nachladezeit","Nachladezeit deines Panzers in ms",150)
 
     AbprallerGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*2,2,7,1,"Abpraller","abpraller","Maximale Abpraller deiner Kugeln",125) 
     AbprallChanceGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*3,75,100,5,"Abprallchance","abprallChance","Die Chance das deine Kugel Abprallt",100/5) 
@@ -253,7 +255,7 @@ def Main(Nutzername):
                 
         else:
             toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiene mehr Geld.",audio='ms-winsoundevent:Notification.IM')
-
+        pygame.display.set_caption("Shop | Guthaben: {}$".format(Daten.read(Nutzername,"punkte")))
     basis = pygame.Surface((360, 1))
     for x in range(360):
         h = x / 360
@@ -280,6 +282,7 @@ def Main(Nutzername):
                 mouseUP = True
             if event.type == pygame.QUIT:
                 laeuft = False
+
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
             for group in SettingGroupsss:

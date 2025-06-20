@@ -72,7 +72,8 @@ class Player(pygame.sprite.Sprite):
         self.abpraller = Daten.read(Name,"abpraller")
         self.abprallChance = Daten.read(Name,"abprallChance")
         self.mienenPos = []
-
+        self.rewriteGuthaben = pygame.time.get_ticks()+5*1000
+        pygame.display.set_caption("Panzerkiste | Punkte: {}$".format(Daten.read(self.ID,"punkte"))) 
         #  Grafik:
         #  Unten
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
@@ -93,6 +94,9 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
+        if pygame.time.get_ticks() >= self.rewriteGuthaben:
+            self.rewriteGuthaben = pygame.time.get_ticks()+60*60*1000
+            pygame.display.set_caption("Panzerkiste | Punkte: {}$".format(Daten.read(self.ID,"punkte"))) 
         # --- Körper drehen ---
         gedreht_body = pygame.transform.rotate(self.body_surface, -self.richtung)
         body_rect = gedreht_body.get_rect(center=(self.position.x, self.position.y))
@@ -193,7 +197,7 @@ class Player(pygame.sprite.Sprite):
 
                 neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
                                    abpraller=self.abpraller, abprallChance=self.abprallChance,
-                                   shooter_id=self.ID)
+                                   shooter_id=self.ID,shooter = self)
                 kugel_gruppe.add(neue_kugel)
                 self.kugeln -= 1
                 self.letzterEinzelschuss = jetzt
@@ -201,9 +205,18 @@ class Player(pygame.sprite.Sprite):
                     self.letzterSchuss = jetzt
     def Schaden(self,amount=1):
         self.leben -= amount
+        self.PunkteGeben(-amount)
         if self.leben <= 0:
             print("Ende")
-            #running = False                                  
+            #running = False       
+    def PunkteGeben(self,amount=1):             
+        anzeige = amount
+        if amount > 0:
+            anzeige = "+" + str(amount)
+        Daten.write(self.ID,"punkte",(Daten.read(self.ID,"punkte")+amount))
+        pygame.display.set_caption("Panzerkiste | Punkte: {}$ | {}$!".format(Daten.read(self.ID,"punkte"),str(anzeige)))   
+
+        self.rewriteGuthaben = pygame.time.get_ticks()+3*1000       
 class FeindPanzer(pygame.sprite.Sprite):
 
     def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe):
@@ -366,7 +379,7 @@ class FeindPanzer(pygame.sprite.Sprite):
 
             neue_kugel = Kugel(start_pos, richtung, self.kugelSpeed,
                             abpraller=self.abpraller, abprallChance=self.abprallChance,
-                            shooter_id=self.ID)
+                            shooter_id=self.ID,shooter = self)
             kugel_gruppe.add(neue_kugel)
             self.kugeln -= 1
             self.letzterEinzelschuss = jetzt
@@ -376,7 +389,7 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.leben -= amount
         #if self.leben <= 0:
             #running = False 
-
+   
 class FeindPanzerManage():
     def __init__(self):
         self.panzer =  []
@@ -426,7 +439,7 @@ class Explosion(pygame.sprite.Sprite):
             else:
                 self.kill()       
 class Kugel(pygame.sprite.Sprite):
-    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=1, shooter_id=None):
+    def __init__(self, start_pos, richtung, geschwindigkeit=8, abpraller=2, abprallChance=1, shooter_id=None,shooter = None):
         super().__init__()
         self.original_image = pygame.Surface((14, 7), pygame.SRCALPHA)
         pygame.draw.rect(self.original_image, ROT, self.original_image.get_rect())
@@ -440,7 +453,7 @@ class Kugel(pygame.sprite.Sprite):
         self.abprallChance = abprallChance
         self.shooter_id = shooter_id
         self.freund_ignorieren_bis = pygame.time.get_ticks() + 150
-
+        self.shooter = shooter
         self.update_rotation()
     def remove_self(self):
         self.kill()
@@ -504,6 +517,9 @@ class Kugel(pygame.sprite.Sprite):
                     if self.mask.overlap(ziel.mask, offset):
                         ziel.Schaden()
                         explosions_gruppe.add(Explosion(*self.rect.center))
+                        if self.shooter_id != ziel.ID:
+                            if self.shooter_id == player.ID:
+                                self.shooter.PunkteGeben(1*ziel.level)
                         self.kill()
                         return
 
