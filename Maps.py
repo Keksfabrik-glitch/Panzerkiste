@@ -7,7 +7,8 @@ map_1 = {
     "holes": [
         {"x": 400, "y": 200, "radius": 25}
     ],
-    "player_start": (100, 100)
+    "player_start": (100, 100),
+    "fpanzer_start": [(200,500),(300,100)]
 }
 map_2 = {
     "walls": [
@@ -20,7 +21,8 @@ map_2 = {
         {"x": 150, "y": 350, "radius": 15},
         {"x": 450, "y": 350, "radius": 15}
     ],
-    "player_start": (50, 200)
+    "player_start": (50, 200),
+    "fpanzer_start": [(200,500),(300,100)]
 }
 map_3 = {
     "walls": [
@@ -33,7 +35,8 @@ map_3 = {
     "holes": [
         {"x": 400, "y": 200, "radius": 10}
     ],
-    "player_start": (150, 150)
+    "player_start": (150, 150),
+    "fpanzer_start": [(200,500),(300,100)]
 }
 map_4 = {
     "walls": [
@@ -43,7 +46,8 @@ map_4 = {
     "holes": [
         {"x": 300, "y": 300, "radius": 10}
     ],
-    "player_start": (400, 300)
+    "player_start": (400, 300),
+    "fpanzer_start": [(200,500),(300,100)]
 }
 map_test = {
     "walls": [
@@ -52,5 +56,6 @@ map_test = {
     "holes": [
         {"x": 300, "y": 300, "radius": 10}
     ],
-    "player_start": (400, 300)
+    "player_start": (400, 300),
+    "fpanzer_start" : [(100,100)]
 }

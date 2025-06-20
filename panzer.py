@@ -770,6 +770,8 @@ def Main(Nutzername):
             if event.type == pygame.QUIT:
                 start_running = False
                 running = False
+        if pygame.mouse.get_pressed()[0]:
+            start_running = False
         label_gruppe.update()
         label_gruppe.draw(screen)
         if len(label_gruppe) == 0:
