@@ -23,6 +23,16 @@ BLAU = (0, 0, 255)
 GRÜN = (0,255,0)
 GOLD = (212, 175, 55)
 TRANSPARENT = (0,0,0,0)
+#Sounds
+Sounds = True
+pygame.mixer.init()
+sound_start = pygame.mixer.Sound("Sounds/Tanks_Start.mp3")
+sound_jingle = pygame.mixer.Sound("Sounds/Tanks_Jingel.mp3")
+sound_win = pygame.mixer.Sound("Sounds/Tanks_Win.mp3")
+sound_fail = pygame.mixer.Sound("Sounds/Tanks_Fail.mp3")
+sound_round_end = pygame.mixer.Sound("Sounds/Tanks_Round_End.mp3")
+sound_explosion = pygame.mixer.Sound("Sounds/Tanks_Explosion.wav")
+sound_treffer = pygame.mixer.Sound("Sounds/Tanks_Treffer.wav")
 #Sprite Groups
 wände = pygame.sprite.Group()
 explosions_gruppe = pygame.sprite.Group()
@@ -207,11 +217,14 @@ class Player(pygame.sprite.Sprite):
     def Schaden(self,amount=1):
         self.leben -= amount
         self.PunkteGeben(-amount)
+        if Sounds:
+            sound_treffer.play()
         if self.leben <= 0:
-            print("Ende")
-            #running = False       
+            if Sounds:
+                sound_explosion.play()
+
     def PunkteGeben(self,amount=1):       
-        print("AHHH ", amount)     
+        #print("AHHH ", amount)
         anzeige = amount
         if amount > 0:
             anzeige = "+" + str(amount)
@@ -393,9 +406,11 @@ class FeindPanzer(pygame.sprite.Sprite):
 
     def Schaden(self, amount=1):
         self.leben -= amount
-        print(f"FeindPanzer {self.ID} Schaden: {amount}, Leben jetzt: {self.leben}")
+        if Sounds:
+            sound_treffer.play()
         if self.leben <= 0:
-            print(f"FeindPanzer {self.ID} zerstört")
+            if Sounds:
+                sound_explosion.play()
             self.kill()
 
 
@@ -806,6 +821,8 @@ def Main(Nutzername):
     maps = ["map_1", "map_2", "map_3", "map_4", "map_5"]
     level_running = True
     level = 1
+    if Sounds:
+        sound_start.play()
     while level_running:
         if level != 1:
             map_name = maps[(level - 1) % len(maps)]
@@ -830,6 +847,9 @@ def Main(Nutzername):
                     start_running = False
                     running = False
                     level_running = False
+                    if Sounds:
+                        sound_jingle.stop()
+                        sound_round_end.play()
 
             if pygame.mouse.get_pressed()[0]:
                 start_running = False
@@ -838,6 +858,8 @@ def Main(Nutzername):
             if len(label_gruppe) == 0:
                 start_running = False
             pygame.display.flip()
+        if Sounds:
+            sound_jingle.play(loops=-1)
         while running:
             screen.fill(SAND)
             löcher.draw(screen)
@@ -846,10 +868,18 @@ def Main(Nutzername):
                 if event.type == pygame.QUIT:
                     running = False
                     level_running = False
+                    if Sounds:
+                        sound_jingle.stop()
+                        sound_round_end.play()
             if len(feindPanzerGR) == 0:
-                print("Alle Feindpanzer zerstört! Lade neues Level...")
+                if Sounds:
+                    sound_jingle.stop()
+                    sound_win.play()
                 running = False
             if player.leben <= 0:
+                if Sounds:
+                    sound_jingle.stop()
+                    sound_fail.play()
                 running = False
                 level_running = False
                 print("Du bist in level {} gestorben".format(level))
