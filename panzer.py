@@ -797,7 +797,7 @@ def Main(Nutzername):
     screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
-    lade_map(M.map_1,Nutzername)
+    lade_map(M.map_3,Nutzername)
     running = True
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 24)
