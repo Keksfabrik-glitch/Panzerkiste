@@ -412,8 +412,6 @@ class FeindPanzerManage():
             # Mienen Stats und appraller danach noch...
 #Testing
 FM = FeindPanzerManage()
-#for i in range(1,25):
-FM.NeuerPanzer(1,"stehend",(300,300))
   
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -756,6 +754,9 @@ def lade_map(map_data,Nutzername):
     player = Player(map_data["player_start"], Nutzername)
     spieler_gruppe.empty()
     spieler_gruppe.add(player)
+    #Fpanzer platzieren
+    for i in range (len(map_data.get("fpanzer_start",[]))):
+        FM.NeuerPanzer(1, "stehend", map_data["fpanzer_start"][i])
 
 def Main(Nutzername):
     #feindPanzer.add(Player(10,10))
@@ -764,7 +765,7 @@ def Main(Nutzername):
     screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
-    lade_map(M.map_test,Nutzername)
+    lade_map(M.map_1,Nutzername)
     running = True
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 24)

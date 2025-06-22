@@ -1,14 +1,16 @@
 #Maps
 map_1 = {
     "walls": [
-        {"x": 300, "y": 100, "w": 200, "h": 20, "destroyable": False},
-        {"x": 300, "y": 280, "w": 200, "h": 20, "destroyable": False}
+        {"x": 150, "y": 150, "w": 500, "h": 300, "destroyable": False},
+        {"x": 150, "y": 75.5, "w": 10, "h": 75.5, "destroyable": False},
+        {"x": 550, "y": 0, "w": 10, "h": 75.5, "destroyable": False},
+        {"x": 650, "y": 440, "w": 75.5, "h": 10, "destroyable": False},
+        {"x": 725.5, "y": 250, "w": 75.5, "h": 10, "destroyable": False}
     ],
     "holes": [
-        {"x": 400, "y": 200, "radius": 25}
     ],
-    "player_start": (100, 100),
-    "fpanzer_start": [(200,500),(300,100)]
+    "player_start": (75.5, 525.5),
+    "fpanzer_start": [(725.5,75.5)]
 }
 map_2 = {
     "walls": [
