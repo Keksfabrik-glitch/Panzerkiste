@@ -28,7 +28,7 @@ def registrieren (nutzername,passwort):
             "passwort": hash_passwort(passwort),
             "stats": {
                 "punkte": 0, #Geld
-                "farbe": "[98, 255, 255, 255]",
+                "farbe": "[100, 255, 255, 255]",
                 "leben": 3,
                 "schussCooldown": 250,
                 "drehgeschwindigkeit": 5,
