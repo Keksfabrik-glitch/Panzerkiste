@@ -32,7 +32,7 @@ def registrieren (nutzername,passwort):
                 "leben": 3,
                 "schussCooldown": 250,
                 "drehgeschwindigkeit": 5,
-                "geschwindigkeit": 10,
+                "geschwindigkeit": 25,
                 "maxKugeln": 5,
                 "kugelSpeed": 5,
                 "nachladezeit": 5,

@@ -2,7 +2,7 @@
     "_Hannes_": {
         "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "punkte": -1,
+            "punkte": 26,
             "farbe": "[31, 215, 166, 255]",
             "leben": 10,
             "schussCooldown": 40,
@@ -31,6 +31,266 @@
             "maxKugeln": 5,
             "kugelSpeed": 5,
             "nachladezeit": 1,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "Test": {
+        "passwort": "f424a9fa10ad336803a7be15a8b50e8dce56ac0853db9792c9351ef3a80a6b97",
+        "stats": {
+            "punkte": -21,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 10,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "Tesssst": {
+        "passwort": "34dc9100a65aa3beec6f7e673d29e5388ddb0c2290b1ea4ea7158a2d8ee388bc",
+        "stats": {
+            "punkte": 3,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 10,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "TETTTTESSS": {
+        "passwort": "3f00eebd321c2509e2b9cb5d8d4f44eebcd7b1a3f1777a842f571e8c13f33589",
+        "stats": {
+            "punkte": 1,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "LOL": {
+        "passwort": "73cd9f27540deebfafd8ed2c529e2f8365dbb85a3e863925535cbbbb39a88699",
+        "stats": {
+            "punkte": 0,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "tttt": {
+        "passwort": "19d804d9e313db296af1271e81ecea279d1a089716aef7c1684ef8d0770ba3d4",
+        "stats": {
+            "punkte": -1,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "I HATE THIS": {
+        "passwort": "3c3d3a7e47db846d3510c1eb853df5bd289a764235ac406d55ef902a9fccb62f",
+        "stats": {
+            "punkte": 1,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "ENDLICH BITTE": {
+        "passwort": "a342c357d0012830a07cc0f62c3df55b0d82fc8315b1ca4352035be2083f6142",
+        "stats": {
+            "punkte": -8,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "ENDLICH HURRA": {
+        "passwort": "0d488ef9c0938396411e18c283726f893be6f27b4cc1c9c5ea5a9a37e149ee27",
+        "stats": {
+            "punkte": 0,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "ENDLICH JURRA": {
+        "passwort": "461d9a4c6dedce2f67b7cb293b686f7c4c93a3fad4aede4fa6ac565613c5e35a",
+        "stats": {
+            "punkte": 0,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "FINALLY": {
+        "passwort": "71161367a1b7114e8dee561f2f5c32146442e508b21c053cd1df1fc5b59a4ada",
+        "stats": {
+            "punkte": 3,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "sehr gut": {
+        "passwort": "b773f862b779a9b4067251a555caac539f955a3892a1da1c7f42e27c12bc2ff4",
+        "stats": {
+            "punkte": -4,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "TETETANUSTEST": {
+        "passwort": "af2c620d818c9ba46f849ccc3345d7b21c942d28bac925e106a7c41b133736f1",
+        "stats": {
+            "punkte": -4,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
+    },
+    "omg": {
+        "passwort": "d2f21900f07ba116bc043b29df1174dbf11b0b709d0aa0f9b8ed1048a67f3627",
+        "stats": {
+            "punkte": -7,
+            "farbe": "[98, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
             "abpraller": 2,
             "abprallChance": 0.75,
             "mieneZeit": 15,

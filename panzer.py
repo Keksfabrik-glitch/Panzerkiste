@@ -8,6 +8,7 @@ import Maps as M
 import zielsystem as Z
 import Speicher as Daten
 import json
+
 pygame.init()
 clock = pygame.time.Clock()
 panzer_größe = 40
@@ -180,7 +181,7 @@ class Player(pygame.sprite.Sprite):
                     self.mienenAnzahl -= 1
                 if len(self.mienenPos) <= 5:
                     pos = self.position.copy()
-                    GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
+                    GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius,self))
                     self.letzte_mine_zeit = jetzt
                     
     def Schuss(self, maus_pos, jetzt):
@@ -209,7 +210,8 @@ class Player(pygame.sprite.Sprite):
         if self.leben <= 0:
             print("Ende")
             #running = False       
-    def PunkteGeben(self,amount=1):             
+    def PunkteGeben(self,amount=1):       
+        print("AHHH ", amount)     
         anzeige = amount
         if amount > 0:
             anzeige = "+" + str(amount)
@@ -359,7 +361,7 @@ class FeindPanzer(pygame.sprite.Sprite):
                     self.mienenAnzahl -= 1
                 if len(self.mienenPos) <= 5:
                     pos = self.position.copy()
-                    GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius))
+                    GelegteMienen.add(Miene(pos,jetzt,self.ID,self.mieneZeit,self.explosionsRadius,self))
                     self.letzte_mine_zeit = jetzt
                     
     def Schuss(self, winkel):
@@ -593,15 +595,17 @@ class Loch(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 class Miene(pygame.sprite.Sprite):
     #Zwischenversion, die funktioniert
-    def __init__(self,pos,jetzt,ID,mieneZeit,explosionsRadius):
+    def __init__(self,pos,jetzt,ID,mieneZeit,explosionsRadius,Ersteller):
         super().__init__()
         self.pos = pos
         self.gelegt = jetzt
         self.ZeitBisEx = mieneZeit
         self.explosionsRadius = explosionsRadius
         self.ErstellerID = ID
+        self.Ersteller = Ersteller
         self.ErstellerLastIn = self.ZeitBisEx - jetzt/1000
         self.toleranz = 0.25
+        self.getroffene = set()
         self.early = False
         self.radius = 8
         self.rest = self.ZeitBisEx
@@ -624,17 +628,30 @@ class Miene(pygame.sprite.Sprite):
             if getroffeneWand:
                 if getroffeneWand.zerstörbarkeit:
                     getroffeneWand.schaden(10)
-            offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top)
+                        
             for miene in GelegteMienen:
                 diff = miene.pos - self.pos
                 abstand = diff.length()
                 if abstand <= self.explosionsRadius:
                     miene.early = True
                     miene.gelegt += (2 - miene.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
-
             for spieler in spieler_gruppe:
+                offset = (spieler.rect.left - explosions_sprite.rect.left,spieler.rect.top - explosions_sprite.rect.top)
                 if explosions_sprite.mask.overlap(spieler.mask, offset):
+                    if spieler.ID in self.getroffene:
+                        continue
+                    self.getroffene.add(spieler.ID)
                     spieler.Schaden(2)
+                    if spieler.ID != self.ErstellerID:
+                        self.Ersteller.PunkteGeben(5)
+            for Panzer in feindPanzerGR:
+                offset = (Panzer.rect.left - explosions_sprite.rect.left,Panzer.rect.top - explosions_sprite.rect.top)
+                if explosions_sprite.mask.overlap(Panzer.mask, offset):
+                    if Panzer.ID in self.getroffene:
+                        continue
+                    self.getroffene.add(Panzer.ID)
+                    Panzer.Schaden(2)
+                    self.Ersteller.PunkteGeben(5)
             self.kill()
 
             ##!!! Bei den getroffenem Panzer, nicht immer Player
@@ -665,8 +682,23 @@ class Miene(pygame.sprite.Sprite):
                     pygame.draw.circle(explosions_sprite.image, (255, 0, 0, 128), (radius, radius), radius)
                     explosions_sprite.rect = explosions_sprite.image.get_rect(center=(self.pos.x, self.pos.y))
                     explosions_sprite.mask = pygame.mask.from_surface(explosions_sprite.image)
-                    offset = (player.rect.left - explosions_sprite.rect.left,player.rect.top - explosions_sprite.rect.top) # NUR SPIELER. ANDERE PANZER MÜSSEN AUCH 
+                    
                     for spieler in spieler_gruppe:
+                        offset = (spieler.rect.left - explosions_sprite.rect.left,spieler.rect.top - explosions_sprite.rect.top) # NUR SPIELER. ANDERE PANZER MÜSSEN AUCH 
+                        if explosions_sprite.mask.overlap(spieler.mask, offset):
+                            if spieler.ID == self.ErstellerID:
+                                if self.ErstellerLastIn - self.rest >= self.toleranz:
+                                    self.early = True
+                                    self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                                self.ErstellerLastIn = self.rest
+                                if self.rest <= self.ZeitBisEx - 4: #4 Sekunden zum rausgehen 
+                                    self.early = True
+                                    self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                            else: # Nicht der Leger, also auch keine Vorteile 
+                                self.early = True
+                                self.gelegt += (2 - self.rest)*1000  # Gelegte Zeit manipulieren, dass es so war das jetzt nur noch 2 Sekunden verbleibend sind
+                    for spieler in feindPanzerGR:
+                        offset = (spieler.rect.left - explosions_sprite.rect.left,spieler.rect.top - explosions_sprite.rect.top) # NUR SPIELER. ANDERE PANZER MÜSSEN AUCH 
                         if explosions_sprite.mask.overlap(spieler.mask, offset):
                             if spieler.ID == self.ErstellerID:
                                 if self.ErstellerLastIn - self.rest >= self.toleranz:
@@ -838,4 +870,3 @@ def Main(Nutzername):
         pygame.display.flip()
         clock.tick(60)
 
-#Main()
