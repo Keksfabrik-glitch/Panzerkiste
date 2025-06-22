@@ -306,6 +306,9 @@ class FeindPanzer(pygame.sprite.Sprite):
             if Z.hat_sichtlinie(self.position, player.position, wände) == True:
                 self.Schuss(winkel*-1)
 
+        if self.leben <= 0:
+            self.kill()
+
     # --- Bewegungsmethoden ---
     def Drehen(self, Um):
         self.richtung += Um
@@ -387,11 +390,15 @@ class FeindPanzer(pygame.sprite.Sprite):
             self.letzterEinzelschuss = jetzt
             if self.kugeln == 0:
                 self.letzterSchuss = jetzt
-    def Schaden(self,amount=1):
+
+    def Schaden(self, amount=1):
         self.leben -= amount
-        #if self.leben <= 0:
-            #running = False 
-   
+        print(f"FeindPanzer {self.ID} Schaden: {amount}, Leben jetzt: {self.leben}")
+        if self.leben <= 0:
+            print(f"FeindPanzer {self.ID} zerstört")
+            self.kill()
+
+
 class FeindPanzerManage():
     def __init__(self):
         self.panzer =  []
@@ -763,7 +770,7 @@ class StartLabel(pygame.sprite.Sprite):
         if jetzt >= self.ende:
             self.kill()
 
-def lade_map(map_data,Nutzername):
+def lade_map(map_data,Nutzername,level):
     wände.empty()
     löcher.empty()
 
@@ -788,85 +795,115 @@ def lade_map(map_data,Nutzername):
     spieler_gruppe.add(player)
     #Fpanzer platzieren
     for i in range (len(map_data.get("fpanzer_start",[]))):
-        FM.NeuerPanzer(1, "stehend", map_data["fpanzer_start"][i])
+        FM.NeuerPanzer(level, "stehend", map_data["fpanzer_start"][i])
 
 def Main(Nutzername):
     #feindPanzer.add(Player(10,10))
     global player, running
     P_WIDTH, P_HEIGHT = 800, 600
     screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
-    pygame.display.set_caption("Panzerkiste")  # Fenstertitel
+    pygame.display.set_caption("Panzerkiste")
+    maps = ["map_1", "map_2", "map_3", "map_4", "map_5"]
+    level_running = True
+    level = 1
+    while level_running:
+        if level != 1:
+            map_name = maps[(level - 1) % len(maps)]
+            map_data = getattr(M, map_name)
+            lade_map(map_data, Nutzername, level % 5 +1)
+        else:
+            map_data = M.map_1
+            lade_map(map_data, Nutzername, 1)
 
-    lade_map(M.map_3,Nutzername)
-    running = True
-    clock = pygame.time.Clock()
-    font = pygame.font.SysFont(None, 24)
-    #Startlabel Test
-    start_running = True
-    label_gruppe.add(StartLabel(0,0,P_WIDTH,P_HEIGHT,0,1,2000))
-    while start_running:
-        clock.tick(60)
-        screen.fill((255, 255, 255))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        running = True
+        clock = pygame.time.Clock()
+        font = pygame.font.SysFont(None, 24)
+
+        # Startbildschirm anzeigen
+        start_running = True
+        label_gruppe.add(StartLabel(0, 0, P_WIDTH, P_HEIGHT, level, len(map_data.get("fpanzer_start", [])),2000))
+        while start_running:
+            clock.tick(60)
+            screen.fill((255, 255, 255))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    start_running = False
+                    running = False
+                    level_running = False
+
+            if pygame.mouse.get_pressed()[0]:
                 start_running = False
+            label_gruppe.update()
+            label_gruppe.draw(screen)
+            if len(label_gruppe) == 0:
+                start_running = False
+            pygame.display.flip()
+        while running:
+            screen.fill(SAND)
+            löcher.draw(screen)
+            jetzt = pygame.time.get_ticks()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    level_running = False
+            if len(feindPanzerGR) == 0:
+                print("Alle Feindpanzer zerstört! Lade neues Level...")
                 running = False
-        if pygame.mouse.get_pressed()[0]:
-            start_running = False
-        label_gruppe.update()
-        label_gruppe.draw(screen)
-        if len(label_gruppe) == 0:
-            start_running = False
-        pygame.display.flip()
-    while running:
-        screen.fill(SAND)
-        löcher.draw(screen)
-        jetzt = pygame.time.get_ticks()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if player.leben <= 0:
                 running = False
+                level_running = False
+                print("Du bist in level {} gestorben".format(level))
 
-        maus_pos = pygame.mouse.get_pos()
-        richtung = pygame.Vector2(maus_pos) - player.position
-        if richtung.length() != 0:
-            richtung = richtung.normalize()
-        winkel = -richtung.angle_to(pygame.Vector2(1, 0))
-        player.turmWinkel = winkel
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
-            player.goW()
-        if keys[pygame.K_s]:
-            player.goS()
-        if keys[pygame.K_a]:
-            player.goA()
-        if keys[pygame.K_d]:
-            player.goD()
-        if keys[pygame.K_SPACE]:
-            player.Miene()
+            maus_pos = pygame.mouse.get_pos()
+            richtung = pygame.Vector2(maus_pos) - player.position
+            if richtung.length() != 0:
+                richtung = richtung.normalize()
+            winkel = -richtung.angle_to(pygame.Vector2(1, 0))
+            player.turmWinkel = winkel
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_w]:
+                player.goW()
+            if keys[pygame.K_s]:
+                player.goS()
+            if keys[pygame.K_a]:
+                player.goA()
+            if keys[pygame.K_d]:
+                player.goD()
+            if keys[pygame.K_SPACE]:
+                player.Miene()
 
-        if pygame.mouse.get_pressed()[0]:
-            player.Schuss(maus_pos, jetzt)
+            if pygame.mouse.get_pressed()[0]:
+                player.Schuss(maus_pos, jetzt)
 
-        if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
-            player.kugeln = player.maxKugeln
-        for panzer in feindPanzerGR:
-            if panzer.kugeln == 0 and jetzt - panzer.letzterSchuss >= panzer.nachladezeit * 1000:
-                panzer.kugeln = panzer.maxKugeln
-        GelegteMienen.update()
-        spieler_gruppe.update()
-        feindPanzerGR.update()
-        kugel_gruppe.update()
-        kugel_gruppe.draw(screen)
-        spieler_gruppe.draw(screen)
-        feindPanzerGR.draw(screen)
-        wände.draw(screen)
-        explosions_gruppe.update()
-        explosions_gruppe.draw(screen)
+            if player.kugeln == 0 and jetzt - player.letzterSchuss >= player.nachladezeit * 1000:
+                player.kugeln = player.maxKugeln
+            for panzer in feindPanzerGR:
+                if panzer.kugeln == 0 and jetzt - panzer.letzterSchuss >= panzer.nachladezeit * 1000:
+                    panzer.kugeln = panzer.maxKugeln
+            GelegteMienen.update()
+            spieler_gruppe.update()
+            feindPanzerGR.update()
+            kugel_gruppe.update()
+            kugel_gruppe.draw(screen)
+            spieler_gruppe.draw(screen)
+            feindPanzerGR.draw(screen)
+            wände.draw(screen)
+            explosions_gruppe.update()
+            explosions_gruppe.draw(screen)
 
-        
-        screen.blit(font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ), (30, 30))
-        screen.blit(font.render("Leben: {}".format(player.leben), True, SCHWARZ), (30, 55))
 
-        pygame.display.flip()
-        clock.tick(60)
+            screen.blit(font.render("Kugeln: {}".format(player.kugeln), True, SCHWARZ), (30, 30))
+            screen.blit(font.render("Leben: {}".format(player.leben), True, SCHWARZ), (30, 55))
+
+            pygame.display.flip()
+            clock.tick(60)
+        level += 1
+        wände.empty()
+        explosions_gruppe.empty()
+        kugel_gruppe.empty()
+        spieler_gruppe.empty()
+        löcher.empty()
+        GelegteMienen.empty()
+        feindPanzerGR.empty()
+        label_gruppe.empty()
 
