@@ -21,7 +21,7 @@ if Nutzername == None:
     running = False
 else:
     running = True
-    print(Nutzername)
+    #print(Nutzername)
 while running:
     auswahl = SB.Main(Nutzername)  # Fenster übergeben
     if auswahl == "Singleplayer":

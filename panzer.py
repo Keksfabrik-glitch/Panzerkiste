@@ -12,7 +12,7 @@ pygame.init()
 clock = pygame.time.Clock()
 panzer_größe = 40
 
-P_WIDTH, P_HEIGHT = 800, 400
+P_WIDTH, P_HEIGHT = 800, 600
 #Farben
 WEISS = (255, 255, 255)
 ROT = (255, 0, 0)
@@ -760,7 +760,7 @@ def lade_map(map_data,Nutzername):
 def Main(Nutzername):
     #feindPanzer.add(Player(10,10))
     global player, running
-    P_WIDTH, P_HEIGHT = 800, 400
+    P_WIDTH, P_HEIGHT = 800, 600
     screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")  # Fenstertitel
 
