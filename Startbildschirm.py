@@ -9,12 +9,17 @@ except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 pygame.init()
+#Sounds
+Sounds = True
+pygame.mixer.init
+sound_startbildschirm = pygame.mixer.Sound("Sounds/Tanks_Startbildschirm.mp3")
 # Setup für Startbildschirm
 def Main(Nutzername):
     SB_BREITE = 600  # screenbreite für Startbildschirm
     SB_HOEHE = 600   # screenhöhe für Startbildschirm
 
-
+    if Sounds:
+        sound_startbildschirm.play(loops=-1)
     screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm
     pygame.display.set_caption("Startbildschirm")  # screentitel
 
@@ -40,6 +45,7 @@ def Main(Nutzername):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                sound_startbildschirm.stop()
                 return "Beenden"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
@@ -49,6 +55,7 @@ def Main(Nutzername):
                 elif event.key == pygame.K_RETURN:
                     auswahl = stellen[selected_index]
                     if auswahl == "Singleplayer":
+                        sound_startbildschirm.stop()
                         if wintoast:
                             notify(progress={
                                 'title': 'Wird gestartet',
@@ -77,12 +84,16 @@ def Main(Nutzername):
                         return "Singleplayer"
                         
                     elif auswahl == "Multiplayer":
+                        sound_startbildschirm.stop()
                         return "Multiplayer"
                     elif auswahl == "Einstellungen":
+                        sound_startbildschirm.stop()
                         return "Einstellungen"
                     elif auswahl == "Beenden":
+                        sound_startbildschirm.stop()
                         return "Beenden"
                     elif auswahl == "Shop":
+                        sound_startbildschirm.stop()
                         return "Shop"
 
         pygame.display.flip()
