@@ -38,5 +38,25 @@
             "mieneCooldown": 5,
             "explosionsRadius": 40
         }
+    },
+    "Presentation": {
+        "passwort": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+        "stats": {
+            "punkte": 1000,
+            "farbe": "[100, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        }
     }
 }
