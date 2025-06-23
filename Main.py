@@ -33,7 +33,7 @@ while running:
         if wintoast:
             notify('Fehler', 'Multiplayer ist noch nicht verfügbar.', audio='ms-winsoundevent:Notification.IM')
         else:
-            print("Fehler, Einstellungen sind noch nicht verfügbar.")
+            print("Fehler, Multiplayer ist noch nicht verfügbar.")
     elif auswahl == "Einstellungen":
         E.main(Nutzername)
     elif auswahl == "Shop":
