@@ -1,36 +1,30 @@
-#Speicher
+# Speicher.py
 import json
+import os
+
 Speicherort = "Accounts.json"
+
 def speichere_daten(dateiname, daten):
-    with open(dateiname, "w") as f:
-        json.dump(daten, f, indent=4)
+    with open(dateiname, "w", encoding="utf-8") as f:
+        json.dump(daten, f, indent=4, ensure_ascii=False)
 
 def lade_daten(dateiname):
-    with open(dateiname, "r") as f:
-        return json.load(f)
-    
-def read(nutzername,value):
-    try :
-        daten = lade_daten(Speicherort)
-    except :
-        return False
-    if nutzername in daten: 
-        return daten[nutzername]["stats"][value]
-    return False 
-   
+    if not os.path.exists(dateiname):
+        return {}
+    with open(dateiname, "r", encoding="utf-8") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
 
-def write(nutzername, value, set):
-    try :
-        daten = lade_daten(Speicherort)
-    except :
-        return False
-    if nutzername in daten: 
-        daten[nutzername]["stats"][value] = set
-        speichere_daten(Speicherort, daten)
+def read(nutzername, value, ort="stats", speicherort=Speicherort):
+    daten = lade_daten(speicherort)
+    return daten.get(nutzername, {}).get(ort, {}).get(value, False)
+
+def write(nutzername, value, set, ort="stats", speicherort=Speicherort):
+    daten = lade_daten(speicherort)
+    if nutzername in daten and ort in daten[nutzername]:
+        daten[nutzername][ort][value] = set
+        speichere_daten(speicherort, daten)
         return True
-    return False 
-
-#
-#print(write("Andreas","leben",0))
-#print(read("Andreas","leben"))
-   
+    return False
