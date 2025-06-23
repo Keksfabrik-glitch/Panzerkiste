@@ -29,7 +29,7 @@ PastelMaxAufpreis = 90
 #Sounds
 Sounds = True
 pygame.mixer.init()
-#sound_ca_king = pygame.mixer.Sound("Sounds/Tanks_Ca-king.mp3")
+sound_ca_cing = pygame.mixer.Sound("Sounds/Tanks_Ca-ching.mp3")
 def FarbPreisBerechnen(Farbe):
     preis = 10
     r, g, b, a = Farbe
@@ -129,8 +129,8 @@ class Button:
 
 def Main(Nutzername):
     laeuft = True
-    #if Sounds:
-        #sound_ca_king.play()
+    if Sounds:
+        sound_ca_cing.play()
     class SettingsGroup():
         def kaufen(self):
             Geld = Daten.read(Nutzername,"punkte")
@@ -146,6 +146,8 @@ def Main(Nutzername):
                     self.maxOwnedValue = self.maxOwnedValue*100
                 self.slider.internValue = self.value -self.min
                 self.slider.SliderButtonPos()
+                if Sounds:
+                    sound_ca_cing.play()
                 #if wintoast == True:
                     
             else:
@@ -257,7 +259,8 @@ def Main(Nutzername):
         if Geld >= Farbpreis:
             Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Farbpreis))
             Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
-            
+            if Sounds:
+                sound_ca_cing.play()
             #if wintoast == True:
                 
         else:

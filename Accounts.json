@@ -22,9 +22,9 @@
     "Andreas": {
         "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
         "stats": {
-            "punkte": 271,
-            "farbe": "[98, 255, 255, 255]",
-            "leben": 4,
+            "punkte": 18,
+            "farbe": "[1, 216, 243, 255]",
+            "leben": 5,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
             "geschwindigkeit": 25,
