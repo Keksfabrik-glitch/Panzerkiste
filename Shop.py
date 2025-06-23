@@ -149,7 +149,8 @@ def Main(Nutzername):
                 #if wintoast == True:
                     
             else:
-                toast("Fehler","Du hast zu wenig Geld. Upgrade um weniger Stats, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
+                if wintoast:
+                    toast("Fehler","Du hast zu wenig Geld. Upgrade um weniger Stats, oder verdiehne mehr Geld.",audio='ms-winsoundevent:Notification.IM')
             pygame.display.set_caption("Shop | Guthaben: {}$".format(Daten.read(Nutzername,"punkte")))
         def __init__(self,x,y,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10):
             self.pos = (x,y)
@@ -260,7 +261,8 @@ def Main(Nutzername):
             #if wintoast == True:
                 
         else:
-            toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiene mehr Geld.",audio='ms-winsoundevent:Notification.IM')
+            if wintoast:
+                toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiene mehr Geld.",audio='ms-winsoundevent:Notification.IM')
         pygame.display.set_caption("Shop | Guthaben: {}$".format(Daten.read(Nutzername,"punkte")))
     basis = pygame.Surface((360, 1))
     for x in range(360):
