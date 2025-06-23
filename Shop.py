@@ -29,7 +29,7 @@ PastelMaxAufpreis = 90
 #Sounds
 Sounds = True
 pygame.mixer.init()
-sound_ca_king = pygame.mixer.Sound("Sounds/Tanks_Ca-king.mp3")
+#sound_ca_king = pygame.mixer.Sound("Sounds/Tanks_Ca-king.mp3")
 def FarbPreisBerechnen(Farbe):
     preis = 10
     r, g, b, a = Farbe
@@ -129,8 +129,8 @@ class Button:
 
 def Main(Nutzername):
     laeuft = True
-    if Sounds:
-        sound_ca_king.play()
+    #if Sounds:
+        #sound_ca_king.play()
     class SettingsGroup():
         def kaufen(self):
             Geld = Daten.read(Nutzername,"punkte")
