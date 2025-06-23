@@ -76,6 +76,3 @@ def main(nutzer, screen=None):
 
         pygame.display.flip()
         clock.tick(60)
-
-#Ende
-pygame.quit()

@@ -10,6 +10,7 @@ import panzer as P
 import Shop as S
 import Startbildschirm as SB
 import Account as Acc
+import Einstellungen as E
 # Setup
 pygame.init()
 pygame.display.set_caption("Panzerkiste")
@@ -34,10 +35,7 @@ while running:
         else:
             print("Fehler, Einstellungen sind noch nicht verfügbar.")
     elif auswahl == "Einstellungen":
-        if wintoast:
-            notify('Fehler', 'Einstellungen sind noch nicht verfügbar.', audio='ms-winsoundevent:Notification.IM')
-        else:
-            print("Fehler, Einstellungen sind noch nicht verfügbar.")
+        E.main(Nutzername)
     elif auswahl == "Shop":
         S.Main(Nutzername)
 # Ende

@@ -4,6 +4,7 @@ import colorsys
 import math
 import json
 import Speicher as Daten
+import panzer as P
 from time import sleep
 try:
     from win11toast import toast, notify, update_progress
@@ -18,7 +19,7 @@ except:
     sysVerfügbar = False
     print("Bitte installiere sys, um alle Features freizuschalten")
 pygame.init()
-# Setup für Startbildschirm
+# Setup
 font = pygame.font.SysFont(None, 24)
 SAND = (239, 228, 176)
 SCHWARZ = (0,0,0)
@@ -128,6 +129,7 @@ class Button:
 
 
 def Main(Nutzername):
+    P.sound_jingle.stop()
     laeuft = True
     if Sounds:
         sound_ca_cing.play()
