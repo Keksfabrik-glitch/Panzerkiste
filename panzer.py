@@ -34,6 +34,7 @@ sound_fail = pygame.mixer.Sound("Sounds/Tanks_Fail.mp3")
 sound_round_end = pygame.mixer.Sound("Sounds/Tanks_Round_End.mp3")
 sound_explosion = pygame.mixer.Sound("Sounds/Tanks_Explosion.wav")
 sound_treffer = pygame.mixer.Sound("Sounds/Tanks_Treffer.wav")
+sound_schuss = pygame.mixer.Sound("Sounds/Tanks_Schuss.wav")
 #Sprite Groups
 wände = pygame.sprite.Group()
 explosions_gruppe = pygame.sprite.Group()
@@ -200,7 +201,7 @@ class Player(pygame.sprite.Sprite):
             richtung = pygame.Vector2(maus_pos) - self.position
             if richtung.length() != 0:
                 richtung = richtung.normalize()
-                # Abstand von Panzerzentrum plus Kugelgröße (halbe Breite), damit Kugel komplett außerhalb startet
+                #Kugel startet nicht im Panzer
                 panzer_radius = panzer_größe * 0.5  # ca. halbe Panzergröße (Radius)
                 kugel_radius = 10 / 2  # Kugelgröße ist 10x4, also halbe Breite=5
                 abstand = panzer_radius + kugel_radius + 2  # 2 Pixel extra als Puffer
@@ -211,6 +212,8 @@ class Player(pygame.sprite.Sprite):
                                    abpraller=self.abpraller, abprallChance=self.abprallChance,
                                    shooter_id=self.ID,shooter = self)
                 kugel_gruppe.add(neue_kugel)
+                if Sounds:
+                    sound_schuss.play()
                 self.kugeln -= 1
                 self.letzterEinzelschuss = jetzt
                 if self.kugeln == 0:
@@ -400,6 +403,8 @@ class FeindPanzer(pygame.sprite.Sprite):
                             abpraller=self.abpraller, abprallChance=self.abprallChance,
                             shooter_id=self.ID,shooter = self)
             kugel_gruppe.add(neue_kugel)
+            if Sounds:
+                sound_schuss.play()
             self.kugeln -= 1
             self.letzterEinzelschuss = jetzt
             if self.kugeln == 0:
@@ -938,3 +943,4 @@ def Main(Nutzername):
         feindPanzerGR.empty()
         label_gruppe.empty()
 
+sound_jingle.stop()
