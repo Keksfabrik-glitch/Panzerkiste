@@ -14,6 +14,7 @@ clock = pygame.time.Clock()
 panzer_größe = 40
 
 P_WIDTH, P_HEIGHT = 800, 600
+SL_beendbar = False
 #Farben
 WEISS = (255, 255, 255)
 ROT = (255, 0, 0)
@@ -850,9 +851,9 @@ def Main(Nutzername):
                     if Sounds:
                         sound_jingle.stop()
                         sound_round_end.play()
-
-            if pygame.mouse.get_pressed()[0]:
-                start_running = False
+            if SL_beendbar:
+                if pygame.mouse.get_pressed()[0]:
+                    start_running = False
             label_gruppe.update()
             label_gruppe.draw(screen)
             if len(label_gruppe) == 0:

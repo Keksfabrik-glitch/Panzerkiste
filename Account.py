@@ -42,6 +42,11 @@ def registrieren (nutzername,passwort):
                 "mienenAnzahl": -1, # unendlich -1
                 "mieneCooldown": 5,
                 "explosionsRadius": 40
+            },
+            "Einstellungen": {
+                "Sound": True,
+                "Lautstärke": 50,
+                "SL_beendbar": False
             }
         }
         Sp.speichere_daten(Speicherort,daten)

@@ -17,6 +17,11 @@
             "mienenAnzahl": -1,
             "mieneCooldown": 1,
             "explosionsRadius": 80
+        },
+        "Einstellungen": {
+            "Sound": true,
+            "Lautstärke": 50,
+            "SL_beendbar": false
         }
     },
     "Andreas": {
@@ -37,6 +42,11 @@
             "mienenAnzahl": -1,
             "mieneCooldown": 5,
             "explosionsRadius": 40
+        },
+        "Einstellungen": {
+            "Sound": true,
+            "Lautstärke": 50,
+            "SL_beendbar": false
         }
     },
     "Presentation": {
@@ -56,7 +66,12 @@
             "mieneZeit": 15,
             "mienenAnzahl": -1,
             "mieneCooldown": 5,
-            "explosionsRadius": 40
+            "explosionsRadius": 4
+        },
+        "Einstellungen": {
+            "Sound": true,
+            "Lautstärke": 50,
+            "SL_beendbar": false
         }
     }
 }
