@@ -55,7 +55,8 @@ def Main(Nutzername):
                 elif event.key == pygame.K_RETURN:
                     auswahl = stellen[selected_index]
                     if auswahl == "Singleplayer":
-                        sound_startbildschirm.stop()
+                        if Sounds:
+                            sound_startbildschirm.stop()
                         if wintoast:
                             notify(progress={
                                 'title': 'Wird gestartet',
@@ -84,16 +85,20 @@ def Main(Nutzername):
                         return "Singleplayer"
                         
                     elif auswahl == "Multiplayer":
-                        sound_startbildschirm.stop()
+                        if Sounds:
+                            sound_startbildschirm.stop()
                         return "Multiplayer"
                     elif auswahl == "Einstellungen":
-                        sound_startbildschirm.stop()
+                        if Sounds:
+                            sound_startbildschirm.stop()
                         return "Einstellungen"
                     elif auswahl == "Beenden":
-                        sound_startbildschirm.stop()
+                        if Sounds:
+                            sound_startbildschirm.stop()
                         return "Beenden"
                     elif auswahl == "Shop":
-                        sound_startbildschirm.stop()
+                        if Sounds:
+                            sound_startbildschirm.stop()
                         return "Shop"
 
         pygame.display.flip()
