@@ -25,7 +25,6 @@ GRÜN = (0,255,0)
 GOLD = (212, 175, 55)
 TRANSPARENT = (0,0,0,0)
 #Sounds
-Sounds = True
 pygame.mixer.init()
 sound_start = pygame.mixer.Sound("Sounds/Tanks_Start.mp3")
 sound_jingle = pygame.mixer.Sound("Sounds/Tanks_Jingel.mp3")
@@ -827,6 +826,8 @@ def Main(Nutzername):
     maps = ["map_1", "map_2", "map_3", "map_4", "map_5"]
     level_running = True
     level = 1
+    #Sounds
+    Sounds = Daten.read(Nutzername,"Sound",ort="Einstellungen")
     if Sounds:
         sound_start.play()
     while level_running:

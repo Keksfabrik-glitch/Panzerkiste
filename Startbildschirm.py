@@ -2,6 +2,7 @@
 # Pygame Template https://www.pygame.org/project-Pathfinding+Experiment-2932-4829.html
 import pygame
 from time import sleep
+import Speicher as S
 try:
     from win11toast import toast, notify, update_progress
     wintoast = True
@@ -10,14 +11,15 @@ except:
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 pygame.init()
 #Sounds
-Sounds = True
 pygame.mixer.init
 sound_startbildschirm = pygame.mixer.Sound("Sounds/Tanks_Startbildschirm.mp3")
+SB_Speicherort = "Accounts.json"
 # Setup für Startbildschirm
 def Main(Nutzername):
     SB_BREITE = 600  # screenbreite für Startbildschirm
     SB_HOEHE = 600   # screenhöhe für Startbildschirm
-
+    #Sounds
+    Sounds = S.read(Nutzername,"Sound",ort="Einstellungen",speicherort =SB_Speicherort)
     if Sounds:
         sound_startbildschirm.play(loops=-1)
     screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm

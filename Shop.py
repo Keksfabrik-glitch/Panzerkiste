@@ -28,7 +28,7 @@ BLAU = (50, 100, 255)
 FarbStartPreis = 20
 PastelMaxAufpreis = 90
 #Sounds
-Sounds = True
+SH_Speicherort = "Accounts.json"
 pygame.mixer.init()
 sound_ca_cing = pygame.mixer.Sound("Sounds/Tanks_Ca-ching.mp3")
 def FarbPreisBerechnen(Farbe):
@@ -129,6 +129,8 @@ class Button:
 
 
 def Main(Nutzername):
+    #Sounds
+    Sounds = Daten.read(Nutzername,"Sound", ort="Einstellungen", speicherort=SH_Speicherort)
     P.sound_jingle.stop()
     laeuft = True
     if Sounds:
