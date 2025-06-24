@@ -867,7 +867,7 @@ def Main(Nutzername):
             label_gruppe.draw(screen)
             if len(label_gruppe) == 0:
                 start_running = False
-                running = True
+                running = True #Damit Spielaufgerufen wird
             pygame.display.flip()
         if Sounds:
             sound_jingle.play(loops=-1)
