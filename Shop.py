@@ -142,7 +142,7 @@ def Main(Nutzername):
             if Geld >= Preis:
                 self.saveValue = self.value
                 if self.SaveName == "abprallChance":
-                    self.saveValuevalue = self.value/100
+                    self.saveValue = self.value/100
                 Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Preis))
                 Daten.write(Nutzername, self.SaveName, self.saveValue)
                 self.maxOwnedValue = Daten.read(Nutzername,self.SaveName)
@@ -197,9 +197,10 @@ def Main(Nutzername):
             self.slider.draw(screen)
             self.displayValue = self.value
             if self.SaveName == "abprallChance":
-                #self.displayValue = self.value/100
+                #self.displayValue = self.value
                 screen.blit(font.render("{}: {}% für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
-            screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
+            else:
+                screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
             screen.blit(font.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
             self.Button.draw(screen)
 
