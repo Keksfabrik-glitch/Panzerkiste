@@ -14,7 +14,6 @@ clock = pygame.time.Clock()
 panzer_größe = 40
 
 P_WIDTH, P_HEIGHT = 800, 600
-SL_beendbar = False
 #Farben
 WEISS = (255, 255, 255)
 ROT = (255, 0, 0)
@@ -23,6 +22,7 @@ SAND = (239, 228, 176)
 BLAU = (0, 0, 255)
 GRÜN = (0,255,0)
 GOLD = (212, 175, 55)
+GELB = (255,255,0)
 TRANSPARENT = (0,0,0,0)
 #Sounds
 pygame.mixer.init()
@@ -569,7 +569,6 @@ class Kugel(pygame.sprite.Sprite):
         if not overlap_point:
             return pygame.math.Vector2(0, -1)  # fallback nach oben
 
-        # Erzeuge eine Gradientmaske der Hindernis-Maske für "Normale"
         # Suche Nachbarn um den Kollisionspunkt herum
         x, y = overlap_point
         grad = pygame.math.Vector2(0, 0)
@@ -687,9 +686,9 @@ class Miene(pygame.sprite.Sprite):
                 # schnelles Blinken
                 blink = 500 - ((2 - self.rest) / 2) *100
                 blinkend = (jetzt // blink) % 2 == 0
-                farbe = (255, 255, 0) if blinkend else (255, 0, 0)
+                farbe = GELB if blinkend else ROT
             else:
-                farbe = (255, 0, 0)  # normal rot, kein Blinken
+                farbe = ROT  # normal rot, kein Blinken
                 if self.early == False:
                     explosions_sprite = pygame.sprite.Sprite()
                     radius = self.radius # Kugeln sollen nur, wenn sie bei AUF die Miene fliegen, diese Aktivieren. Spieler sollen sie auch im Umkreis aktivieren. Daher unterschiedlicher Radius
@@ -818,6 +817,7 @@ def lade_map(map_data,Nutzername,level):
         FM.NeuerPanzer(level, "stehend", map_data["fpanzer_start"][i])
 
 def Main(Nutzername):
+    #Setup
     #feindPanzer.add(Player(10,10))
     global player, running
     P_WIDTH, P_HEIGHT = 800, 600
@@ -826,7 +826,14 @@ def Main(Nutzername):
     maps = ["map_1", "map_2", "map_3", "map_4", "map_5"]
     level_running = True
     level = 1
+    running = True
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont(None, 24)
+
+    #StartLabel_beendbar aus Einstellungen laden
+    SL_beendbar = Daten.read(Nutzername,"SL_beendbar",ort="Einstellungen")
     #Sounds
+    global Sounds
     Sounds = Daten.read(Nutzername,"Sound",ort="Einstellungen")
     if Sounds:
         sound_start.play()
@@ -838,10 +845,6 @@ def Main(Nutzername):
         else:
             map_data = M.map_1
             lade_map(map_data, Nutzername, 1)
-
-        running = True
-        clock = pygame.time.Clock()
-        font = pygame.font.SysFont(None, 24)
 
         # Startbildschirm anzeigen
         start_running = True
@@ -878,6 +881,7 @@ def Main(Nutzername):
                     if Sounds:
                         sound_jingle.stop()
                         sound_round_end.play()
+            #Ende
             if len(feindPanzerGR) == 0:
                 if Sounds:
                     sound_jingle.stop()
