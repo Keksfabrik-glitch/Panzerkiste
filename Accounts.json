@@ -27,14 +27,14 @@
     "Andreas": {
         "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
         "stats": {
-            "punkte": 104,
+            "punkte": 97,
             "farbe": "[1, 216, 243, 255]",
             "leben": 6,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
             "geschwindigkeit": 25,
             "maxKugeln": 10,
-            "kugelSpeed": 5,
+            "kugelSpeed": 15,
             "nachladezeit": 1,
             "abpraller": 2,
             "abprallChance": 0.75,
