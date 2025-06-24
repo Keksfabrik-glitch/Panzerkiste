@@ -197,7 +197,8 @@ def Main(Nutzername):
             self.slider.draw(screen)
             self.displayValue = self.value
             if self.SaveName == "abprallChance":
-                self.displayValue = self.value/100
+                #self.displayValue = self.value/100
+                screen.blit(font.render("{}: {}% für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
             screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
             screen.blit(font.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
             self.Button.draw(screen)
