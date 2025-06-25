@@ -34,6 +34,7 @@ sound_round_end = pygame.mixer.Sound("Sounds/Tanks_Round_End.mp3")
 sound_explosion = pygame.mixer.Sound("Sounds/Tanks_Explosion.wav")
 sound_treffer = pygame.mixer.Sound("Sounds/Tanks_Treffer.wav")
 sound_schuss = pygame.mixer.Sound("Sounds/Tanks_Schuss.wav")
+sounds = [sound_start, sound_jingle, sound_win, sound_fail,sound_round_end, sound_explosion, sound_treffer, sound_schuss]
 #Sprite Groups
 wände = pygame.sprite.Group()
 explosions_gruppe = pygame.sprite.Group()
@@ -56,6 +57,10 @@ def randomNameID(länge=5,idOrName=True):
     if idOrName == True:
         Zeichen = string.ascii_letters + string.digits
         return "".join(random.choices(Zeichen, k = länge))
+def setze_lautstärke(wert):
+    pygame.mixer.music.set_volume(wert)
+    for sound in sounds:
+        sound.set_volume(wert)
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, position,Name):
@@ -835,6 +840,8 @@ def Main(Nutzername):
     #Sounds
     global Sounds
     Sounds = Daten.read(Nutzername,"Sound",ort="Einstellungen")
+    lautstärke = Daten.read(Nutzername, "Lautstärke", ort="Einstellungen")
+    setze_lautstärke(lautstärke)
     if Sounds:
         sound_start.play()
     while level_running:

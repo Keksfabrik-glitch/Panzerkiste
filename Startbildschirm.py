@@ -14,12 +14,19 @@ pygame.init()
 pygame.mixer.init
 sound_startbildschirm = pygame.mixer.Sound("Sounds/Tanks_Startbildschirm.mp3")
 SB_Speicherort = "Accounts.json"
+sounds = [sound_startbildschirm]
+def setze_lautstärke(wert):
+    pygame.mixer.music.set_volume(wert)
+    for sound in sounds:
+        sound.set_volume(wert)
 # Setup für Startbildschirm
 def Main(Nutzername):
     SB_BREITE = 600  # screenbreite für Startbildschirm
     SB_HOEHE = 600   # screenhöhe für Startbildschirm
     #Sounds
     Sounds = S.read(Nutzername,"Sound",ort="Einstellungen",speicherort =SB_Speicherort)
+    lautstärke = S.read(Nutzername,"Lautstärke",ort = "Einstellungen",speicherort=SB_Speicherort)
+    setze_lautstärke(lautstärke)
     if Sounds:
         sound_startbildschirm.play(loops=-1)
     screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm
