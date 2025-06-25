@@ -19,8 +19,8 @@
             "explosionsRadius": 80
         },
         "Einstellungen": {
-            "Sound": true,
-            "Lautstärke": 1.0,
+            "Sound": 0,
+            "Lautstärke": 0.0,
             "SL_beendbar": true
         }
     },

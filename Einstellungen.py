@@ -23,115 +23,139 @@ FONT = pygame.font.SysFont("arial", 20)
 #Sprite Groups
 slider = pygame.sprite.Group()
 
-class SwitchButton:
-    def __init__(self, x, y, nutzer, parameter, label= None, width=60, height=30):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.nutzer = nutzer
-        self.parameter = parameter
-        self.label = label
-        if self.label is None:
-            self.label = self.parameter
-        self.zustand = S.read(self.nutzer, self.parameter, ort="Einstellungen", speicherort=E_Speicherort)
-        self.anim_fortschritt = 1.0 if self.zustand else 0.0
-        self.anim_geschwindigkeit = 0.1
-        self.anim_zielwert = self.anim_fortschritt
 
-    def draw(self, surface):
-        # Text zeichnen links vom Button
-        text_surface = FONT.render(self.label, True, SCHWARZ)
-        text_rect = text_surface.get_rect()
-        text_rect.midright = (self.rect.x - 10, self.rect.centery)  # 10px Abstand links vom Button
-        surface.blit(text_surface, text_rect)
-
-
-        r = ROT[0] + (GRÜN[0] - ROT[0]) * self.anim_fortschritt
-        g = ROT[1] + (GRÜN[1] - ROT[1]) * self.anim_fortschritt
-        b = ROT[2] + (GRÜN[2] - ROT[2]) * self.anim_fortschritt
-        color = (int(r), int(g), int(b))
-
-        pygame.draw.rect(surface, color, self.rect, border_radius=15)
-        kreis_radius = self.rect.height // 2 - 3
-
-        start = self.rect.x + kreis_radius + 3
-        ende = self.rect.right - kreis_radius - 3
-        kreis_x = start + (ende - start) * self.anim_fortschritt
-
-        kreis_center = (kreis_x, self.rect.centery)
-        pygame.draw.circle(surface, WEISS, kreis_center, kreis_radius)
-        if abs(self.anim_fortschritt - self.anim_zielwert) > 0.01:
-            richtung = 1 if self.anim_fortschritt < self.anim_zielwert else -1
-            self.anim_fortschritt += self.anim_geschwindigkeit * richtung
-            self.anim_fortschritt = max(0.0, min(1.0, self.anim_fortschritt))
-        else:
-            self.anim_fortschritt = self.anim_zielwert
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if self.rect.collidepoint(event.pos):
-                self.zustand = not self.zustand
-                self.anim_zielwert = 1.0 if self.zustand else 0.0  
-                S.write(self.nutzer, self.parameter, self.zustand, ort="Einstellungen", speicherort=E_Speicherort)
-
-class Tonslider(pygame.sprite.Sprite):
-    def __init__(self, x, y, nutzer, parameter="Lautstärke"):
-        super().__init__()
-        self.x = x
-        self.y = y
-        self.w = 300
-        self.h = 10
-        self.knob_radius = 6
-        self.padding = self.knob_radius  # space on both left and right
-
-        self.total_width = self.w + 2 * self.padding
-        self.total_height = self.h + 2 * self.knob_radius
-
-        self.nutzer = nutzer
-        self.parameter = parameter
-        self.wert = S.read(self.nutzer, self.parameter, ort="Einstellungen")
-
-        self.image = pygame.Surface((self.total_width, self.total_height), pygame.SRCALPHA)
-        self.rect = self.image.get_rect(topleft=(self.x - self.padding, self.y))  # Shift so track stays aligned
-
-        self.dragging = False
-        self.update_image()
-
-    def update_image(self):
-        self.image.fill((0, 0, 0, 0))
-
-        # Linie im Hintergrund
-        pygame.draw.rect(self.image,SCHWARZ,(self.padding, self.total_height // 2 - self.h // 2, self.w, self.h)
-        )
-
-        # Knopf
-        knob_x = int(self.padding + self.w * self.wert)
-        pygame.draw.circle(self.image, BLAU, (knob_x, self.total_height // 2), self.knob_radius)
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.dragging = True
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.dragging = False
-
-        elif event.type == pygame.MOUSEMOTION and self.dragging:
-            relative_x = event.pos[0] - self.rect.x - self.padding
-            self.wert = max(0.0, min(1.0, relative_x / self.w))
-            S.write(self.nutzer, self.parameter, self.wert, ort="Einstellungen")
-            self.update_image()
 
 def main(nutzer, screen=None):
+    class SwitchButton:
+        def __init__(self, x, y, parameter, label= None, width=60, height=30):
+            self.rect = pygame.Rect(x, y, width, height)
+            self.nutzer = nutzer
+            self.parameter = parameter
+            self.label = label
+            if self.label is None:
+                self.label = self.parameter
+            self.zustand = S.read(self.nutzer, self.parameter, ort="Einstellungen", speicherort=E_Speicherort)
+            self.anim_fortschritt = 1.0 if self.zustand else 0.0
+            self.anim_geschwindigkeit = 0.1
+            self.anim_zielwert = self.anim_fortschritt
+
+        def draw(self, surface):
+            # Text zeichnen links vom Button
+            text_surface = FONT.render(self.label, True, SCHWARZ)
+            text_rect = text_surface.get_rect()
+            text_rect.midright = (self.rect.x - 10, self.rect.centery)  # 10px Abstand links vom Button
+            surface.blit(text_surface, text_rect)
+
+
+            r = ROT[0] + (GRÜN[0] - ROT[0]) * self.anim_fortschritt
+            g = ROT[1] + (GRÜN[1] - ROT[1]) * self.anim_fortschritt
+            b = ROT[2] + (GRÜN[2] - ROT[2]) * self.anim_fortschritt
+            color = (int(r), int(g), int(b))
+
+            pygame.draw.rect(surface, color, self.rect, border_radius=15)
+            kreis_radius = self.rect.height // 2 - 3
+
+            start = self.rect.x + kreis_radius + 3
+            ende = self.rect.right - kreis_radius - 3
+            kreis_x = start + (ende - start) * self.anim_fortschritt
+
+            kreis_center = (kreis_x, self.rect.centery)
+            pygame.draw.circle(surface, WEISS, kreis_center, kreis_radius)
+            if abs(self.anim_fortschritt - self.anim_zielwert) > 0.01:
+                richtung = 1 if self.anim_fortschritt < self.anim_zielwert else -1
+                self.anim_fortschritt += self.anim_geschwindigkeit * richtung
+                self.anim_fortschritt = max(0.0, min(1.0, self.anim_fortschritt))
+            else:
+                self.anim_fortschritt = self.anim_zielwert
+        def klick(self,zustand):
+            self.zustand = zustand
+            self.anim_zielwert = 1.0 if self.zustand else 0.0  
+            S.write(self.nutzer, self.parameter, self.zustand, ort="Einstellungen", speicherort=E_Speicherort)
+        def handle_event(self, event):
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.rect.collidepoint(event.pos):
+                    self.zustand = not self.zustand
+                    self.anim_zielwert = 1.0 if self.zustand else 0.0  
+                    if self.zustand == 1:
+                        S.write(nutzer,"Lautstärke", 0.5, ort="Einstellungen", speicherort=E_Speicherort)
+                    else:
+                        S.write(nutzer,"Lautstärke", 0,  ort="Einstellungen", speicherort=E_Speicherort)
+
+    class Slider(pygame.sprite.Sprite):
+        def __init__(self,parameter,x, y, breite,höhe,min,max,steps = 1,interaktions_padding = 10,Toggle = None):
+            super().__init__()
+            self.rect = pygame.Rect(x,y,breite,höhe)
+            self.SaveValue = parameter
+            self.interaktions_padding = interaktions_padding
+            self.InteractionRect = pygame.Rect(x- interaktions_padding, y - interaktions_padding, breite + 2 * interaktions_padding, höhe + 2 * interaktions_padding)
+            self.pos = (x,y)
+            self.größe = (breite,höhe)
+            self.color = (0,0,0)
+            self.min = min
+            self.max = max-min
+            self.steps = steps
+            self.sliderPos = self.pos
+            self.Toggle = Toggle
+            self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+            self.internValue = S.read(nutzer,self.SaveValue,"Einstellungen")
+            if self.SaveValue == "Lautstärke":
+                self.internValue= self.internValue*100
+            self.value = self.internValue
+            self.SliderButtonPos()
+        def draw(self, screen):
+            if self.SaveValue == "Lautstärke":
+                self.SliderButtonPos()
+            pygame.draw.rect(screen, self.color, self.rect)
+            pygame.draw.rect(screen, SCHWARZ, self.rect, 2)
+            pygame.draw.rect(screen, BLAU, self.handle_rect)
+            pygame.draw.rect(screen, SCHWARZ, self.handle_rect, 1)
+
+        def SliderButtonPos(self):
+            if self.SaveValue == "Lautstärke":
+                self.internValue = S.read(nutzer,self.SaveValue,"Einstellungen")*100
+           
+            relPos = self.internValue / self.max
+            x = self.pos[0] + relPos * self.größe[0]
+            y = self.pos[1]
+            self.sliderPos = (x,y)
+            self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+
+
+        def valueVonPos(self,touch):
+            relative_x = touch[0] - self.pos[0]
+            relative_x = max(0, min(self.größe[0], relative_x)) 
+            rel_pos = relative_x / self.größe[0]
+            roher_wert = self.min + rel_pos * self.max
+            self.internValue = round(roher_wert / self.steps) * self.steps
+            self.value = self.internValue
+            save = self.value
+            if self.SaveValue == "Lautstärke":
+                save = self.value/100
+                if self.value >= 1: 
+                    self.Toggle.klick(1)
+                elif self.value < 1:
+                    self.Toggle.klick(0)
+            S.write(nutzer, self.SaveValue, save, ort="Einstellungen", speicherort=E_Speicherort)
+            self.SliderButtonPos()
+        def handle_event(self, pos):
+            if self.InteractionRect.collidepoint(pos): 
+                self.valueVonPos(pos)
+        def set_value(self, wert):
+            self.internValue = wert
+            self.value = self.internValue
+            self.SliderButtonPos()
+
     if screen is None:
         screen = pygame.display.set_mode((E_BREITE, E_HOEHE))
+    SoundToogle =  SwitchButton(300, 85,"Sound","Sound")
+    StartLabelToggel = SwitchButton(300, 125, "SL_beendbar","Start Label überspringbar")
+    switches = [SoundToogle,StartLabelToggel]
 
-    switches = [
-        SwitchButton(300, 85, nutzer, "Sound","Sound"),
-        SwitchButton(300, 125, nutzer, "SL_beendbar","Start Label überspringbar")
-    ]
-    slider.add(Tonslider(60,230,nutzer))
+    LautstärkeSlider = Slider("Lautstärke",60,230,150,5,0,100,4,10,SoundToogle)
+    Sliders = [LautstärkeSlider]
     E_laeuft = True
     clock = pygame.time.Clock()
-
+    mouseUP = True
     while E_laeuft:
         screen.fill(SAND)
         for event in pygame.event.get():
@@ -139,15 +163,18 @@ def main(nutzer, screen=None):
                 E_laeuft = False
             for switch in switches:
                 switch.handle_event(event)
-
-            for s in slider:
-                s.handle_event(event)
-
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouseUP = False
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouseUP = True
+        if mouseUP == False:
+            for s in Sliders:
+                s.handle_event(pygame.mouse.get_pos())
         for switch in switches:
             switch.draw(screen)
         #Slider
-        slider.update()
-        slider.draw(screen)
+        for s in Sliders:
+            s.draw(screen)
         #Text
         screen.blit(FONT.render("Lautstärke:", True, SCHWARZ), (60, 200))
         pygame.display.flip()

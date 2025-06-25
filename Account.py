@@ -45,7 +45,7 @@ def registrieren (nutzername,passwort):
             },
             "Einstellungen": {
                 "Sound": True,
-                "Lautstärke": 0.52,
+                "Lautstärke": 0.5,
                 "SL_beendbar": False
             }
         }
