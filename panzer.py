@@ -96,6 +96,7 @@ class Player(pygame.sprite.Sprite):
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
         self.body_surface.fill(FarbeVerändern(self.farbe,-25))
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
+        pygame.draw.rect(self.body_surface , SCHWARZ, (panzer_größe // 10 ,panzer_größe//20 ,panzer_größe * 0.75 ,2))
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
         self.turm.fill(self.farbe)
@@ -104,6 +105,7 @@ class Player(pygame.sprite.Sprite):
         self.kanone = pygame.Surface((panzer_größe, panzer_größe // 8), pygame.SRCALPHA)
         pygame.draw.rect(self.kanone, FarbeVerändern(self.farbe,25), (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8))
         pygame.draw.rect(self.kanone, SCHWARZ, (panzer_größe // 2+1, 0, panzer_größe // 1.5, panzer_größe // 8), 2)
+        
         # Platzhalter (wird bei update() gesetzt)
         self.image = pygame.Surface((1, 1), pygame.SRCALPHA)
         self.rect = self.image.get_rect(center=self.position)
@@ -572,6 +574,7 @@ class Kugel(pygame.sprite.Sprite):
         offset = (hindernis.rect.left - self.rect.left, hindernis.rect.top - self.rect.top)
         overlap_point = self.mask.overlap(hindernis.mask, offset)
         if not overlap_point:
+            print("Keine Überlappung")
             return pygame.math.Vector2(0, -1)  # fallback nach oben
 
         # Suche Nachbarn um den Kollisionspunkt herum
@@ -870,6 +873,7 @@ def Main(Nutzername):
             if SL_beendbar:
                 if pygame.mouse.get_pressed()[0]:
                     start_running = False
+                    running = True
             label_gruppe.update()
             label_gruppe.draw(screen)
             if len(label_gruppe) == 0:
