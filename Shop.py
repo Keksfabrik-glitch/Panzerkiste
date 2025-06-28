@@ -92,10 +92,10 @@ class Slider(pygame.sprite.Sprite):
         x = self.pos[0] + relPos * self.größe[0]
         y = self.pos[1]
         self.sliderPos = (x,y)
-        self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+        self.handle_rect = pygame.Rect(self.sliderPos[0]-5, self.sliderPos[1]-2.5, 10, self.größe[1]+5)
 
     def valueVonPos(self,touch):
-        diff = touch[0] - (self.pos[0] - self.interaktions_padding)
+        diff = touch[0] - self.pos[0] 
         self.internValue = round((self.max*(1/self.steps)/self.größe[0])*diff) * self.steps
         self.value = self.internValue+self.min
         self.SliderButtonPos()
@@ -211,8 +211,8 @@ def Main(Nutzername):
             screen.blit(font.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
             self.Button.draw(screen)
 
-    SH_BREITE = 825
-    SH_HOEHE = 950
+    SH_BREITE = 1325
+    SH_HOEHE = 665
 
     screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
     Geld = Daten.read(Nutzername,"punkte")
@@ -234,34 +234,28 @@ def Main(Nutzername):
 
 
     STATS_POS = (FARBBEREICH_POS[0]+470,10)
-    #Nutzername,min,max,steps =1,name = "Titel",saveName = "farbe",Beschreibung = "Beschreibung",Preis = 10
-     #-          "schussCooldown": 250,
-     #-       "drehgeschwindigkeit": 5,
-     #-      "geschwindigkeit": 10,
-    #-       "maxKugeln": 5,
-    #-        "kugelSpeed": 5,
-    #- "nachladezeit": 3,
-          #  "abpraller": 3,
-          #  "abprallChance": 0.75,
-          #  "mieneZeit": 15,
-          #  "mienenAnzahl": -1,
-          #  "mieneCooldown": 5,
-          #  "explosionsRadius": 40
-    AbstandY = 135
-    lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*0,3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
-    GeschwindigkeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*1,25,61,2,"Geschwindigkeit","geschwindigkeit","Die Geschwindigkeit deines Panzers",50/2)
-    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",25)
-    MaxKugelnGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*3,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75)
-    KugelSpeedGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*4,5,35,10,"Kugel Geschwindigkeit","kugelSpeed","Die Geschwindigkeit einer Kugel",150/10)
-    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*5,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)   
-    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,1,5,1,"Nachladezeit","nachladezeit","Nachladezeit deines Panzers in ms",150)
 
-    AbprallerGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*2,2,7,1,"Abpraller","abpraller","Maximale Abpraller deiner Kugeln",125) 
-    AbprallChanceGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*3,75,100,5,"Abprallchance","abprallChance","Die Chance das deine Kugel Abprallt",100/5) 
-    mieneZeitGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*4,15,35,5,"Zünddauer Miene","mieneZeit","Zeit bis eine Miene Explodiert.",75/5) 
+    AbstandY = 135
+    #3. Reihe
+    
+    GeschwindigkeitGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*0,25,61,2,"Geschwindigkeit","geschwindigkeit","Die Geschwindigkeit deines Panzers",50/2)
+    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*1,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",25)
+    AbprallerGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*2,2,7,1,"Abpraller","abpraller","Maximale Abpraller deiner Kugeln",125) 
+    AbprallChanceGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*3,75,100,5,"Abprallchance","abprallChance","Die Chance das deine Kugel Abprallt",100/5) 
+   
+    #2. Reihe
+    lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*0,3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
+    MaxKugelnGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*1,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75)
+    KugelSpeedGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,35,10,"Kugel Geschwindigkeit","kugelSpeed","Die Geschwindigkeit einer Kugel",150/10)
+    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*3,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)   
+    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*4,1,5,1,"Nachladezeit","nachladezeit","Nachladezeit deines Panzers in ms",150)
+
+   
+    #1. Reihe
+    mieneZeitGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*2,15,35,5,"Zünddauer Miene","mieneZeit","Zeit bis eine Miene Explodiert.",75/5) 
+    mienenCooldownGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*3,5,1,1,"Mienen Cooldown","mieneCooldown","Zeitspanne bis du eine neue Miene legen kannst.",150)
+    explosionsRadiusGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*4,40,80,10,"Explosionsradius","explosionsRadius","Der Betroffene Bereich bei einer Explosion.",100/10)
     #mienenAnzahlGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75) UNENDLICH PRO SPIEL ZURZEIT. LEVELABHÄNGIG
-    mienenCooldownGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*5,5,1,1,"Mienen Cooldown","mieneCooldown","Zeitspanne bis du eine neue Miene legen kannst.",150)
-    explosionsRadiusGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*6,40,80,10,"Explosionsradius","explosionsRadius","Der Betroffene Bereich bei einer Explosion.",100/10)
     SettingGroupsss = [lebenGroup,GeschwindigkeitGroup,DrehGeschwindigkeitsGroup,MaxKugelnGroup,KugelSpeedGroup,SchussCooldownGroup,NachladezeitGroup,AbprallerGroup,AbprallChanceGroup,mieneZeitGroup,mienenCooldownGroup,explosionsRadiusGroup]    
 
 
@@ -358,3 +352,4 @@ def Main(Nutzername):
         pygame.display.flip()   
         clock.tick(60)
 
+#Main("_Hannes_")

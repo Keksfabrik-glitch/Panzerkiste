@@ -44,9 +44,8 @@ def registrieren (nutzername,passwort):
                 "explosionsRadius": 40
             },
             "Einstellungen": {
-                "Sound": True,
                 "Lautstärke": 0.5,
-                "SL_beendbar": False
+                "SL_beendbar": True
             }
         }
         Sp.speichere_daten(Speicherort,daten)

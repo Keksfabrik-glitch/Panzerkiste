@@ -35,6 +35,12 @@ def main(nutzer, screen=None):
             if self.label is None:
                 self.label = self.parameter
             self.zustand = S.read(self.nutzer, self.parameter, ort="Einstellungen", speicherort=E_Speicherort)
+            if self.parameter == "Sound":
+                Lautstärke = S.read(nutzer,"Sound","Einstellungen")*100
+                if Lautstärke >= 1: 
+                    self.zustand = 1
+                elif Lautstärke < 1:
+                    self.zustand = 0
             self.anim_fortschritt = 1.0 if self.zustand else 0.0
             self.anim_geschwindigkeit = 0.1
             self.anim_zielwert = self.anim_fortschritt
@@ -70,16 +76,21 @@ def main(nutzer, screen=None):
         def klick(self,zustand):
             self.zustand = zustand
             self.anim_zielwert = 1.0 if self.zustand else 0.0  
-            S.write(self.nutzer, self.parameter, self.zustand, ort="Einstellungen", speicherort=E_Speicherort)
+            if self.parameter != "Lautstärke":
+                S.write(self.nutzer, self.parameter, self.zustand, ort="Einstellungen", speicherort=E_Speicherort)
         def handle_event(self, event):
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.rect.collidepoint(event.pos):
                     self.zustand = not self.zustand
                     self.anim_zielwert = 1.0 if self.zustand else 0.0  
-                    if self.zustand == 1:
-                        S.write(nutzer,"Lautstärke", 0.5, ort="Einstellungen", speicherort=E_Speicherort)
+                    if self.parameter == "Lautstärke":
+                        if self.zustand == 1:
+                            S.write(nutzer,"Lautstärke", 0.5, ort="Einstellungen", speicherort=E_Speicherort)
+                        else:
+                            S.write(nutzer,"Lautstärke", 0,  ort="Einstellungen", speicherort=E_Speicherort)
                     else:
-                        S.write(nutzer,"Lautstärke", 0,  ort="Einstellungen", speicherort=E_Speicherort)
+                       S.write(self.nutzer, self.parameter, True if self.zustand == 1 else False, ort="Einstellungen", speicherort=E_Speicherort)
+
 
     class Slider(pygame.sprite.Sprite):
         def __init__(self,parameter,x, y, breite,höhe,min,max,steps = 1,interaktions_padding = 10,Toggle = None):
@@ -147,7 +158,7 @@ def main(nutzer, screen=None):
 
     if screen is None:
         screen = pygame.display.set_mode((E_BREITE, E_HOEHE))
-    SoundToogle =  SwitchButton(300, 85,"Sound","Sound")
+    SoundToogle =  SwitchButton(300, 85,"Lautstärke","Sound")
     StartLabelToggel = SwitchButton(300, 125, "SL_beendbar","Start Label überspringbar")
     switches = [SoundToogle,StartLabelToggel]
 

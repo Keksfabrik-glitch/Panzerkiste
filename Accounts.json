@@ -2,13 +2,13 @@
     "_Hannes_": {
         "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "punkte": 99876,
-            "farbe": "[31, 215, 166, 255]",
+            "punkte": 1,
+            "farbe": "[4, 85, 199, 255]",
             "leben": 10,
             "schussCooldown": 40,
             "drehgeschwindigkeit": 10,
-            "geschwindigkeit": 50,
-            "maxKugeln": 7,
+            "geschwindigkeit": 61,
+            "maxKugeln": 10,
             "kugelSpeed": 35,
             "nachladezeit": 5,
             "abpraller": 6,
@@ -19,8 +19,8 @@
             "explosionsRadius": 80
         },
         "Einstellungen": {
-            "Sound": 0,
-            "Lautstärke": 0.0,
+            "Sound": 1,
+            "Lautstärke": 0.68,
             "SL_beendbar": true
         }
     },
@@ -72,6 +72,31 @@
             "Sound": true,
             "Lautstärke": 1.0,
             "SL_beendbar": false
+        }
+    },
+    "t": {
+        "passwort": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+        "stats": {
+            "punkte": 0,
+            "farbe": "[100, 255, 255, 255]",
+            "leben": 3,
+            "schussCooldown": 250,
+            "drehgeschwindigkeit": 5,
+            "geschwindigkeit": 25,
+            "maxKugeln": 5,
+            "kugelSpeed": 5,
+            "nachladezeit": 5,
+            "abpraller": 2,
+            "abprallChance": 0.75,
+            "mieneZeit": 15,
+            "mienenAnzahl": -1,
+            "mieneCooldown": 5,
+            "explosionsRadius": 40
+        },
+        "Einstellungen": {
+            "Sound": true,
+            "Lautstärke": 0.12,
+            "SL_beendbar": true
         }
     }
 }
