@@ -286,9 +286,10 @@ def Main(Nutzername):
 
     FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
 
-
+    hintergrund = pygame.image.load("Hintergrund_Shop.png")
+    hintergrund = pygame.transform.scale(hintergrund,(SH_BREITE, SH_HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
     while laeuft:
-        screen.fill(SAND)
+        screen.blit(hintergrund, (0, 0))
         
         for event in pygame.event.get ():
             if event.type == pygame.MOUSEBUTTONDOWN:
