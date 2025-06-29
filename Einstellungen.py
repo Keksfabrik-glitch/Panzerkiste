@@ -167,8 +167,12 @@ def main(nutzer, screen=None):
     E_laeuft = True
     clock = pygame.time.Clock()
     mouseUP = True
+    #Hintergrund
+    hintergrund = pygame.image.load("Hintergrund_Einstellungen.png")
+    hintergrund = pygame.transform.scale(hintergrund,(E_BREITE, E_HOEHE))# Skaliere Hintergrundbild auf die angegebene Größe
+
     while E_laeuft:
-        screen.fill(SAND)
+        screen.blit(hintergrund, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 E_laeuft = False
