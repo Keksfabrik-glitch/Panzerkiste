@@ -162,7 +162,7 @@ def main(nutzer, screen=None):
     StartLabelToggel = SwitchButton(300, 125, "SL_beendbar","Start Label überspringbar")
     switches = [SoundToogle,StartLabelToggel]
 
-    LautstärkeSlider = Slider("Lautstärke",60,230,150,5,0,100,4,10,SoundToogle)
+    LautstärkeSlider = Slider("Lautstärke",130,190,150,5,0,100,4,10,SoundToogle)
     Sliders = [LautstärkeSlider]
     E_laeuft = True
     clock = pygame.time.Clock()
@@ -191,6 +191,6 @@ def main(nutzer, screen=None):
         for s in Sliders:
             s.draw(screen)
         #Text
-        screen.blit(FONT.render("Lautstärke:", True, SCHWARZ), (60, 200))
+        screen.blit(FONT.render("Lautstärke:", True, SCHWARZ), (130, 160))
         pygame.display.flip()
         clock.tick(60)
