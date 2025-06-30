@@ -96,7 +96,8 @@ class Player(pygame.sprite.Sprite):
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
         self.body_surface.fill(FarbeVerändern(self.farbe,-25))
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
-        pygame.draw.rect(self.body_surface , SCHWARZ, (panzer_größe // 10 ,panzer_größe//20 ,panzer_größe * 0.75 ,2))
+        pygame.draw.line(self.body_surface,SCHWARZ,(self.body_surface.get_width() // 2 - panzer_größe // 8, panzer_größe - 1),
+                         (self.body_surface.get_width() // 2 + panzer_größe // 8, panzer_größe - 1),7)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
         self.turm.fill(self.farbe)
@@ -280,6 +281,8 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
         self.body_surface.fill(FarbeVerändern(farbe,-25))
         pygame.draw.rect(self.body_surface, SCHWARZ, (0, 0, panzer_größe * 0.75, panzer_größe), 2)
+        pygame.draw.line(self.body_surface, SCHWARZ,(self.body_surface.get_width() // 2 - panzer_größe // 8, panzer_größe - 1),
+                         (self.body_surface.get_width() // 2 + panzer_größe // 8, panzer_größe - 1), 7)
         # Turm
         self.turm = pygame.Surface((panzer_größe // 2.15, panzer_größe // 2.15), pygame.SRCALPHA)
         self.turm.fill(farbe)
