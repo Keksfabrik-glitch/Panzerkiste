@@ -16,7 +16,7 @@ ROT = (255, 0, 0)
 WEISS = (255, 255, 255)
 SAND = (239, 228, 176)
 SCHWARZ = (0,0,0)
-BLAU = (0,0,255)
+BLAU = (0, 169, 252)
 #Schrift
 pygame.font.init()
 FONT = pygame.font.SysFont("arial", 20)
@@ -47,7 +47,7 @@ def main(nutzer, screen=None):
 
         def draw(self, surface):
             # Text zeichnen links vom Button
-            text_surface = FONT.render(self.label, True, SCHWARZ)
+            text_surface = FONT.render(self.label, True, WEISS)
             text_rect = text_surface.get_rect()
             text_rect.midright = (self.rect.x - 10, self.rect.centery)  # 10px Abstand links vom Button
             surface.blit(text_surface, text_rect)
@@ -101,7 +101,7 @@ def main(nutzer, screen=None):
             self.InteractionRect = pygame.Rect(x- interaktions_padding, y - interaktions_padding, breite + 2 * interaktions_padding, höhe + 2 * interaktions_padding)
             self.pos = (x,y)
             self.größe = (breite,höhe)
-            self.color = (0,0,0)
+            self.color = WEISS
             self.min = min
             self.max = max-min
             self.steps = steps
@@ -117,9 +117,9 @@ def main(nutzer, screen=None):
             if self.SaveValue == "Lautstärke":
                 self.SliderButtonPos()
             pygame.draw.rect(screen, self.color, self.rect)
-            pygame.draw.rect(screen, SCHWARZ, self.rect, 2)
+            pygame.draw.rect(screen, WEISS, self.rect, 2)
             pygame.draw.rect(screen, BLAU, self.handle_rect)
-            pygame.draw.rect(screen, SCHWARZ, self.handle_rect, 1)
+            pygame.draw.rect(screen, WEISS, self.handle_rect, 1)
 
         def SliderButtonPos(self):
             if self.SaveValue == "Lautstärke":
@@ -191,6 +191,6 @@ def main(nutzer, screen=None):
         for s in Sliders:
             s.draw(screen)
         #Text
-        screen.blit(FONT.render("Lautstärke:", True, SCHWARZ), (130, 160))
+        screen.blit(FONT.render("Lautstärke:", True, WEISS), (130, 160))
         pygame.display.flip()
         clock.tick(60)

@@ -95,7 +95,7 @@
         },
         "Einstellungen": {
             "Sound": true,
-            "Lautstärke": 0.12,
+            "Lautstärke": 0.0,
             "SL_beendbar": true
         }
     }
