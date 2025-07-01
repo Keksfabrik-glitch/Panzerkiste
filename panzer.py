@@ -323,7 +323,7 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
         #Zielsystem
-        winkel = Z.berechne_turmwinkel(self.position, player.position, wände)
+        winkel = Z.berechneTurmwinkel(self.position, player.position, wände)
         if winkel is not None:
             self.turmWinkel = winkel
             if Z.hat_sichtlinie(self.position, player.position, wände) == True:
@@ -840,13 +840,12 @@ def Main(Nutzername):
 
     #StartLabel_beendbar aus Einstellungen laden
     SL_beendbar = Daten.read(Nutzername,"SL_beendbar",ort="Einstellungen")
-    #Sounds
-    global Sounds
-    Sounds = Daten.read(Nutzername,"Sound",ort="Einstellungen")
+
+   
     lautstärke = Daten.read(Nutzername, "Lautstärke", ort="Einstellungen")
     setze_lautstärke(lautstärke)
-    if Sounds:
-        sound_start.play()
+
+    sound_start.play()
     while level_running:
         if level != 1:
             map_name = maps[(level - 1) % len(maps)]
@@ -867,9 +866,8 @@ def Main(Nutzername):
                     start_running = False
                     running = False
                     level_running = False
-                    if Sounds:
-                        sound_jingle.stop()
-                        sound_round_end.play()
+                    sound_jingle.stop()
+                    sound_round_end.play()
             if SL_beendbar:
                 if pygame.mouse.get_pressed()[0]:
                     start_running = False
@@ -880,8 +878,7 @@ def Main(Nutzername):
                 start_running = False
                 running = True #Damit Spielaufgerufen wird
             pygame.display.flip()
-        if Sounds:
-            sound_jingle.play(loops=-1)
+        sound_jingle.play(loops=-1)
         while running:
             screen.fill(SAND)
             löcher.draw(screen)
@@ -890,19 +887,16 @@ def Main(Nutzername):
                 if event.type == pygame.QUIT:
                     running = False
                     level_running = False
-                    if Sounds:
-                        sound_jingle.stop()
-                        sound_round_end.play()
+                    sound_jingle.stop()
+                    sound_round_end.play()
             #Ende
             if len(feindPanzerGR) == 0:
-                if Sounds:
-                    sound_jingle.stop()
-                    sound_win.play()
+                sound_jingle.stop()
+                sound_win.play()
                 running = False
             if player.leben <= 0:
-                if Sounds:
-                    sound_jingle.stop()
-                    sound_fail.play()
+                sound_jingle.stop()
+                sound_fail.play()
                 running = False
                 level_running = False
                 print("Du bist in level {} gestorben".format(level))
@@ -961,3 +955,4 @@ def Main(Nutzername):
         label_gruppe.empty()
 
 sound_jingle.stop()
+#Main("_Hannes_")
