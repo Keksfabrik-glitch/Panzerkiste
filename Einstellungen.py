@@ -19,16 +19,23 @@ SCHWARZ = (0,0,0)
 BLAU = (0, 169, 252)
 #Schrift
 pygame.font.init()
-FONT = pygame.font.SysFont("arial", 20)
+FONT = pygame.font.SysFont("arial", 20,bold =  True)
 #Sprite Groups
 slider = pygame.sprite.Group()
-
+pygame.mixer.init()
+BlingSound = pygame.mixer.Sound("Sounds/Lautstaerke.wav")
+sounds = [BlingSound]
+def setze_lautstärke(wert):
+    pygame.mixer.music.set_volume(wert)
+    for sound in sounds:
+        sound.set_volume(wert)
 
 
 def main(nutzer, screen=None):
     class SwitchButton:
         def __init__(self, x, y, parameter, label= None, width=60, height=30):
             self.rect = pygame.Rect(x, y, width, height)
+           
             self.nutzer = nutzer
             self.parameter = parameter
             self.label = label
@@ -49,7 +56,7 @@ def main(nutzer, screen=None):
             # Text zeichnen links vom Button
             text_surface = FONT.render(self.label, True, WEISS)
             text_rect = text_surface.get_rect()
-            text_rect.midright = (self.rect.x - 10, self.rect.centery)  # 10px Abstand links vom Button
+            text_rect.midleft = (self.rect.right + 10, self.rect.centery)  # 10px Abstand links vom Button 
             surface.blit(text_surface, text_rect)
 
 
@@ -108,6 +115,7 @@ def main(nutzer, screen=None):
             self.sliderPos = self.pos
             self.Toggle = Toggle
             self.handle_rect = pygame.Rect(self.sliderPos[0], self.sliderPos[1]-2.5, 10, self.größe[1]+5)
+            self.letzterSound = pygame.time.get_ticks()
             self.internValue = S.read(nutzer,self.SaveValue,"Einstellungen")
             if self.SaveValue == "Lautstärke":
                 self.internValue= self.internValue*100
@@ -148,6 +156,12 @@ def main(nutzer, screen=None):
                     self.Toggle.klick(0)
             S.write(nutzer, self.SaveValue, save, ort="Einstellungen", speicherort=E_Speicherort)
             self.SliderButtonPos()
+            if pygame.time.get_ticks() >= self.letzterSound + 20:
+                self.letzterSound = pygame.time.get_ticks()
+                lautstärke = S.read(nutzer, "Lautstärke", ort="Einstellungen")
+                setze_lautstärke(lautstärke)
+
+            BlingSound.play()
         def handle_event(self, pos):
             if self.InteractionRect.collidepoint(pos): 
                 self.valueVonPos(pos)
@@ -158,8 +172,8 @@ def main(nutzer, screen=None):
 
     if screen is None:
         screen = pygame.display.set_mode((E_BREITE, E_HOEHE))
-    SoundToogle =  SwitchButton(300, 85,"Lautstärke","Sound")
-    StartLabelToggel = SwitchButton(300, 125, "SL_beendbar","Start Label überspringbar")
+    SoundToogle =  SwitchButton(130, 125,"Lautstärke","Sound")
+    StartLabelToggel = SwitchButton(130, 85, "SL_beendbar","Start Label überspringbar")
     switches = [SoundToogle,StartLabelToggel]
 
     LautstärkeSlider = Slider("Lautstärke",130,190,150,5,0,100,4,10,SoundToogle)

@@ -24,11 +24,11 @@ def Main(Nutzername):
     SB_BREITE = 600  # screenbreite für Startbildschirm
     SB_HOEHE = 600   # screenhöhe für Startbildschirm
     #Sounds
-    Sounds = S.read(Nutzername,"Sound",ort="Einstellungen",speicherort =SB_Speicherort)
+    
     lautstärke = S.read(Nutzername,"Lautstärke",ort = "Einstellungen",speicherort=SB_Speicherort)
     setze_lautstärke(lautstärke)
-    if Sounds:
-        sound_startbildschirm.play(loops=-1)
+    
+    sound_startbildschirm.play(loops=-1)
     screen = pygame.display.set_mode((SB_BREITE, SB_HOEHE))  # screengröße für den Startbildschirm
     pygame.display.set_caption("Startbildschirm")  # screentitel
 
@@ -64,8 +64,7 @@ def Main(Nutzername):
                 elif event.key == pygame.K_RETURN:
                     auswahl = stellen[selected_index]
                     if auswahl == "Singleplayer":
-                        if Sounds:
-                            sound_startbildschirm.stop()
+                        sound_startbildschirm.stop()
                         if wintoast:
                             notify(progress={
                                 'title': 'Wird gestartet',
@@ -94,20 +93,16 @@ def Main(Nutzername):
                         return "Singleplayer"
                         
                     elif auswahl == "Multiplayer":
-                        if Sounds:
-                            sound_startbildschirm.stop()
+                        sound_startbildschirm.stop()
                         return "Multiplayer"
                     elif auswahl == "Einstellungen":
-                        if Sounds:
-                            sound_startbildschirm.stop()
+                        sound_startbildschirm.stop()
                         return "Einstellungen"
                     elif auswahl == "Beenden":
-                        if Sounds:
-                            sound_startbildschirm.stop()
+                        sound_startbildschirm.stop()
                         return "Beenden"
                     elif auswahl == "Shop":
-                        if Sounds:
-                            sound_startbildschirm.stop()
+                        sound_startbildschirm.stop()
                         return "Shop"
 
         pygame.display.flip()

@@ -20,11 +20,18 @@ except:
     print("Bitte installiere sys, um alle Features freizuschalten")
 pygame.init()
 # Setup
+fontBold = pygame.font.SysFont(None,24,bold=True)
 font = pygame.font.SysFont(None, 24)
+fontKursiv = pygame.font.SysFont(None,24,False,True)
+fontBig = pygame.font.SysFont(None, 30)
+#Farben
 SAND = (239, 228, 176)
 SCHWARZ = (0,0,0)
 GRAU = (200, 200, 200)
 BLAU = (50, 100, 255)
+ROT = (173, 40, 40)
+WEIß = (255,255,255)
+Grün = (50, 168, 82)
 FarbStartPreis = 20
 PastelMaxAufpreis = 90
 #Sounds
@@ -63,7 +70,54 @@ def FarbPreisBerechnen(Farbe):
     preis = max(preis,1)
     return preis
 
+class Toggle:
+        def __init__(self, x, y, zustand = False,label= None, width=60, height=30,):
+            self.rect = pygame.Rect(x, y, width, height)
+           
+            self.label = label
+            if self.label is None:
+                self.label = self.parameter
+            self.zustand = zustand
+            self.anim_fortschritt = 1.0 if self.zustand else 0.0
+            self.anim_geschwindigkeit = 0.1
+            self.anim_zielwert = self.anim_fortschritt
 
+        def draw(self, surface):
+            # Text zeichnen links vom Button
+            text_surface = font.render(self.label, True, SCHWARZ)
+            text_rect = text_surface.get_rect()
+            text_rect.midleft = (self.rect.right + 10, self.rect.centery)  # 10px Abstand links vom Button 
+            surface.blit(text_surface, text_rect)
+
+
+            r = ROT[0] + (Grün[0] - ROT[0]) * self.anim_fortschritt
+            g = ROT[1] + (Grün[1] - ROT[1]) * self.anim_fortschritt
+            b = ROT[2] + (Grün[2] - ROT[2]) * self.anim_fortschritt
+            color = (int(r), int(g), int(b))
+
+            pygame.draw.rect(surface, color, self.rect, border_radius=15)
+            kreis_radius = self.rect.height // 2 - 3
+
+            start = self.rect.x + kreis_radius + 3
+            ende = self.rect.right - kreis_radius - 3
+            kreis_x = start + (ende - start) * self.anim_fortschritt
+
+            kreis_center = (kreis_x, self.rect.centery)
+            pygame.draw.circle(surface, WEIß, kreis_center, kreis_radius)
+            if abs(self.anim_fortschritt - self.anim_zielwert) > 0.01:
+                richtung = 1 if self.anim_fortschritt < self.anim_zielwert else -1
+                self.anim_fortschritt += self.anim_geschwindigkeit * richtung
+                self.anim_fortschritt = max(0.0, min(1.0, self.anim_fortschritt))
+            else:
+                self.anim_fortschritt = self.anim_zielwert
+        def klick(self,zustand):
+            self.zustand = zustand
+            self.anim_zielwert = 1.0 if self.zustand else 0.0  
+        def handle_event(self, pos):
+            if self.rect.collidepoint(pos):
+                self.zustand = not self.zustand
+                self.anim_zielwert = 1.0 if self.zustand else 0.0  
+                    
 
 class Slider(pygame.sprite.Sprite):
     def __init__(self, x, y, breite,höhe,value,min,max,steps = 1,interaktions_padding = 5):
@@ -136,12 +190,10 @@ class Button:
 def Main(Nutzername):
     #Sounds
     lautstärke = Daten.read(Nutzername, "Lautstärke", ort="Einstellungen", speicherort=SH_Speicherort)
-    Sounds = Daten.read(Nutzername,"Sound", ort="Einstellungen", speicherort=SH_Speicherort)
     setze_lautstärke(lautstärke)
     P.sound_jingle.stop()
     laeuft = True
-    if Sounds:
-        sound_ca_cing.play()
+    #Eine Settings Gruppierung mit Preis Slider etc...
     class SettingsGroup():
         def kaufen(self):
             Geld = Daten.read(Nutzername,"punkte")
@@ -157,8 +209,7 @@ def Main(Nutzername):
                     self.maxOwnedValue = self.maxOwnedValue*100
                 self.slider.internValue = self.value -self.min
                 self.slider.SliderButtonPos()
-                if Sounds:
-                    sound_ca_cing.play()
+
                 #if wintoast == True:
                     
             else:
@@ -182,7 +233,7 @@ def Main(Nutzername):
 
             
             self.value = self.maxOwnedValue
-            self.Button = Button(x,y+55, 100, 40, "Kaufen", self.kaufen)
+            #self.Button = Button(x,y+55, 100, 40, "Kaufen", self.kaufen)
             self.slider = Slider(x, y+20, 200, 5, self.maxOwnedValue,min,max, steps)
             self.slider.internValue = self.value -self.min
             self.slider.SliderButtonPos()
@@ -195,24 +246,33 @@ def Main(Nutzername):
                 self.preis = self.preis *-1
             if self.preis < 0:
                 self.preis = self.preis/2
-            else:
-                self.preis = self.preis*(1-(int(self.value) - self.maxOwnedValue)/200)
             self.preis = int(self.preis)
         def buttonEvent(self,event):
             self.Button.handle_event(event)
         def draw(self,screen):
             self.slider.draw(screen)
             self.displayValue = self.value
+            farbe = SCHWARZ
+            if self.preis > 0:
+                farbe = ROT
+            elif self.preis < 0:
+                farbe = Grün
             if self.SaveName == "abprallChance":
-                #self.displayValue = self.value
-                screen.blit(font.render("{}: {}% für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
+                textLinks = font.render(f"{self.Titel}: {self.displayValue}% für ", True, SCHWARZ)
+                textPreis = fontBold.render(f"{self.preis}$", True, farbe)
+                screen.blit(textLinks, self.pos); screen.blit(textPreis, (self.pos[0] + textLinks.get_width(), self.pos[1]))
             else:
-                screen.blit(font.render("{}: {} für {}$".format(self.Titel,self.displayValue,self.preis),True, SCHWARZ), (self.pos))
-            screen.blit(font.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
-            self.Button.draw(screen)
+                textLinks = font.render(f"{self.Titel}: {self.displayValue} für ", True, SCHWARZ)
+                textPreis = fontBold.render(f"{self.preis}$", True, farbe)
+                screen.blit(textLinks, self.pos); screen.blit(textPreis, (self.pos[0] + textLinks.get_width(), self.pos[1]))
+            #pygame.draw.line(screen, SCHWARZ,(self.pos[0], self.pos[1] + 55),(self.pos[0] + self.slider.größe[0], self.pos[1]  + 55),2)
 
-    SH_BREITE = 1325
-    SH_HOEHE = 665
+            screen.blit(fontKursiv.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
+            #self.Button.draw(screen)
+        def preis(self):
+            return self.preis
+    SH_BREITE = 850
+    SH_HOEHE = 675
 
     screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
     Geld = Daten.read(Nutzername,"punkte")
@@ -225,7 +285,7 @@ def Main(Nutzername):
 
 
     mouseUP = True
-    FARBBEREICH_POS = (10,10)
+    FARBBEREICH_POS = (20,20)
     farbe =  pygame.Color(*tuple(json.loads(Daten.read(Nutzername,"farbe"))))
     FarbTon= (255,0,0)
     FarbWahlHSVBereichGröße = (300,250)
@@ -233,29 +293,32 @@ def Main(Nutzername):
     FarbTonSlider_pos = (310+FARBBEREICH_POS[0], FARBBEREICH_POS[1]) 
 
 
-    STATS_POS = (FARBBEREICH_POS[0]+470,10)
+    STATS_POS = (FARBBEREICH_POS[0]+470,20)
 
-    AbstandY = 135
-    #3. Reihe
+    AbstandY = 70
+
     
-    GeschwindigkeitGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*0,25,61,2,"Geschwindigkeit","geschwindigkeit","Die Geschwindigkeit deines Panzers",50/2)
-    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*1,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",25)
-    AbprallerGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*2,2,7,1,"Abpraller","abpraller","Maximale Abpraller deiner Kugeln",125) 
-    AbprallChanceGroup = SettingsGroup(STATS_POS[0]+460,STATS_POS[1]+AbstandY*3,75,100,5,"Abprallchance","abprallChance","Die Chance das deine Kugel Abprallt",100/5) 
    
+    #SETTINGS GRUPPEN DEFINIEREN
     #2. Reihe
     lebenGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*0,3,10,1,"Leben","leben","Die Anzahl der Leben deines Panzers",100)
-    MaxKugelnGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*1,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75)
-    KugelSpeedGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,35,10,"Kugel Geschwindigkeit","kugelSpeed","Die Geschwindigkeit einer Kugel",150/10)
-    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*3,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)   
-    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*4,1,5,1,"Nachladezeit","nachladezeit","Nachladezeit deines Panzers in ms",150)
-
+    GeschwindigkeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*1,25,61,2,"Geschwindigkeit","geschwindigkeit","Die Geschwindigkeit deines Panzers",50/2)
+    DrehGeschwindigkeitsGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*2,5,10,1,"Dreheschwindigkeit","drehgeschwindigkeit","Die Drehgeschwindigkeit deines Panzers",25)
+    
+    MaxKugelnGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*3,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75)
+    KugelSpeedGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*4,5,35,10,"Kugel Geschwindigkeit","kugelSpeed","Die Geschwindigkeit einer Kugel",150/10)
+    SchussCooldownGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*5,240,40,20,"Schuss Cooldown","schussCooldown","Abstand zwischen zwei Schüssen",150/20)   
+    NachladezeitGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,1,5,1,"Nachladezeit","nachladezeit","Nachladezeit deines Panzers in ms",150)
+    AbprallerGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*7,2,7,1,"Abpraller","abpraller","Maximale Abpraller deiner Kugeln",125) 
    
     #1. Reihe
-    mieneZeitGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*2,15,35,5,"Zünddauer Miene","mieneZeit","Zeit bis eine Miene Explodiert.",75/5) 
-    mienenCooldownGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*3,5,1,1,"Mienen Cooldown","mieneCooldown","Zeitspanne bis du eine neue Miene legen kannst.",150)
-    explosionsRadiusGroup = SettingsGroup(STATS_POS[0]-460,STATS_POS[1]+AbstandY*4,40,80,10,"Explosionsradius","explosionsRadius","Der Betroffene Bereich bei einer Explosion.",100/10)
+    mieneZeitGroup = SettingsGroup(STATS_POS[0]-470,STATS_POS[1]+AbstandY*4,15,35,5,"Zünddauer Miene","mieneZeit","Zeit bis eine Miene Explodiert.",75/5) 
+    mienenCooldownGroup = SettingsGroup(STATS_POS[0]-470,STATS_POS[1]+AbstandY*5,5,1,1,"Mienen Cooldown","mieneCooldown","Zeitspanne bis du eine neue Miene legen kannst.",150)
+    explosionsRadiusGroup = SettingsGroup(STATS_POS[0]-470,STATS_POS[1]+AbstandY*6,40,80,10,"Explosionsradius","explosionsRadius","Der Betroffene Bereich bei einer Explosion.",100/10)
     #mienenAnzahlGroup = SettingsGroup(STATS_POS[0],STATS_POS[1]+AbstandY*6,5,10,1,"Kugeln","maxKugeln","Kugeln pro Magazin",75) UNENDLICH PRO SPIEL ZURZEIT. LEVELABHÄNGIG
+    
+    AbprallChanceGroup = SettingsGroup(STATS_POS[0]-470,STATS_POS[1]+AbstandY*7,75,100,5,"Abprallchance","abprallChance","Die Chance das deine Kugel Abprallt",100/5) 
+    
     SettingGroupsss = [lebenGroup,GeschwindigkeitGroup,DrehGeschwindigkeitsGroup,MaxKugelnGroup,KugelSpeedGroup,SchussCooldownGroup,NachladezeitGroup,AbprallerGroup,AbprallChanceGroup,mieneZeitGroup,mienenCooldownGroup,explosionsRadiusGroup]    
 
 
@@ -266,14 +329,14 @@ def Main(Nutzername):
         if Geld >= Farbpreis:
             Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")-Farbpreis))
             Daten.write(Nutzername, "farbe", json.dumps(list(farbe)))
-            if Sounds:
-                sound_ca_cing.play()
+
             #if wintoast == True:
                 
         else:
             if wintoast:
                 toast("Fehler","Du hast zu wenig Geld. Suche eine andere Farbe aus, oder verdiene mehr Geld.",audio='ms-winsoundevent:Notification.IM')
         pygame.display.set_caption("Shop | Guthaben: {}$".format(Daten.read(Nutzername,"punkte")))
+    #FarbSlider 
     basis = pygame.Surface((360, 1))
     for x in range(360):
         h = x / 360
@@ -284,21 +347,38 @@ def Main(Nutzername):
     FarbWahlSurface = pygame.Surface(FarbWahlHSVBereichGröße)
     Farbpreis = 10
 
-    FarbeKaufenButton = Button(FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+50, 100, 40, "Kaufen", FarbeKaufen)
+    FarbeMitKaufenToggle = Toggle(FARBBEREICH_POS[0],650,False,"Farbe mit Kaufen")
+    def KaufeAlles():
+        
+        for group in SettingGroupsss:
+            group.kaufen()
+        if FarbeMitKaufenToggle.zustand == True:
+            FarbeKaufen()
+        sound_ca_cing.play()
+    global GesamtPreis
+    GesamtPreis = 0
+    def updatePreise():
+        GesamtPreis = 0
+        for group in SettingGroupsss:
+            GesamtPreis += group.preis
+        if FarbeMitKaufenToggle.zustand == True:
+            GesamtPreis += FarbPreisBerechnen(farbe)
+        return GesamtPreis
+    KaufenButton = Button(FARBBEREICH_POS[0],600, 100, 40, "Kaufen", KaufeAlles)
 
-    hintergrund = pygame.image.load("Hintergrund_Shop.png")
-    hintergrund = pygame.transform.scale(hintergrund,(SH_BREITE, SH_HOEHE))  # Skaliere Hintergrundbild auf die angegebene Größe
+
     while laeuft:
-        screen.blit(hintergrund, (0, 0))
+        screen.fill(SAND)
         
         for event in pygame.event.get ():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseUP = False
-                for group in SettingGroupsss:
-                    group.buttonEvent(pygame.mouse.get_pos())
-                FarbeKaufenButton.handle_event(pygame.mouse.get_pos())
+                GesamtPreis = updatePreise()
+                FarbeMitKaufenToggle.handle_event(pygame.mouse.get_pos())
+                KaufenButton.handle_event(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEBUTTONUP:
                 mouseUP = True
+                GesamtPreis = updatePreise()
             if event.type == pygame.QUIT:
                 laeuft = False
 
@@ -321,6 +401,7 @@ def Main(Nutzername):
                 else:
                     farbe = farbe
             Farbpreis = FarbPreisBerechnen(farbe) # Punkte
+            GesamtPreis = updatePreise()
             
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
         pygame.draw.rect(screen, (0, 0, 0), ((FarbTonSlider_pos[0],FarbTonSlider_pos[1]), (FarbTonSliderGröße[0],FarbTonSliderGröße[1])), 2, )
@@ -345,12 +426,14 @@ def Main(Nutzername):
 
         screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
-        FarbeKaufenButton.draw(screen)
+        KaufenButton.draw(screen)
+        FarbeMitKaufenToggle.draw(screen)
 
-    
         for group in SettingGroupsss:
             group.draw(screen)
+        
+        screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,SCHWARZ),(FARBBEREICH_POS[0]+ 115,610))
         pygame.display.flip()   
         clock.tick(60)
 
-#Main("_Hannes_")
+Main("_Hannes_")

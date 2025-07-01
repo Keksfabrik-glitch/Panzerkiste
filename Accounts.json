@@ -77,9 +77,9 @@
     "t": {
         "passwort": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
         "stats": {
-            "punkte": 0,
+            "punkte": 513,
             "farbe": "[100, 255, 255, 255]",
-            "leben": 3,
+            "leben": 8,
             "schussCooldown": 250,
             "drehgeschwindigkeit": 5,
             "geschwindigkeit": 25,
@@ -94,8 +94,7 @@
             "explosionsRadius": 40
         },
         "Einstellungen": {
-            "Sound": true,
-            "Lautstärke": 0.0,
+            "Lautstärke": 0.32,
             "SL_beendbar": true
         }
     }
