@@ -3,3 +3,5 @@ ca-ching: https://pixabay.com/de/sound-effects/cashier-quotka-chingquot-sound-ef
 Treffer, Schuss, Explosion: https://www.sounds-resource.com/wii/wiiplay/sound/28569/?source=genre (Sample_ 0000 - 0001)
 Win, Round_End, Fail, Jingel, Start, Startbildschirm: https://downloads.khinsider.com/game-soundtracks/album/wii-play
 (66, 55, 54, 53 ,52 , 2)
+
+Lautstaerke: Windows 11 Betriebssystem
