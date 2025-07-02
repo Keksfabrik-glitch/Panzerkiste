@@ -193,9 +193,12 @@ def Main(Nutzername):
     setze_lautstärke(lautstärke)
     P.sound_jingle.stop()
     laeuft = True
+    global Geld
+    Geld = Daten.read(Nutzername,"punkte")
     #Eine Settings Gruppierung mit Preis Slider etc...
     class SettingsGroup():
         def kaufen(self):
+            global Geld
             Geld = Daten.read(Nutzername,"punkte")
             Preis = self.preis
             if Geld >= Preis:
@@ -272,10 +275,10 @@ def Main(Nutzername):
         def preis(self):
             return self.preis
     SH_BREITE = 850
-    SH_HOEHE = 675
+    SH_HOEHE = 690
 
     screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
-    Geld = Daten.read(Nutzername,"punkte")
+    
     pygame.display.set_caption("Shop | Guthaben: {}$".format(Geld))  
 
     BLAU = (0, 0, 255)  
@@ -349,15 +352,18 @@ def Main(Nutzername):
 
     FarbeMitKaufenToggle = Toggle(FARBBEREICH_POS[0],650,False,"Farbe mit Kaufen")
     def KaufeAlles():
-        
         for group in SettingGroupsss:
             group.kaufen()
         if FarbeMitKaufenToggle.zustand == True:
             FarbeKaufen()
         sound_ca_cing.play()
+        global Geld
+        Geld = Daten.read(Nutzername,"punkte")
     global GesamtPreis
     GesamtPreis = 0
     def updatePreise():
+        global Geld
+        Geld = Daten.read(Nutzername,"punkte")
         GesamtPreis = 0
         for group in SettingGroupsss:
             GesamtPreis += group.preis
@@ -431,8 +437,10 @@ def Main(Nutzername):
 
         for group in SettingGroupsss:
             group.draw(screen)
-        
-        screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,SCHWARZ),(FARBBEREICH_POS[0]+ 115,610))
+        if GesamtPreis > Geld:
+            screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,ROT),(FARBBEREICH_POS[0]+ 115,610))
+        else:
+             screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,SCHWARZ),(FARBBEREICH_POS[0]+ 115,610))
         pygame.display.flip()   
         clock.tick(60)
 

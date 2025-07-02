@@ -219,8 +219,8 @@ class Player(pygame.sprite.Sprite):
                                    abpraller=self.abpraller, abprallChance=self.abprallChance,
                                    shooter_id=self.ID,shooter = self)
                 kugel_gruppe.add(neue_kugel)
-                if Sounds:
-                    sound_schuss.play()
+               
+                sound_schuss.play()
                 self.kugeln -= 1
                 self.letzterEinzelschuss = jetzt
                 if self.kugeln == 0:
@@ -228,11 +228,9 @@ class Player(pygame.sprite.Sprite):
     def Schaden(self,amount=1):
         self.leben -= amount
         self.PunkteGeben(-amount)
-        if Sounds:
-            sound_treffer.play()
+        sound_treffer.play()
         if self.leben <= 0:
-            if Sounds:
-                sound_explosion.play()
+            sound_explosion.play()
 
     def PunkteGeben(self,amount=1):       
         #print("AHHH ", amount)
@@ -412,8 +410,7 @@ class FeindPanzer(pygame.sprite.Sprite):
                             abpraller=self.abpraller, abprallChance=self.abprallChance,
                             shooter_id=self.ID,shooter = self)
             kugel_gruppe.add(neue_kugel)
-            if Sounds:
-                sound_schuss.play()
+            sound_schuss.play()
             self.kugeln -= 1
             self.letzterEinzelschuss = jetzt
             if self.kugeln == 0:
@@ -421,11 +418,9 @@ class FeindPanzer(pygame.sprite.Sprite):
 
     def Schaden(self, amount=1):
         self.leben -= amount
-        if Sounds:
-            sound_treffer.play()
+        sound_treffer.play()
         if self.leben <= 0:
-            if Sounds:
-                sound_explosion.play()
+            sound_explosion.play()
             self.kill()
 
 

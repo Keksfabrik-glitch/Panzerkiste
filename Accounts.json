@@ -2,7 +2,7 @@
     "_Hannes_": {
         "passwort": "5e243f5cccfa1f093f5bc7402ce438509ce6d50a4e7bb88ff6753abd90b531fd",
         "stats": {
-            "punkte": -2,
+            "punkte": 12,
             "farbe": "[4, 85, 199, 255]",
             "leben": 10,
             "schussCooldown": 40,
@@ -10,8 +10,8 @@
             "geschwindigkeit": 61,
             "maxKugeln": 10,
             "kugelSpeed": 35,
-            "nachladezeit": 5,
-            "abpraller": 6,
+            "nachladezeit": 3,
+            "abpraller": 7,
             "abprallChance": 1.0,
             "mieneZeit": 35,
             "mienenAnzahl": -1,
