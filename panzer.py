@@ -47,6 +47,12 @@ label_gruppe = pygame.sprite.Group()
 
 screen = pygame.display.set_mode((P_WIDTH,P_HEIGHT))  # screengröße für den Startbildschirm
 ## CLASSES
+
+
+
+
+
+
 def FarbeVerändern(farbe, amount):
     ret = []
     for ft in farbe:
@@ -243,9 +249,9 @@ class Player(pygame.sprite.Sprite):
         self.rewriteGuthaben = pygame.time.get_ticks()+3*1000       
 class FeindPanzer(pygame.sprite.Sprite):
 
-    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe):
+    def __init__(self, position,Name,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe,abpraller):
         super().__init__()
-        self.kannFahren = kannFahren
+       
         self.Punkte = 0
         self.ID = Name
         self.level = level
@@ -269,11 +275,21 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.letzte_mine_zeit = -2000
         self.mine_cooldown = 5
         self.explosionsRadius = 40
-        self.abpraller = 2
+        self.abpraller = abpraller
         self.abprallChance = 0.75
         self.mienenPos = []
 
+        #Schießen
+        self.besterWinkel = 0
+        self.LetzteBerechnung = pygame.time.get_ticks()
+        self.letzteGenauigkeit = 1000000
+        self.Versuche = 0
+        self.abstand = self.nachladezeit
+        self.kannAbprallen = self.abpraller != 0
 
+        self.kannMienenLegen = False
+        self.kannFahren = kannFahren
+        
         #  Grafik:
         #  Unten
         self.body_surface = pygame.Surface((panzer_größe * 0.75, panzer_größe), pygame.SRCALPHA)
@@ -323,12 +339,32 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.position)
         self.mask = pygame.mask.from_surface(self.image)
 
-        #Zielsystem
-        winkel = Z.berechneTurmwinkel(self.position, player.position, wände)
-        if winkel is not None:
-            self.turmWinkel = winkel
-            if Z.hat_sichtlinie(self.position, player.position, wände) == True:
-                self.Schuss(winkel*-1)
+        #Zielsystem abstand mal 1000?
+        if self.kannAbprallen == True:
+            if pygame.time.get_ticks()-self.LetzteBerechnung >= self.abstand*1000:
+                winkel,Genauigkeit = Z.WinkelBerechnen(self.position, player.position, wände,self.Versuche,self.besterWinkel,self.abpraller ,screen)
+                self.LetzteBerechnung = pygame.time.get_ticks()
+                if self.letzteGenauigkeit>= Genauigkeit:
+                    self.Versuche +=1
+                    self.besterWinkel = winkel
+                else:
+                    self.Versuche -=1
+                    self.besterWinkel = None
+                self.Versuche = max(self.Versuche,4)
+                self.Versuche = min(self.Versuche,0)
+                self.letzteGenauigkeit = Genauigkeit
+                #print(self.Versuche,winkel,Genauigkeit,self.letzteGenauigkeit)
+            w = Z.anim(self.position,player.position,wände)
+            if w != None:
+                self.turmWinkel = w
+            if self.letzteGenauigkeit <= 200 and (self.besterWinkel == float or self.besterWinkel == int):
+                self.turmWinkel = self.besterWinkel
+                self.Schuss(self.besterWinkel*-1)
+        else: # Nicht so performance kostend
+            w = Z.anim(self.position,player.position,wände)
+            if w != None:
+                self.turmWinkel = w
+                self.Schuss(w*-1)
 
         if self.leben <= 0:
             self.kill()
@@ -437,10 +473,26 @@ class FeindPanzerManage():
             schuss_cooldown = int(max(50, 500 + (level - 1) *-20)) # sinkt um -20
             kugeln = int(min(20, 1 + (level - 1) *0.8)) #steigt: [a,a,][b][c][d,d]... max 20 [19]
             #maxKugeln = kugeln
+            abpraller = 0
             kugelSpeed = int(min(8, 3 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
             nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
             farbe = (222, 166, 44)
-            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe)
+            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe,abpraller)
+            self.panzer.append(neuerPanzer)
+            feindPanzerGR.add(neuerPanzer)
+        if typ == "AbprallStehend":
+            leben = int(min(10, 1 + (level - 1) *0.6)) #steigt: [a,a][b,b][c][d,d]... max 10
+            kannFahren = False
+            geschwindigkeit = 0
+            abpraller = int(min(6, 1 + (level - 1) *0.4))
+            drehgeschwindigkeit = int(min(12, 2 + (level - 1) *0.4)) #steigt: [a,a,][b,b][c,c,c][d,d]... max 12
+            schuss_cooldown = int(max(50, 500 + (level - 1) *-20)) # sinkt um -20
+            kugeln = int(min(20, 1 + (level - 1) *0.8)) #steigt: [a,a,][b][c][d,d]... max 20 [19]
+            #maxKugeln = kugeln
+            kugelSpeed = int(min(8, 3 + (level - 1) *0.5)) #steigt: [a,a,][b,b][c,c][d,d,d..] max 12, min 8
+            nachladezeit = int(max(1, 50 + (level - 1) *-1.5))/10 #sink: -[a],-[b],-[a]... max 5, min 0.1  #/10 damit es im Nachstellenbereich ist
+            farbe = (222, 166, 44)
+            neuerPanzer = FeindPanzer(position,id,level,leben,kannFahren,geschwindigkeit,drehgeschwindigkeit,schuss_cooldown,kugeln,kugelSpeed,nachladezeit,farbe,abpraller)
             self.panzer.append(neuerPanzer)
             feindPanzerGR.add(neuerPanzer)
             # Mienen Stats und appraller danach noch...
@@ -495,7 +547,6 @@ class Kugel(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image, winkel)
         self.rect = self.image.get_rect(center=self.position)
         self.mask = pygame.mask.from_surface(self.image)
-
     def update(self):
         jetzt = pygame.time.get_ticks()
 
@@ -517,7 +568,7 @@ class Kugel(pygame.sprite.Sprite):
                     overlap = self.mask.overlap(wand.mask, offset)
 
                     if overlap:  # tatsächliche Pixelkollision
-                        self.position -= step_vector  # Schritt zurück
+                        self.position -= step_vector*5  # Schritt zurück
                         self.rect.center = self.position
                         self.update_rotation()
 
@@ -530,9 +581,16 @@ class Kugel(pygame.sprite.Sprite):
                         # Abprallverhalten
                         if self.abpraller > 0 and self.abprallChance  > random.random():
                             normal = self.get_normal_vector(wand)
+                            #print(self.richtung)
                             self.richtung = self.richtung.reflect(normal)
+                            #print(self.richtung)
                             self.abpraller -= 1
                             self.geschwindigkeit *= 0.85
+                            #print(step_vector)
+                            self.update_rotation()
+                            #print(step_vector)
+                            self.position += step_vector*-1
+                            self.rect.center = self.position
                             self.update_rotation()
                             return
                         else:
@@ -561,37 +619,21 @@ class Kugel(pygame.sprite.Sprite):
                     explosions_gruppe.add(Explosion(*self.rect.center))
                     self.kill()
                     kugel.kill()
-
             # --- Spielfeld verlassen ---
             if not screen.get_rect().inflate(40, 40).collidepoint(self.rect.center):
                 self.kill()
                 return
 
+
     def get_normal_vector(self, hindernis):
-        # Berechne den exakten Kollisionspunkt via Maske
-        offset = (hindernis.rect.left - self.rect.left, hindernis.rect.top - self.rect.top)
-        overlap_point = self.mask.overlap(hindernis.mask, offset)
-        if not overlap_point:
-            print("Keine Überlappung")
-            return pygame.math.Vector2(0, -1)  # fallback nach oben
 
-        # Suche Nachbarn um den Kollisionspunkt herum
-        x, y = overlap_point
-        grad = pygame.math.Vector2(0, 0)
+        dir = self.richtung
+        if abs(dir.x) > abs(dir.y):
+             return pygame.math.Vector2(0, -1 if dir.y > 0 else 1)
 
-        # Nachbarpixel in der Hindernis-Maske abfragen
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            try:
-                if hindernis.mask.get_at((x + dx, y + dy)) == 0:
-                    grad += pygame.math.Vector2(dx, dy)
-            except IndexError:
-                pass
-
-        if grad.length_squared() == 0:
-            # Kein Rand gefunden, also fallback
-            grad = pygame.math.Vector2(self.rect.center) - pygame.math.Vector2(hindernis.rect.center)
-
-        return grad.normalize()
+        else:
+            return pygame.math.Vector2(-1 if dir.x > 0 else 1, 0)
+        
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, breite, höhe, zerstörbarkeit=False, leben=8):
@@ -804,10 +846,11 @@ def lade_map(map_data,Nutzername,level):
         wände.add(Wall(wand["x"], wand["y"], wand["w"], wand["h"], wand.get("destroyable", False)))
 
     # Immer die vier Randwände laden
-    wände.add(Wall(0, -2, P_WIDTH, 4))                  # Oben
-    wände.add(Wall(-2, P_HEIGHT - 2, P_WIDTH, 4))         # Unten
-    wände.add(Wall(-2, 0, 4, P_HEIGHT))                 # Links
-    wände.add(Wall(P_WIDTH - 2, 0, 4, P_HEIGHT))         # Rechts
+    breite = 4
+    wände.add(Wall(0, -2, P_WIDTH, breite))                  # Oben
+    wände.add(Wall(-2, P_HEIGHT - 2, P_WIDTH, breite))         # Unten
+    wände.add(Wall(-2, 0, breite, P_HEIGHT))                 # Links
+    wände.add(Wall(P_WIDTH - 2, 0, breite, P_HEIGHT))         # Rechts
 
     # Löcher laden
     for loch in map_data.get("holes", []):
@@ -953,4 +996,4 @@ def Main(Nutzername):
         label_gruppe.empty()
 
 sound_jingle.stop()
-#Main("_Hannes_")
+Main("_Hannes_")
