@@ -61,14 +61,32 @@ map_4 = {
 }
 map_5 = {
     "walls": [
-        {"x": 150, "y": 125, "w": 100, "h": 25, "destroyable": False},
-        {"x": 250, "y": 125, "w": 150, "h": 25, "destroyable": True},
-        {"x": 400, "y": 125, "w": 25, "h": 200, "destroyable": False},
-        {"x": 375, "y": 300, "w": 25, "h": 200, "destroyable": True},
-        {"x": 400, "y": 475, "w": 250, "h": 25, "destroyable": False}
+        {"x": 200, "y": 100, "w": 100, "h": 150, "destroyable": False},
+        {"x": 200, "y": 350, "w": 100, "h": 150, "destroyable": False},
+        {"x": 400, "y": 100, "w": 100, "h": 150, "destroyable": False},
+        {"x": 400, "y": 350, "w": 100, "h": 150, "destroyable": False},
+        {"x": 400, "y": 250, "w": 100, "h": 100, "destroyable": True}
     ],
     "holes": [
     ],
-    "player_start": (175, 425),
-    "fpanzer_start": [(600,525),(600,225)]
+    "player_start": (150, 300),
+    "fpanzer_start": [(650,300)]
+}
+map_6 = {
+    "walls": [],
+    "holes": [
+        {"x": 225, "y": 25, "radius": 25},
+        {"x": 525, "y": 25, "radius": 25},
+        {"x": 225, "y": 75, "radius": 25},
+        {"x": 525, "y": 75, "radius": 25},
+        {"x": 225, "y": 125, "radius": 25},
+        {"x": 25, "y": 175, "radius": 25},
+        {"x": 75, "y": 175, "radius": 25},
+        {"x": 125, "y": 175, "radius": 25},
+        {"x": 225, "y": 175, "radius": 25},
+        {"x": 275, "y": 175, "radius": 25},
+        {"x": 325, "y": 175, "radius": 25}
+    ],
+    "player_start": (150, 300),
+    "fpanzer_start": [(650,300)]
 }
