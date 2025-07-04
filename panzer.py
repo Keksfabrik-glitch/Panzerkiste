@@ -883,7 +883,7 @@ def Main(Nutzername):
     P_WIDTH, P_HEIGHT = 800, 600
     screen = pygame.display.set_mode((P_WIDTH, P_HEIGHT))  # Fenstergröße für das Spiel
     pygame.display.set_caption("Panzerkiste")
-    maps = ["map_1", "map_2", "map_3", "map_4", "map_5"]
+    maps = ["map_2", "map_3", "map_4", "map_5","map_6"]
     level_running = True
     level = 1
     running = True
