@@ -275,8 +275,8 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.letzte_mine_zeit = -2000
         self.mine_cooldown = 5
         self.explosionsRadius = 40
-        self.abpraller = abpraller
-        self.abprallChance = 0.75
+        self.abpraller = 10#abpraller
+        self.abprallChance = 1#0.75
         self.mienenPos = []
 
         #Schießen
@@ -286,6 +286,8 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.Versuche = 0
         self.abstand = self.nachladezeit
         self.kannAbprallen = self.abpraller != 0
+        self.intelligenz = 60
+        self.sichtFeld = 200
 
         self.kannMienenLegen = False
         self.kannFahren = kannFahren
@@ -342,22 +344,31 @@ class FeindPanzer(pygame.sprite.Sprite):
         #Zielsystem abstand mal 1000?
         if self.kannAbprallen == True:
             if pygame.time.get_ticks()-self.LetzteBerechnung >= self.abstand*1000:
-                winkel,Genauigkeit = Z.WinkelBerechnen(self.position, player.position, wände,self.Versuche,self.besterWinkel,self.abpraller ,screen)
+                winkel,Genauigkeit = Z.WinkelBerechnen(self.position, player.position, wände,self.Versuche,self.besterWinkel,self.abpraller,self.intelligenz,self.sichtFeld)
                 self.LetzteBerechnung = pygame.time.get_ticks()
+                print(Genauigkeit,self.Versuche)
                 if self.letzteGenauigkeit>= Genauigkeit:
+                    print("BESSER YEA")
                     self.Versuche +=1
                     self.besterWinkel = winkel
                 else:
+                    print("SCHLECHTER NÖ")
                     self.Versuche -=1
+                    if self.besterWinkel != None:
+                        self.turmWinkel = self.besterWinkel
+                        self.Schuss(self.besterWinkel*-1)
                     self.besterWinkel = None
-                self.Versuche = max(self.Versuche,4)
-                self.Versuche = min(self.Versuche,0)
+              
+                self.Versuche = max(self.Versuche,0)
+                self.Versuche = min(self.Versuche,4)
+
                 self.letzteGenauigkeit = Genauigkeit
                 #print(self.Versuche,winkel,Genauigkeit,self.letzteGenauigkeit)
             w = Z.anim(self.position,player.position,wände)
             if w != None:
                 self.turmWinkel = w
-            if self.letzteGenauigkeit <= 200 and (self.besterWinkel == float or self.besterWinkel == int):
+           
+            if self.letzteGenauigkeit <= 500 and self.besterWinkel != None:
                 self.turmWinkel = self.besterWinkel
                 self.Schuss(self.besterWinkel*-1)
         else: # Nicht so performance kostend
