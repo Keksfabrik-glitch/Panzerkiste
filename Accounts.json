@@ -45,7 +45,7 @@
         },
         "Einstellungen": {
             "Sound": true,
-            "Lautstärke": 0,
+            "Lautstärke": 0.76,
             "SL_beendbar": false
         }
     },

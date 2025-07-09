@@ -13,6 +13,7 @@ import Shop as S
 import Startbildschirm as SB
 import Account as Acc
 import Einstellungen as E
+import werbung as W
 # Setup
 pygame.init()
 pygame.display.set_caption("Panzerkiste")
@@ -36,6 +37,8 @@ while running:
     elif auswahl == "Einstellungen":
         E.main(Nutzername)
     elif auswahl == "Shop":
+        random_index = random.randint(0, len(werbespots_audio) - 1)
+        W.werbung(werbespots_video[random_index], werbespots_audio[random_index])
         S.Main(Nutzername)
 # Ende
 pygame.quit()
