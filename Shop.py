@@ -433,20 +433,20 @@ def Main(Nutzername):
             
         screen.blit(FarbTonSurface, FarbTonSlider_pos)
         pygame.draw.rect(screen, (0, 0, 0), ((FarbTonSlider_pos[0],FarbTonSlider_pos[1]), (FarbTonSliderGröße[0],FarbTonSliderGröße[1])), 2, )
-
-        surf = pygame.Surface((1, 2))
+                                      #weiß
+        surf = pygame.Surface((1, 2)) #schwarz
         surf.fill((255,255,255))
         surf.set_at((0, 1), (0, 0,0))
         surf = pygame.transform.smoothscale(surf, FarbWahlHSVBereichGröße)
 
-        surf2 = pygame.Surface((2,1))
-        surf2.fill((255,255,255))
-        surf2.set_at((1, 0), (FarbTon))
+        surf2 = pygame.Surface((2,1))                                               #weiß Farbe
+        surf2.fill((255,255,255))                                                   #Alle weiß
+        surf2.set_at((1, 0), (FarbTon))                                             # rechts farbe
         surf2 = pygame.transform.smoothscale(surf2, (FarbWahlHSVBereichGröße))
         surf.blit(surf2, (0, 0), special_flags=pygame.BLEND_MULT)
         screen.blit(surf, FARBBEREICH_POS)
         FarbWahlSurface.blit(surf, (0, 0))
-        FarbWahlSurface.blit(surf2, (0, 0), special_flags=pygame.BLEND_MULT)
+        FarbWahlSurface.blit(surf2, (0, 0), special_flags=pygame.BLEND_MULT) # verrechnen
         farbPreview = pygame.Rect(345+FARBBEREICH_POS[0], 200+FARBBEREICH_POS[1], 50, 50)
         pygame.draw.rect(screen, (0, 0, 0), (FARBBEREICH_POS, FarbWahlHSVBereichGröße), 2)
         pygame.draw.rect(screen, farbe, farbPreview, border_radius=10)
