@@ -393,7 +393,8 @@ def Main(Nutzername):
             KaufeAlles()
             lautstärke = Daten.read(Nutzername, "Lautstärke", ort="Einstellungen", speicherort=SH_Speicherort)
             setze_lautstärke(lautstärke)
-            screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
+            pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)
+            global mouseUP
             mouseUP = True
             
     KaufenButton = Button(FARBBEREICH_POS[0],600, 100, 40, "Kaufen", KaufeAlles)
