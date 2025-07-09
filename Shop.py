@@ -6,21 +6,24 @@ import json
 import Speicher as Daten
 import panzer as P
 import random
+import cv2
 from time import sleep
 try:
     from win11toast import toast, notify, update_progress
     wintoast = True
+    werbespots_video = ["Videos/RickRoll.mp4","Videos/Schumacher.mp4"]
+    werbespots_audio = ["Videos/RickRoll.mp3","Videos/Schumacher.mp3"]
 except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 try:
  
-    #from moviepy.editor import VideoFileClip
+    import werbung as werbungWiedergeben
     werbung = True
 except:
     werbung = False
-    print("Bitte installiere moviepy.editor, um extea Features freizuschalten :-)")
-werbung = False
+    print("Bitte installiere cv2, um extea Features freizuschalten :-)")
+
 pygame.init()
 # Setup
 fontBold = pygame.font.SysFont(None,24,bold=True)
@@ -378,20 +381,23 @@ def Main(Nutzername):
         if FarbeMitKaufenToggle.zustand == True:
             GesamtPreis += FarbPreisBerechnen(farbe)
         return GesamtPreis
-    #def WerbungAbspielen():
-        #if werbung == True:
-            
-            #if random.randint(1,2) == 2:
-            #    clip = RickRoll
-            #else:
-            #    clip = Sc
-            #clip.ipython_display(width=480)
-            #clip.preview(fullscreen = False,window_title="Werbung")
-            #gesamtPreis = updatePreise()
-            #Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")+gesamtPreis/2))
-            #KaufeAlles()
+    def WerbungAbspielen():
+        if werbung == True:
+            lautstärke = Daten.read(Nutzername, "Lautstärke", ort="Einstellungen", speicherort=SH_Speicherort)
+            setze_lautstärke(1)
+            random_index = random.randint(0, len(werbespots_audio) - 1)
+            werbungWiedergeben.werbung(werbespots_video[random_index], werbespots_audio[random_index])
+            gesamtPreis = updatePreise()
+            Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")+gesamtPreis/2))
+            KaufeAlles()
+            lautstärke = Daten.read(Nutzername, "Lautstärke", ort="Einstellungen", speicherort=SH_Speicherort)
+            setze_lautstärke(lautstärke)
+            screen = pygame.display.set_mode((SH_BREITE, SH_HOEHE), pygame.RESIZABLE)  
+            mouseUP = True
             
     KaufenButton = Button(FARBBEREICH_POS[0],600, 100, 40, "Kaufen", KaufeAlles)
+    if werbung == True:
+        WerbungButton = Button(FARBBEREICH_POS[0]+115,600,100,40,"1/2 Preis",WerbungAbspielen)
 
 
     while laeuft:
@@ -403,6 +409,8 @@ def Main(Nutzername):
                 GesamtPreis = updatePreise()
                 FarbeMitKaufenToggle.handle_event(pygame.mouse.get_pos())
                 KaufenButton.handle_event(pygame.mouse.get_pos())
+                if werbung == True:
+                    WerbungButton.handle_event(pygame.mouse.get_pos())
                 
             if event.type == pygame.MOUSEBUTTONUP:
                 mouseUP = True
@@ -456,7 +464,8 @@ def Main(Nutzername):
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         KaufenButton.draw(screen)
         FarbeMitKaufenToggle.draw(screen)
-
+        if werbung == True:
+            WerbungButton.draw(screen)
         for group in SettingGroupsss:
             group.draw(screen)
         if GesamtPreis > Geld:
