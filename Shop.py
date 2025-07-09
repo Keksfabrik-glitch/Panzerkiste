@@ -17,7 +17,8 @@ except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 try:
- 
+    import cv2
+    cap = cv2.VideoCapture("Videos/RickRoll.mp4")
     import werbung as werbungWiedergeben
     werbung = True
 except:
@@ -417,7 +418,7 @@ def Main(Nutzername):
                 GesamtPreis = updatePreise()
             if event.type == pygame.QUIT:
                 laeuft = False
-                print("Bye")
+
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
             for group in SettingGroupsss:
