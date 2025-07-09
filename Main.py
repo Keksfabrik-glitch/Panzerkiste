@@ -36,7 +36,6 @@ while running:
     elif auswahl == "Einstellungen":
         E.main(Nutzername)
     elif auswahl == "Shop":
-
         S.Main(Nutzername)
 # Ende
 pygame.quit()

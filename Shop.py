@@ -11,8 +11,8 @@ from time import sleep
 try:
     from win11toast import toast, notify, update_progress
     wintoast = True
-    werbespots_video = ["Videos/RickRoll.mp4","Videos/Schumacher.mp4"]
-    werbespots_audio = ["Videos/RickRoll.mp3","Videos/Schumacher.mp3"]
+    werbespots_video = ["Videos/RickRoll.mp4","Videos/Schumacher.mp4","Videos/Haribo.mp4"]
+    werbespots_audio = ["Videos/RickRoll.mp3","Videos/Schumacher.mp3","Videos/Haribo.mp3"]
 except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
