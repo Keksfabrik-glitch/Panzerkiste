@@ -52,21 +52,21 @@
     "t": {
         "passwort": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
         "stats": {
-            "punkte": 8717.0,
+            "punkte": 7485.5,
             "farbe": "[100, 255, 255, 255]",
             "leben": 8,
             "schussCooldown": 60,
-            "drehgeschwindigkeit": 5,
-            "geschwindigkeit": 25,
-            "maxKugeln": 10,
+            "drehgeschwindigkeit": 7,
+            "geschwindigkeit": 45,
+            "maxKugeln": 9,
             "kugelSpeed": 5,
-            "nachladezeit": 4,
-            "abpraller": 2,
+            "nachladezeit": 5,
+            "abpraller": 7,
             "abprallChance": 1.0,
-            "mieneZeit": 15,
+            "mieneZeit": 25,
             "mienenAnzahl": -1,
-            "mieneCooldown": 5,
-            "explosionsRadius": 40
+            "mieneCooldown": 2,
+            "explosionsRadius": 70
         },
         "Einstellungen": {
             "Lautstärke": 0.4,
