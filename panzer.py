@@ -348,11 +348,11 @@ class FeindPanzer(pygame.sprite.Sprite):
                 self.LetzteBerechnung = pygame.time.get_ticks()
                 print(Genauigkeit,self.Versuche)
                 if self.letzteGenauigkeit>= Genauigkeit:
-                    print("BESSER YEA")
+                   
                     self.Versuche +=1
                     self.besterWinkel = winkel
                 else:
-                    print("SCHLECHTER NÖ")
+
                     self.Versuche -=1
                     if self.besterWinkel != None:
                         self.turmWinkel = self.besterWinkel

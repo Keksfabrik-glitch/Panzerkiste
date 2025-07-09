@@ -392,8 +392,7 @@ def Main(Nutzername):
             #KaufeAlles()
             
     KaufenButton = Button(FARBBEREICH_POS[0],600, 100, 40, "Kaufen", KaufeAlles)
-    if werbung == True:
-        WerbungButton = Button(FARBBEREICH_POS[0]+115,600,100,40,"1/2 Preis",WerbungAbspielen)
+
 
     while laeuft:
         screen.fill(SAND)
@@ -404,8 +403,7 @@ def Main(Nutzername):
                 GesamtPreis = updatePreise()
                 FarbeMitKaufenToggle.handle_event(pygame.mouse.get_pos())
                 KaufenButton.handle_event(pygame.mouse.get_pos())
-                if werbung == True:
-                    WerbungButton.handle_event(pygame.mouse.get_pos())
+                
             if event.type == pygame.MOUSEBUTTONUP:
                 mouseUP = True
                 GesamtPreis = updatePreise()
@@ -457,8 +455,6 @@ def Main(Nutzername):
         screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         KaufenButton.draw(screen)
-        if werbung == True:
-            WerbungButton.draw(screen)
         FarbeMitKaufenToggle.draw(screen)
 
         for group in SettingGroupsss:
