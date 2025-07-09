@@ -5,6 +5,16 @@ try:
 except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
+#try:
+    #from moviepy import VideoFileClip
+    #werbung = True
+#except:
+    #werbung = False
+    #if wintoast:
+        #notify('unvollständig', 'Bitte installiere moviepy um alle features freizuschalten', audio='ms-winsoundevent:Notification.IM')
+    #else:
+        #print("Bitte installiere moviepy um alle features freizuschalten")
+import random
 import pygame
 import panzer as P
 import Shop as S
@@ -15,7 +25,8 @@ import Einstellungen as E
 pygame.init()
 pygame.display.set_caption("Panzerkiste")
 pygame.font.init()
-
+#Werbung
+#werbespots = ["RickRoll.mp4","Schumacher.mp4"]
 # Hauptschleife
 Nutzername = Acc.Main()
 if Nutzername == None:
@@ -29,12 +40,9 @@ while running:
         P.Main(Nutzername)          # Fenster übergeben
     elif auswahl == "Beenden":
         running = False
-    elif auswahl == "Multiplayer":
-        if wintoast:
-            notify('Fehler', 'Multiplayer ist noch nicht verfügbar.', audio='ms-winsoundevent:Notification.IM')
-        else:
-            print("Fehler, Multiplayer ist noch nicht verfügbar.")
     elif auswahl == "Einstellungen":
+        #if werbung:
+            #VideoFileClip(random.choice(werbespots)).preview()
         E.main(Nutzername)
     elif auswahl == "Shop":
         S.Main(Nutzername)

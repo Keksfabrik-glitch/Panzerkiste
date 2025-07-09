@@ -91,10 +91,7 @@ def Main(Nutzername):
                         else:
                             print("Installier jetzt endlich win11toast !!!")
                         return "Singleplayer"
-                        
-                    elif auswahl == "Multiplayer":
-                        sound_startbildschirm.stop()
-                        return "Multiplayer"
+
                     elif auswahl == "Einstellungen":
                         sound_startbildschirm.stop()
                         return "Einstellungen"
