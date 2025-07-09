@@ -5,6 +5,7 @@ import math
 import json
 import Speicher as Daten
 import panzer as P
+import random
 from time import sleep
 try:
     from win11toast import toast, notify, update_progress
@@ -13,11 +14,13 @@ except:
     wintoast = False
     print("Bitte installiere Win11toast, um alle Features freizuschalten")
 try:
-    import sys
-    sysVerfügbar = True
+ 
+    #from moviepy.editor import VideoFileClip
+    werbung = True
 except:
-    sysVerfügbar = False
-    print("Bitte installiere sys, um alle Features freizuschalten")
+    werbung = False
+    print("Bitte installiere moviepy.editor, um extea Features freizuschalten :-)")
+werbung = False
 pygame.init()
 # Setup
 fontBold = pygame.font.SysFont(None,24,bold=True)
@@ -39,6 +42,10 @@ SH_Speicherort = "Accounts.json"
 pygame.mixer.init()
 sound_ca_cing = pygame.mixer.Sound("Sounds/Tanks_Ca-ching.mp3")
 sounds = [sound_ca_cing]
+#Videos
+
+#RickRoll = VideoFileClip("Videos/RickRoll.mp4")
+#Schumacher = VideoFileClip("Videos/Schumacher.mp4")
 def setze_lautstärke(wert):
     pygame.mixer.music.set_volume(wert)
     for sound in sounds:
@@ -272,7 +279,7 @@ def Main(Nutzername):
 
             screen.blit(fontKursiv.render(str(self.Beschreibung), True, SCHWARZ), (self.pos[0],self.pos[1]+35))
             #self.Button.draw(screen)
-        def preis(self):
+        def wert(self):
             return self.preis
     SH_BREITE = 850
     SH_HOEHE = 690
@@ -359,6 +366,7 @@ def Main(Nutzername):
         sound_ca_cing.play()
         global Geld
         Geld = Daten.read(Nutzername,"punkte")
+
     global GesamtPreis
     GesamtPreis = 0
     def updatePreise():
@@ -370,8 +378,22 @@ def Main(Nutzername):
         if FarbeMitKaufenToggle.zustand == True:
             GesamtPreis += FarbPreisBerechnen(farbe)
         return GesamtPreis
+    #def WerbungAbspielen():
+        #if werbung == True:
+            
+            #if random.randint(1,2) == 2:
+            #    clip = RickRoll
+            #else:
+            #    clip = Sc
+            #clip.ipython_display(width=480)
+            #clip.preview(fullscreen = False,window_title="Werbung")
+            #gesamtPreis = updatePreise()
+            #Daten.write(Nutzername,"punkte",(Daten.read(Nutzername,"punkte")+gesamtPreis/2))
+            #KaufeAlles()
+            
     KaufenButton = Button(FARBBEREICH_POS[0],600, 100, 40, "Kaufen", KaufeAlles)
-
+    if werbung == True:
+        WerbungButton = Button(FARBBEREICH_POS[0]+115,600,100,40,"1/2 Preis",WerbungAbspielen)
 
     while laeuft:
         screen.fill(SAND)
@@ -382,12 +404,14 @@ def Main(Nutzername):
                 GesamtPreis = updatePreise()
                 FarbeMitKaufenToggle.handle_event(pygame.mouse.get_pos())
                 KaufenButton.handle_event(pygame.mouse.get_pos())
+                if werbung == True:
+                    WerbungButton.handle_event(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEBUTTONUP:
                 mouseUP = True
                 GesamtPreis = updatePreise()
             if event.type == pygame.QUIT:
                 laeuft = False
-
+                print("Bye")
         if mouseUP == False: # Maustaste gedrückt
             MausX, MausY = pygame.mouse.get_pos()
             for group in SettingGroupsss:
@@ -433,15 +457,16 @@ def Main(Nutzername):
         screen.blit(font.render("Farbpreis", True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]))
         screen.blit(font.render(str(Farbpreis), True, SCHWARZ), (FARBBEREICH_POS[0]+345,FARBBEREICH_POS[1]+20))
         KaufenButton.draw(screen)
+        if werbung == True:
+            WerbungButton.draw(screen)
         FarbeMitKaufenToggle.draw(screen)
 
         for group in SettingGroupsss:
             group.draw(screen)
         if GesamtPreis > Geld:
-            screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,ROT),(FARBBEREICH_POS[0]+ 115,610))
+            screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,ROT),(FARBBEREICH_POS[0]+ (230 if werbung==True else 115),610))
         else:
-             screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,SCHWARZ),(FARBBEREICH_POS[0]+ 115,610))
+             screen.blit(fontBig.render("Gesamtpreis: {}$".format(GesamtPreis),True,SCHWARZ),(FARBBEREICH_POS[0]+ (230 if werbung==True else 115),610))
         pygame.display.flip()   
-        clock.tick(60)
+        clock.tick(120)
 
-#Main("_Hannes_")

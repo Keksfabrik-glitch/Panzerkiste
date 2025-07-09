@@ -112,19 +112,19 @@ def berechneTurmwinkel(panzer_pos, spieler_pos, wände, nummer,alterBesterWinkel
         if nummer == 1:
             FaecherBreite -= 40
             print(FaecherBreite)
-            Rays +=5
+            Rays -=5
         elif nummer == 2:
             FaecherBreite -= 30
             print(FaecherBreite)
-            Rays += 10
+            Rays -= 10
         elif nummer == 3:
             FaecherBreite -= 20
-            Rays += 15
+            Rays -= 15
         elif nummer == 4:
             FaecherBreite -= 10
-            Rays += 20
+            Rays -= 10
 
-        MaxSchritte = 2000
+        MaxSchritte = 4000
         besteDistanz = 1000000000 
         besterWinkel = 0.0
         mittelWinkel = 0

@@ -40,7 +40,7 @@ def Main(Nutzername):
     BLAU = (0, 0, 255)  # Blaue Farbe für Auswahl
     WEIß = (255, 255, 255)  # Weiße Farbe für nicht selektierte Optionen
 
-    stellen = ["Singleplayer", "Multiplayer","Shop", "Einstellungen", "Beenden"]
+    stellen = ["Singleplayer","Shop", "Einstellungen", "Beenden"]
     selected_index = 0
     laeuft = True
 

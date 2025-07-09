@@ -286,8 +286,8 @@ class FeindPanzer(pygame.sprite.Sprite):
         self.Versuche = 0
         self.abstand = self.nachladezeit
         self.kannAbprallen = self.abpraller != 0
-        self.intelligenz = 60
-        self.sichtFeld = 200
+        self.intelligenz = 60 # Rays
+        self.sichtFeld = 200 # Winkel max
 
         self.kannMienenLegen = False
         self.kannFahren = kannFahren
@@ -507,7 +507,7 @@ class FeindPanzerManage():
             self.panzer.append(neuerPanzer)
             feindPanzerGR.add(neuerPanzer)
             # Mienen Stats und appraller danach noch...
-#Testing
+
 FM = FeindPanzerManage()
   
 class Explosion(pygame.sprite.Sprite):
@@ -1007,4 +1007,4 @@ def Main(Nutzername):
         label_gruppe.empty()
 
 sound_jingle.stop()
-Main("_Hannes_")
+

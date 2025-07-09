@@ -6,7 +6,7 @@ import Speicher as S
 pygame.init()
 E_BREITE = 500
 E_HOEHE = 250
-screen = pygame.display.set_mode((E_BREITE, E_HOEHE))
+
 pygame.display.set_caption("Einstellungen")
 E_Speicherort = "Accounts.json"
 
