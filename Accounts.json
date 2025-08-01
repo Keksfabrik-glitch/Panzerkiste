@@ -27,17 +27,17 @@
     "Andreas": {
         "passwort": "712b2cb918772120cee135c180437cd3068cae046f23c4fcf6b72c2a19540584",
         "stats": {
-            "punkte": 190,
+            "punkte": 19.5,
             "farbe": "[1, 216, 243, 255]",
-            "leben": 6,
-            "schussCooldown": 250,
+            "leben": 7,
+            "schussCooldown": 180,
             "drehgeschwindigkeit": 5,
-            "geschwindigkeit": 25,
+            "geschwindigkeit": 27,
             "maxKugeln": 10,
             "kugelSpeed": 15,
             "nachladezeit": 1,
             "abpraller": 2,
-            "abprallChance": 0.75,
+            "abprallChance": 0.8,
             "mieneZeit": 15,
             "mienenAnzahl": -1,
             "mieneCooldown": 5,
@@ -45,7 +45,7 @@
         },
         "Einstellungen": {
             "Sound": true,
-            "Lautstärke": 0.76,
+            "Lautstärke": 0.72,
             "SL_beendbar": false
         }
     },
